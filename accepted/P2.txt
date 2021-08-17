@@ -54,7 +54,7 @@ the same meaning, and three additional transaction types. These are
 
 with tags 22, 23, and 24, respectively. These will have the same
 payloads as the corresponding existing transactions, and an additional
-memo field. The memo is a byte array with a maximum size of TODO???.
+memo field. The memo is a byte array with a maximum size of 256.
 The protocol does not give any meaning to the memo, it is an
 uninterpreted part of the transaction that is recorded by the chain.
 
@@ -71,10 +71,8 @@ cost C(tₘ) of a transaction with a memo is
              C(tₘ) = C(t) + size + 2
 
 where t is the corresponding existing transaction without a memo and
-size is the size in bytes of the memo. The + 2 accounts for the
+size is the size in bytes of the memo. The +2 accounts for the
 recording of the size of the memo, which uses 2 bytes.
-
-TODO: We might not use 2 bytes, but variable length encoding. FIX once known.
 
                                Effects
 
@@ -118,5 +116,5 @@ TransferWithScheduleAndMemo
   - schedule: sequence of pairs (timestamp, amount) (variable length)
 
 where `memo` is serialized as
-  - length: word16 (2 bytes) FIXME: finalize when known
+  - length: word16 (2 bytes)
   - bytes: byte array (variable length)
