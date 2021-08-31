@@ -95,13 +95,13 @@ The new transaction payload types are serialized as follows.
 
 TransferWithMemo
   - tag 22: byte (1 byte)
-  - to address: account address (32 bytes)
+  - receiver address: account address (32 bytes)
   - memo: memo (variable length)
   - amount: amount (8 bytes)
 
 EncryptedAmountTransferWithMemo
   - tag 23: byte (1 byte)
-  - to address: account address (32 bytes)
+  - receiver address: account address (32 bytes)
   - memo: memo (variable length)
   - remaining amount: encrypted amount (192 bytes)
   - amount to transfer: encrypted amount (192 bytes)
@@ -110,11 +110,11 @@ EncryptedAmountTransferWithMemo
 
 TransferWithScheduleAndMemo
   - tag 24: byte (1 byte)
-  - to address: account address (32 bytes)
+  - receiver address: account address (32 bytes)
   - memo: memo (variable length)
   - schedule length: byte (1 byte)
   - schedule: sequence of pairs (timestamp, amount) (variable length)
 
 where `memo` is serialized as
-  - length: word16 (2 bytes)
+  - length: word16 (2 bytes big endian)
   - bytes: byte array (variable length)
