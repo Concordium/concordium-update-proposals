@@ -116,5 +116,50 @@ TransferWithScheduleAndMemo
   - schedule: sequence of pairs (timestamp, amount) (variable length)
 
 where `memo` is serialized as
-  - length: word16 (2 bytes big endian)
+  - length: u16 (2 bytes big endian)
   - bytes: byte array (variable length)
+
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of
+this file. The instruction does not need any auxiliary data.
+
+
+                     State and parameter transfer
+
+The state of all accounts and smart contracts, and all chain
+parameters are transferred from the existing chain. The state of the
+chain at the first block after the protocol update, called the
+regenesis block, is the state of the chain at the first finalized
+block after the effective time of the protocol update instruction.
+
+The hash of the regenesis block is computed by hashing the following
+sequence of values
+- genesis slot number: 0 as u64 (8 bytes big endian)
+- protocol version: 2 as u64 (8 bytes big endian) (protocol version)
+- genesis variant: 1 as u8 (1 byte)
+- genesis parameters: see below
+- hash of the genesis block of the chain: 32 bytes
+- hash of the current regenesis block (equal to genesis block of the chain): 32 bytes
+- hash of the terminal block (first block after effective time of the update): 32 bytes
+- state hash at the terminal block: 32 bytes
+
+Genesis parameters are serialized as
+- genesis time in milliseconds since unix epoch: 8 bytes big endian
+- slot duration in milliseconds: 8 bytes big endian
+- epoch length in slots: 8 bytes big endian
+- maximum block energy: 8 bytes big endian
+- finalization parameters: see below
+
+Finalization parameters are serialized as
+- minimum skip in number of blocks: 8 bytes big endian
+- committee maximum size: 4 bytes big endian
+- waiting time in milliseconds: 8 bytes big endian
+- skip shrink factor (ratio of two u64): 16 bytes
+- skip grow factor (ratio of two u64): 16 bytes
+- delay shrink factor (ratio of two u64): 16 bytes
+- delay grow factor (ratio of two u64): 16 bytes
+- allow zero delay: 1 byte, (1 for true, 0 for false)
+
+The Concordium bluepaper explains the meaning of these parameters.
