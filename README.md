@@ -19,4 +19,4 @@ The table lists already effective as well as *planned/draft* protocol updates.
 | Protocol Version | Protocol Update | Effective on Testnet | Effective on Mainnet | Protocol Specification | Commentary | Specification Hash | Transaction Hash (Mainnet) | Block Hash (Mainnet) |
 | :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | P1 | Initial protocol at launch of mainnet | - | Jun 09, 2021 | - | - | - | - | - |
-| P2 | Transaction Memos | *planned  Sep 22, 2021* | *planned  Oct 25, 2021* | *draft <br/> [P2.txt](../main/accepted/P2.txt)* | *draft <br/> [P2-commentary.txt](../main/commentary/P2-commentary.txt)* | `1020566c381b2f6c34cfdaa3bd0d448f106f561f650a49bf443cac0076387731`  |   |   |
+| P2 | Transaction Memos | *planned  Sep 22, 2021* | *planned  Oct 25, 2021* | *draft <br/> [P2.txt](../main/accepted/P2.txt)* | *draft <br/> [P2-commentary.txt](../main/commentary/P2-commentary.txt)* | `4318fc1e8137114b2b85a118bc468fdfac1b678e705777cf80729dd2f80363c9`  |   |   |
