@@ -120,7 +120,55 @@ where `memo` is serialized as
   - bytes: byte array (variable length)
 
 
+                     Genesis data format
+
+The genesis data format at protocol version 2 is the same as at
+protocol version 1, except that the version tag is 4 instead of 3.  In
+particular, the `GDP2Initial` and `GDP2Regenesis` genesis data formats
+are the same as `GDP1Initial` and `GDP1Regenesis` respectively.
+`GDP2Initial` specifies core genesis parameters and an initial state,
+which may be used as an initial genesis block. `GDP2Regenesis`
+specifies core genesis parameters, the hashes of the first genesis
+block, previous genesis block and terminal block of the preceding
+chain, and the state at regenesis. This is used when restarting a chain
+as a result of a protocol update.
+
+
                      Protocol update instruction
 
 The protocol update instruction is identified by the SHA256 hash of
 this file. The instruction does not need any auxiliary data.
+
+The protocol update starts a new chain with the genesis block
+containing genesis data in the `GDP2Regenesis` format. The parameters
+are determined as follows:
+
+- The core genesis parameters are unchanged, except that the genesis
+  time is the timestamp of the last finalized block of the preceding
+  chain.
+
+- The hash of the first genesis block is either
+  - the hash of the genesis block of the preceding chain, if it is
+    a `GDP1Initial` genesis block; or
+  - the first genesis block recorded in the genesis block of the
+    preceding chain, if it is a `GDP1Regenesis` genesis block.
+
+- The hash of the previous genesis block is the hash of the genesis
+  block of the preceding chain.
+
+- The hash of the terminal block is the hash of the last finalized
+  block of the preceding chain.
+
+- The state is derived from the state at the last finalized block of
+  the preceding chain as follows:
+  - The `SeedState` data structure is updated with:
+    - the `epochLength` is unchanged;
+    - the `epoch` is reset to 0;
+    - the `currentLeadershipElectionNonce` is the SHA256 hash of the
+      concatenation of the string `"Regenesis"` with the previous value
+      of `updatedNonce`; and
+    - the `updatedNonce` is the same as
+      `currentLeadershipElectionNonce`.
+  - The `Updates` data structure is updated with:
+    - the current protocol update is unset; and
+    - the protocol update queue is emptied.
