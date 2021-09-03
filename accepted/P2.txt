@@ -120,7 +120,7 @@ where `memo` is serialized as
   - bytes: byte array (variable length)
 
 
-                     Genesis data format
+                         Genesis data format
 
 The genesis data format at protocol version 2 is the same as at
 protocol version 1, except that the version tag is 4 instead of 3.  In
@@ -162,7 +162,6 @@ are determined as follows:
 - The state is derived from the state at the last finalized block of
   the preceding chain as follows:
   - The `SeedState` data structure is updated with:
-    - the `epochLength` is unchanged;
     - the `epoch` is reset to 0;
     - the `currentLeadershipElectionNonce` is the SHA256 hash of the
       concatenation of the string `"Regenesis"` with the previous value
