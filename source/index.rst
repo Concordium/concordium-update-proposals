@@ -12,4 +12,4 @@ Concordium Update Proposals
    :maxdepth: 1
    :caption: Standards
 
-   standards/cts1
+   CIS/cis-1
