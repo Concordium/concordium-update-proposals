@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'Concordium Update Proposals'
+project = 'Concordium Interoperability Specifications'
 copyright = '2021, Concordium'
 author = 'Concordium'
 
@@ -45,7 +45,7 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'furo'
-html_title = "Update Proposals"
+html_title = "Interoperability Specifications"
 html_favicon = "_static/concordium-logo-no-text.svg"
 html_theme_options = {
     "light_logo": "concordium-logo-black.svg",

@@ -1,6 +1,6 @@
-===========================
-Concordium Update Proposals
-===========================
+==========================================
+Concordium Interoperability Specifications
+==========================================
 
 .. toctree::
    :maxdepth: 1
