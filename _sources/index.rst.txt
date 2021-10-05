@@ -1,6 +1,6 @@
-===========================
-Concordium Update Proposals
-===========================
+==========================================
+Concordium Interoperability Specifications
+==========================================
 
 .. toctree::
    :maxdepth: 1
@@ -12,4 +12,4 @@ Concordium Update Proposals
    :maxdepth: 1
    :caption: Standards
 
-   standards/cts1
+   CIS/cis-1
