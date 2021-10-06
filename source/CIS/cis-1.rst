@@ -30,7 +30,7 @@ General types and serialization
 ``TokenID``
 ^^^^^^^^^^^
 
-Token Identifier, which combined with the address of the smart contract instance implementing CTS1, forms the globally unique identifier of a token type.
+Token Identifier, which combined with the address of the smart contract instance implementing CIS1, forms the globally unique identifier of a token type.
 
 - A token ID for a token type SHALL NOT change after a token type have been minted.
 - A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.
@@ -162,7 +162,7 @@ It is serialized as: the first 2 bytes encode the length (``n``) of the data, fo
 Contract functions
 ------------------
 
-A smart contract implementing CTS1 MUST export three functions :ref:`CIS-1-functions-transfer`, :ref:`CIS-1-functions-updateOperator` and :ref:`CIS-1-functions-balanceOf` according to the following description:
+A smart contract implementing CIS1 MUST export three functions :ref:`CIS-1-functions-transfer`, :ref:`CIS-1-functions-updateOperator` and :ref:`CIS-1-functions-balanceOf` according to the following description:
 
 .. _CIS-1-functions-transfer:
 
@@ -505,7 +505,7 @@ Attributes are objects with the following fields:
 Example token metadata: Fungible
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An example of token metadata for a CTS1 implementation wrapping the GTU could be:
+An example of token metadata for a CIS1 implementation wrapping the GTU could be:
 
 .. code-block:: json
 
@@ -513,7 +513,7 @@ An example of token metadata for a CTS1 implementation wrapping the GTU could be
     "name": "Wrapped GTU Token",
     "symbol": "wGTU",
     "decimals": 6,
-    "description": "A CTS1 token wrapping the Global Transaction Unit",
+    "description": "A CIS1 token wrapping the Global Transaction Unit",
     "thumbnail": { "url": "https://location.of/the/thumbnail.png" },
     "display": { "url": "https://location.of/the/display.png" },
     "artifact": { "url": "https://location.of/the/artifact.png" },
@@ -530,7 +530,7 @@ The danish localization JSON file could be:
 .. code-block:: json
 
   {
-    "description": "CTS1 indpakket GTU"
+    "description": "CIS1 indpakket GTU"
   }
 
 Example token metadata: Non-fungible
@@ -597,7 +597,7 @@ A number of limitations are important to be aware of:
 Decisions and rationale
 =======================
 
-In this section we point out some of the differences from other popular token standards found on other blockchains, and provide reasons for deviating from them in CTS1.
+In this section we point out some of the differences from other popular token standards found on other blockchains, and provide reasons for deviating from them in CIS1.
 
 Token ID bytes instead an integer
 ---------------------------------
