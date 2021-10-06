@@ -8,7 +8,7 @@ CIS-1: Concordium Token Standard
    * - Created
      - Sep 22, 2021
    * - Final
-     - planned Oct 13, 2021
+     - planned Nov 1, 2021
 
 Abstract
 ========
