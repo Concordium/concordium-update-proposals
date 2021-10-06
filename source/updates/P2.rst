@@ -1,5 +1,5 @@
 =============================================================
-Protocol Update 2 - Alphae Centauri 2.0 - Transaction Memos
+Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos
 =============================================================
 
 .. list-table::
