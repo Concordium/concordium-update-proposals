@@ -220,7 +220,7 @@ It allows for off-chain applications to track token balances, authentication and
 <h3>General types and serialization<a class="headerlink" href="#general-types-and-serialization" title="Permalink to this headline">¶</a></h3>
 <section id="tokenid">
 <span id="cis-1-tokenid"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenID</span></code><a class="headerlink" href="#tokenid" title="Permalink to this headline">¶</a></h4>
-<p>Token Identifier, which combined with the address of the smart contract instance implementing CTS1, forms the globally unique identifier of a token type.</p>
+<p>Token Identifier, which combined with the address of the smart contract instance implementing CIS1, forms the globally unique identifier of a token type.</p>
 <ul class="simple">
 <li><p>A token ID for a token type SHALL NOT change after a token type have been minted.</p></li>
 <li><p>A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.</p></li>
@@ -326,7 +326,7 @@ Be aware of the parameter size limit of 1024 bytes.</p>
 </section>
 <section id="contract-functions">
 <span id="cis-1-functions"></span><h3>Contract functions<a class="headerlink" href="#contract-functions" title="Permalink to this headline">¶</a></h3>
-<p>A smart contract implementing CTS1 MUST export three functions <a class="reference internal" href="#cis-1-functions-transfer"><span class="std std-ref">transfer</span></a>, <a class="reference internal" href="#cis-1-functions-updateoperator"><span class="std std-ref">updateOperator</span></a> and <a class="reference internal" href="#cis-1-functions-balanceof"><span class="std std-ref">balanceOf</span></a> according to the following description:</p>
+<p>A smart contract implementing CIS1 MUST export three functions <a class="reference internal" href="#cis-1-functions-transfer"><span class="std std-ref">transfer</span></a>, <a class="reference internal" href="#cis-1-functions-updateoperator"><span class="std std-ref">updateOperator</span></a> and <a class="reference internal" href="#cis-1-functions-balanceof"><span class="std std-ref">balanceOf</span></a> according to the following description:</p>
 <section id="transfer">
 <span id="cis-1-functions-transfer"></span><h4><code class="docutils literal notranslate"><span class="pre">transfer</span></code><a class="headerlink" href="#transfer" title="Permalink to this headline">¶</a></h4>
 <p>Executes a list of token transfers.
@@ -681,12 +681,12 @@ To associate a hash with a URL the JSON value is an object:</p>
 </table></div>
 <section id="example-token-metadata-fungible">
 <h4>Example token metadata: Fungible<a class="headerlink" href="#example-token-metadata-fungible" title="Permalink to this headline">¶</a></h4>
-<p>An example of token metadata for a CTS1 implementation wrapping the GTU could be:</p>
+<p>An example of token metadata for a CIS1 implementation wrapping the GTU could be:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Wrapped GTU Token"</span><span class="p">,</span>
   <span class="nt">"symbol"</span><span class="p">:</span> <span class="s2">"wGTU"</span><span class="p">,</span>
   <span class="nt">"decimals"</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-  <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"A CTS1 token wrapping the Global Transaction Unit"</span><span class="p">,</span>
+  <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"A CIS1 token wrapping the Global Transaction Unit"</span><span class="p">,</span>
   <span class="nt">"thumbnail"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://location.of/the/thumbnail.png"</span> <span class="p">},</span>
   <span class="nt">"display"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://location.of/the/display.png"</span> <span class="p">},</span>
   <span class="nt">"artifact"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://location.of/the/artifact.png"</span> <span class="p">},</span>
@@ -701,7 +701,7 @@ To associate a hash with a URL the JSON value is an object:</p>
 </div>
 <p>The danish localization JSON file could be:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-  <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"CTS1 indpakket GTU"</span>
+  <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"CIS1 indpakket GTU"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -767,7 +767,7 @@ To associate a hash with a URL the JSON value is an object:</p>
 </section>
 <section id="decisions-and-rationale">
 <h2>Decisions and rationale<a class="headerlink" href="#decisions-and-rationale" title="Permalink to this headline">¶</a></h2>
-<p>In this section we point out some of the differences from other popular token standards found on other blockchains, and provide reasons for deviating from them in CTS1.</p>
+<p>In this section we point out some of the differences from other popular token standards found on other blockchains, and provide reasons for deviating from them in CIS1.</p>
 <section id="token-id-bytes-instead-an-integer">
 <h3>Token ID bytes instead an integer<a class="headerlink" href="#token-id-bytes-instead-an-integer" title="Permalink to this headline">¶</a></h3>
 <p>Token standards such as ERC721 and ERC1155 both use a 256-bit unsigned integer (32 bytes) for the token ID, to support using something like a SHA256 hash for the token ID.
