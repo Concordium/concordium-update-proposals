@@ -17,8 +17,8 @@ The table lists already effective as well as *planned/draft* protocol updates.
 
 | Protocol Version | Protocol Update | Effective on Testnet | Effective on Mainnet | Protocol Specification | Commentary | Specification Hash | Transaction Hash (Mainnet) | Block Hash (Mainnet) |
 | :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| P1 | Initial protocol at launch of mainnet | - | Jun 09, 2021 | - | - | - | - | - |
-| P2 | Transaction Memos | Sep 22, 2021 | *planned  Oct 13, 2021* | [P2.txt](../main/updates/P2.txt) | [P2-commentary.txt](../main/commentary/P2-commentary.txt) | `9b1f206bbe230fef248c9312805460b4f1b05c1ef3964946981a8d4abb58b923`  |   |   |
+| Alpha Centauri 1.0 (P1) | Initial protocol at launch of mainnet | - | Jun 09, 2021 | - | - | - | - | - |
+| Alpha Centauri 2.0 (P2) | Transaction Memos | Sep 22, 2021 | *planned  Oct 13, 2021* | [P2.txt](../main/updates/P2.txt) | [P2-commentary.txt](../main/commentary/P2-commentary.txt) | `9b1f206bbe230fef248c9312805460b4f1b05c1ef3964946981a8d4abb58b923`  |   |   |
 
 
 ## Website
