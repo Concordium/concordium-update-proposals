@@ -170,7 +170,7 @@ A smart contract implementing CIS1 MUST export three functions :ref:`CIS-1-funct
 ^^^^^^^^^^^^
 
 Executes a list of token transfers.
-A transfer is a token ID, an amount of tokens to be transferred, and the from address and to address.
+A transfer is a token ID, an amount of tokens to be transferred, and the ``from`` address and ``to`` address.
 
 When transferring tokens to a contract address additional information for a receive function hook to trigger is required.
 
@@ -218,6 +218,7 @@ Requirements
 - A transfer of a token amount zero MUST be executed as a normal transfer.
 - A transfer of some amount of a token type MUST only transfer the exact amount of the given token type between balances.
 - A transfer of any amount of a token type to a contract address MUST call receive hook function on the receiving smart contract with a :ref:`receive hook parameter<CIS-1-functions-transfer-receive-hook-parameter>`.
+- Let ``operator`` be an operator of the address ``owner``. A transfer of any amount of a token type from an address ``owner`` sent by an address ``operator`` MUST be executed as if the transfer was sent by ``owner``.
 - The contract function MUST reject if a receive hook function called on the contract receiving tokens rejects.
 
 .. warning::
