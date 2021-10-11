@@ -10,6 +10,7 @@
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     
     
 
@@ -205,6 +206,9 @@
 <tr class="row-even"><th class="stub"><p>Final</p></th>
 <td><p>planned Nov 1, 2021</p></td>
 </tr>
+<tr class="row-odd"><th class="stub"><p>Draft version</p></th>
+<td><p>2 (Oct 11, 2021)</p></td>
+</tr>
 </tbody>
 </table></div>
 <section id="abstract">
@@ -330,7 +334,7 @@ Be aware of the parameter size limit of 1024 bytes.</p>
 <section id="transfer">
 <span id="cis-1-functions-transfer"></span><h4><code class="docutils literal notranslate"><span class="pre">transfer</span></code><a class="headerlink" href="#transfer" title="Permalink to this headline">¶</a></h4>
 <p>Executes a list of token transfers.
-A transfer is a token ID, an amount of tokens to be transferred, and the from address and to address.</p>
+A transfer is a token ID, an amount of tokens to be transferred, and the <code class="docutils literal notranslate"><span class="pre">from</span></code> address and <code class="docutils literal notranslate"><span class="pre">to</span></code> address.</p>
 <p>When transferring tokens to a contract address additional information for a receive function hook to trigger is required.</p>
 <section id="parameter">
 <h5>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h5>
@@ -373,6 +377,7 @@ Currently, with the smallest possible transfers, the parameter can contain 21 tr
 <li><p>A transfer of a token amount zero MUST be executed as a normal transfer.</p></li>
 <li><p>A transfer of some amount of a token type MUST only transfer the exact amount of the given token type between balances.</p></li>
 <li><p>A transfer of any amount of a token type to a contract address MUST call receive hook function on the receiving smart contract with a <a class="reference internal" href="#cis-1-functions-transfer-receive-hook-parameter"><span class="std std-ref">receive hook parameter</span></a>.</p></li>
+<li><p>Let <code class="docutils literal notranslate"><span class="pre">operator</span></code> be an operator of the address <code class="docutils literal notranslate"><span class="pre">owner</span></code>. A transfer of any amount of a token type from an address <code class="docutils literal notranslate"><span class="pre">owner</span></code> sent by an address <code class="docutils literal notranslate"><span class="pre">operator</span></code> MUST be executed as if the transfer was sent by <code class="docutils literal notranslate"><span class="pre">owner</span></code>.</p></li>
 <li><p>The contract function MUST reject if a receive hook function called on the contract receiving tokens rejects.</p></li>
 </ul>
 <div class="admonition warning">
@@ -597,11 +602,11 @@ If the decimal is set to <code class="docutils literal notranslate"><span class=
 <td><p>A description for this token type.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">thumbnail</span></code> (optional)</p></td>
-<td><p>string</p></td>
+<td><p>URL JSON object</p></td>
 <td><p>An image URL to a small image for displaying the asset.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">display</span></code> (optional)</p></td>
-<td><p>string</p></td>
+<td><p>URL JSON object</p></td>
 <td><p>An image URL to a large image for displaying the asset.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">artifact</span></code> (optional)</p></td>
