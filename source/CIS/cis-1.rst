@@ -448,10 +448,10 @@ All of the fields in the JSON file are optional, and this specification reserves
     - string
     - A description for this token type.
   * - ``thumbnail`` (optional)
-    - string
+    - URL JSON object
     - An image URL to a small image for displaying the asset.
   * - ``display`` (optional)
-    - string
+    - URL JSON object
     - An image URL to a large image for displaying the asset.
   * - ``artifact`` (optional)
     - URL JSON object
