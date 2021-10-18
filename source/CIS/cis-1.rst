@@ -237,6 +237,7 @@ Requirements
 - A transfer of any amount of a token type to a contract address MUST call receive hook function on the receiving smart contract with a :ref:`receive hook parameter<CIS-1-functions-transfer-receive-hook-parameter>`.
 - Let ``operator`` be an operator of the address ``owner``. A transfer of any amount of a token type from an address ``owner`` sent by an address ``operator`` MUST be executed as if the transfer was sent by ``owner``.
 - The contract function MUST reject if a receive hook function called on the contract receiving tokens rejects.
+- The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.
 
 .. warning::
 
@@ -312,6 +313,7 @@ A query-amount pair is serialized as a query (``query``) and then a :ref:`CIS-1-
 Requirements
 ~~~~~~~~~~~~
 
+- The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.
 - The contract function MUST reject if any of the queries fail:
 
   - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-1-rejection-errors>`.
