@@ -10,14 +10,14 @@ CIS-1: Concordium Token Standard
    * - Final
      - planned Nov 1, 2021
    * - Draft version
-     - 2 (Oct 11, 2021)
+     - 3 (Oct 18, 2021)
 
 Abstract
 ========
 
 A standard interface for both fungible and non-fungible tokens implemented in a smart contract.
-The interface provides functions for transferring token ownership, authenticating other addresses to transfer tokens and for other smart contracts to access token balances.
-It allows for off-chain applications to track token balances, authentication and the location of token metadata using logged events.
+The interface provides functions for transferring token ownership, allowing other addresses to transfer tokens and for querying token balances and token metadata.
+It allows for off-chain applications to track token balances and the location of token metadata using logged events.
 
 Specification
 =============
@@ -159,6 +159,21 @@ It is serialized as: the first 2 bytes encode the length (``n``) of the data, fo
   This type is passed in a parameter for smart contract function calls.
   Be aware of the parameter size limit of 1024 bytes.
 
+.. _CIS-1-MetadataUrl:
+
+``MetadataUrl``
+^^^^^^^^^^^^^^^
+
+A URL and optional checksum for metadata stored outside of this contract.
+
+It is serialized as: 2 bytes for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) followed by an optional checksum.
+The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) is followed::
+
+  MetadataChecksum ::= (0: Byte)
+                     | (1: Byte) (hash: Byte³²)
+
+  MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
+
 .. _CIS-1-functions:
 
 Contract functions
@@ -264,26 +279,26 @@ Requirements
 ``balanceOf``
 ^^^^^^^^^^^^^
 
-Query balances of a list of addresses and token IDs, the result is then sent back to the sender.
+Query balances of a list of addresses and token IDs, the result is then sent to a provided contract address.
 
 Parameter
 ~~~~~~~~~
 
-The parameter consists of a name of the receive function to callback with the result and a list of token ID and address pairs.
+The parameter consists of a name of the contract address and receive function to callback with the result and a list of token ID and address pairs.
 
-It is serialized as: :ref:`CIS-1-ReceiveHookName` (``callback``) followed by 1 byte for the number of queries (``n``) and then this number of queries (``queries``).
+It is serialized as: a :ref:`CIS-1-ContractAddress` (``resultContract``) then a :ref:`CIS-1-ReceiveHookName` (``resultHook``) followed by 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
 A query is serialized as :ref:`CIS-1-TokenID` (``id``) followed by :ref:`CIS-1-Address` (``address``)::
 
   BalanceOfQuery ::= (id: TokenID) (address: Address)
 
-  BalanceOfParameter ::= (callback: ReceiveFunctionName) (n: Byte) (queries: BalanceOfQueryⁿ)
+  BalanceOfParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (queries: BalanceOfQueryⁿ)
 
 .. note::
 
   Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.
 
-Callback parameter
-~~~~~~~~~~~~~~~~~~
+Result parameter
+~~~~~~~~~~~~~~~~
 
 The parameter for the callback receive function is a list of query and token amount pairs.
 
@@ -292,13 +307,51 @@ A query-amount pair is serialized as a query (``query``) and then a :ref:`CIS-1-
 
   BalanceOfQueryResult ::= (query: BalanceOfQuery) (balance: TokenAmount)
 
-  BalanceOfCallbackParameter ::= (n: Byte²) (results: BalanceOfQueryResultⁿ)
-
+  BalanceOfResultParameter ::= (n: Byte²) (results: BalanceOfQueryResultⁿ)
 
 Requirements
 ~~~~~~~~~~~~
 
-- The contract function MUST reject if the sender is not a contract address with error :ref:`CONTRACT_ONLY<CIS-1-rejection-errors>`.
+- The contract function MUST reject if any of the queries fail:
+
+  - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-1-rejection-errors>`.
+
+.. _CIS-1-functions-tokenMetadata:
+
+``tokenMetadata``
+^^^^^^^^^^^^^^^^^
+
+Query the current token metadata URLs for a list token IDs, the result is then sent to a provided contract address.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of a name of the contract address and receive function to callback with the result and a list of token ID.
+
+It is serialized as: a :ref:`CIS-1-ContractAddress` (``resultContract``) then a :ref:`CIS-1-ReceiveHookName` (``resultHook``) followed by 1 byte for the number of queries (``n``) and then this number of :ref:`CIS-1-TokenID` (``ids``)::
+
+  TokenMetadataParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (ids: TokenIDⁿ)
+
+.. note::
+
+  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.
+
+
+Result parameter
+~~~~~~~~~~~~~~~~
+
+The parameter for the callback receive function is a list of token ID and metadata URL pairs.
+
+It is serialized as: 2 bytes for the number of query-amount pairs (``n``) and then this number of pairs (``results``).
+A pair is serialized as a :ref:`CIS-1-TokenID` (``id``) and then a :ref:`CIS-1-MetadataUrl` (``metadata``)::
+
+  TokenMetadataResult ::= (id: TokenID) (metadata: MetadataUrl)
+
+  TokenMetadataResultParameter ::= (n: Byte²) (results: TokenMetadataResultⁿ)
+
+Requirements
+~~~~~~~~~~~~
+
 - The contract function MUST reject if any of the queries fail:
 
   - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-1-rejection-errors>`.
@@ -377,15 +430,9 @@ The event to log when setting the metadata url for a token type.
 It consists of a token ID and an URL (:rfc:`3986`) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
 Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for certain token id should be used to get the token metadata.
 
-The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-1-TokenID` (``id``), two bytes for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``).
-Lastly a byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) is followed::
+The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-1-TokenID` (``id``) and then a :ref:`CIS-1-MetadataUrl` (``metadata``)::
 
-  MetadataUrl ::= (n: Byte²) (url: Byteⁿ)
-
-  MetadataChecksum ::= (0: Byte)
-                     | (1: Byte) (hash: Byte³²)
-
-  TokenMetadataEvent ::= (251: Byte) (id: TokenID) (metadata: MetadataUrl) (checksum: MetadataChecksum)
+  TokenMetadataEvent ::= (251: Byte) (id: TokenID) (metadata: MetadataUrl)
 
 .. note::
 
@@ -415,10 +462,7 @@ A smart contract following this specification MUST reject the specified errors f
     - An address balance contains insufficient amount of tokens to complete some transfer of a token.
   * - UNAUTHORIZED
     - -42000003
-    - Sender is not the address owning the tokens or an operator of the owning address. Note this can also be used if adding another authentication level on top of the standard.
-  * - CONTRACT_ONLY
-    - -42000004
-    - The sender is not a contract address.
+    - Sender is unauthorized to call this function. Note authorization is not mandated anywhere in this specification, but can still be introduce on top of the standard.
 
 The smart contract implementing this specification MAY introduce custom error codes other than the ones specified in the table above.
 
@@ -616,28 +660,33 @@ The specification only has a ``transfer`` smart contract function which takes li
 This will result in lower energy cost compared to multiple contract calls and only introduces a small overhead for single transfers.
 The reason for not also including a single transfer function is to have smaller smart contract modules, which in turn leads to saving cost on every function call.
 
+No explicit authentication
+--------------------------
+
+The specification does not mandate any authentication scheme and one might expect a requirement for the owner and operators being authenticated to transfer tokens.
+This is very much intentional and the reasoning for this is to keep the specification focused on the interface for transferring token ownership with as few restrictions as possible.
+
+Having a requirement that only owners and operators can transfer would prevent introducing any other authentication scheme on top of this specification.
+
+Adding a requirement for owners and operators being authorized to transfer tokens would prevent introducing custom contract logic rejecting transfers, such as limiting the daily transfers, temporary token lockups or non-transferrable tokens.
+
+Instead this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authenticated, so is an operator of the owner.
+
+Most contract implementing this specification should probably add some authentication and not have anyone being able to transfer any token, but this is not really relevant for the interface described in this specification.
+
 No token level approval/allowance like in ERC20 and ERC721
 ----------------------------------------------------------
 
-This standard only specifies address-level operators and no authentication on per token level.
+This standard only specifies address-level operators and is not scoped to a token type.
 The main argument is simplicity and to save energy cost on common cases, but other reasons are:
 
-- A token level authentication requires the token smart contract to track more state, which increases the overall energy cost.
-- For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, a token level authentication could become very expensive.
+- A token level operator requires the token smart contract to track more state, which increases the overall energy cost.
+- For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, a token level operator could become very expensive.
 - For fungible tokens; `approval/allowance introduces an attack vector <https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit>`_.
 
 .. note::
 
-  The specification does not prevent adding more fine-grained authentication, such as a token level authentication.
-
-Operator can transfer any amount of any token type for the owner
-----------------------------------------------------------------
-
-An operator of an address can transfer any amount of any token type owned by the address.
-An alternative approach could be to scope the operators per token type and the owner could then add the operator for every token type to achieve the same.
-Although it is a more flexible approach in terms of functionality, the complexity will require more of the contract implementation and the general interaction by off-chain integrations and other smart contracts, which in turn would increase the energy cost.
-
-However, if a more fine grained authentication system is needed it can still exist next to the operators.
+  The specification does not prevent adding more fine-grained authentication, such as a token level operators.
 
 Receive hook function
 ---------------------
