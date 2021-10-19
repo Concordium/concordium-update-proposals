@@ -273,6 +273,7 @@ Requirements
 ~~~~~~~~~~~~
 
 - The list of updates MUST be executed in order.
+- The contract function MUST NOT increase or decrease the balance of any address for any token type.
 - The contract function MUST reject if any of the updates fails to be executed.
 
 .. _CIS-1-functions-balanceOf:
@@ -314,6 +315,8 @@ Requirements
 ~~~~~~~~~~~~
 
 - The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.
+- The contract function MUST NOT increase or decrease the balance of any address for any token type.
+- The contract function MUST NOT add or remove any operator for any address.
 - The contract function MUST reject if any of the queries fail:
 
   - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-1-rejection-errors>`.
@@ -354,6 +357,8 @@ A pair is serialized as a :ref:`CIS-1-TokenID` (``id``) and then a :ref:`CIS-1-M
 Requirements
 ~~~~~~~~~~~~
 
+- The contract function MUST NOT increase or decrease the balance of any address for any token type.
+- The contract function MUST NOT add or remove any operator for any address.
 - The contract function MUST reject if any of the queries fail:
 
   - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-1-rejection-errors>`.
