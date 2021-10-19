@@ -464,7 +464,7 @@ A smart contract following this specification MUST reject the specified errors f
     - An address balance contains insufficient amount of tokens to complete some transfer of a token.
   * - UNAUTHORIZED
     - -42000003
-    - Sender is unauthorized to call this function. Note authorization is not mandated anywhere in this specification, but can still be introduce on top of the standard.
+    - Sender is unauthorized to call this function. Note authorization is not mandated anywhere in this specification, but can still be introduced on top of the standard.
 
 The smart contract implementing this specification MAY introduce custom error codes other than the ones specified in the table above.
 
@@ -662,19 +662,19 @@ The specification only has a ``transfer`` smart contract function which takes li
 This will result in lower energy cost compared to multiple contract calls and only introduces a small overhead for single transfers.
 The reason for not also including a single transfer function is to have smaller smart contract modules, which in turn leads to saving cost on every function call.
 
-No explicit authentication
---------------------------
+No explicit authorization
+-------------------------
 
-The specification does not mandate any authentication scheme and one might expect a requirement for the owner and operators being authenticated to transfer tokens.
+The specification does not mandate any authorization scheme and one might expect a requirement for the owner and operators being authorized to transfer tokens.
 This is very much intentional and the reasoning for this is to keep the specification focused on the interface for transferring token ownership with as few restrictions as possible.
 
-Having a requirement that only owners and operators can transfer would prevent introducing any other authentication scheme on top of this specification.
+Having a requirement that only owners and operators can transfer would prevent introducing any other authorization scheme on top of this specification.
 
 Adding a requirement for owners and operators being authorized to transfer tokens would prevent introducing custom contract logic rejecting transfers, such as limiting the daily transfers, temporary token lockups or non-transferrable tokens.
 
-Instead this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authenticated, so is an operator of the owner.
+Instead this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.
 
-Most contract implementing this specification should probably add some authentication and not have anyone being able to transfer any token, but this is not really relevant for the interface described in this specification.
+Most contract implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not really relevant for the interface described in this specification.
 
 No token level approval/allowance like in ERC20 and ERC721
 ----------------------------------------------------------
@@ -688,7 +688,7 @@ The main argument is simplicity and to save energy cost on common cases, but oth
 
 .. note::
 
-  The specification does not prevent adding more fine-grained authentication, such as a token level operators.
+  The specification does not prevent adding more fine-grained authorization, such as a token level operators.
 
 Receive hook function
 ---------------------
