@@ -321,6 +321,51 @@ Requirements
 
   - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-1-rejection-errors>`.
 
+.. _CIS-1-functions-operatorOf:
+
+``operatorOf``
+^^^^^^^^^^^^^^
+
+Query operators with a list of owner address paired with an address to check for being an operator for the owner address.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of a name of the contract address and receive function to callback with the result and a list of address pairs.
+
+It is serialized as: a :ref:`CIS-1-ContractAddress` (``resultContract``) then a :ref:`CIS-1-ReceiveHookName` (``resultHook``) followed by 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
+A query is serialized as :ref:`CIS-1-Address` (``owner``) followed by :ref:`CIS-1-Address` (``address``)::
+
+  OperatorOfQuery ::= (owner: Address) (address: Address)
+
+  OperatorOfParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (queries: OperatorOfQueryⁿ)
+
+.. note::
+
+  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the name of the receive function.
+
+Result parameter
+~~~~~~~~~~~~~~~~
+
+The parameter for the callback receive function is a list of query and boolean pairs.
+
+It is serialized as: 2 bytes for the number of query-boolean pairs (``n``) and then this number of pairs (``results``).
+A query-boolean pair is serialized as a query (``query``) and then a byte with value 0 for false and 1 for true (``isOperator``)::
+
+  Bool ::= (0: Byte) // False
+         | (1: Byte) // True
+
+  OperatorOfQueryResult ::= (query: OperatorOfQuery) (isOperator: Bool)
+
+  OperatorOfResultParameter ::= (n: Byte²) (results: OperatorOfQueryResultⁿ)
+
+Requirements
+~~~~~~~~~~~~
+
+- The contract function MUST NOT increase or decrease the balance of any address for any token type.
+- The contract function MUST NOT add or remove any operator for any address.
+- The contract function MUST reject if any of the queries fails.
+
 .. _CIS-1-functions-tokenMetadata:
 
 ``tokenMetadata``
