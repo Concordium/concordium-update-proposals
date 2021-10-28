@@ -326,7 +326,7 @@ Requirements
 ``operatorOf``
 ^^^^^^^^^^^^^^
 
-Query operators with a list of owner address paired with an address to check for being an operator for the owner address.
+Query operators with a list of pairs, an owner address and a potential operator address, to check whether the potential operator address is an operator for the owner address.
 
 Parameter
 ~~~~~~~~~
@@ -371,12 +371,12 @@ Requirements
 ``tokenMetadata``
 ^^^^^^^^^^^^^^^^^
 
-Query the current token metadata URLs for a list token IDs, the result is then sent to a provided contract address.
+Query the current token metadata URLs for a list of token IDs, and send the result to a provided contract address.
 
 Parameter
 ~~~~~~~~~
 
-The parameter consists of a name of the contract address and receive function to callback with the result and a list of token ID.
+The parameter consists of a name of the contract address and receive function to callback with the result and a list of token IDs.
 
 It is serialized as: a :ref:`CIS-1-ContractAddress` (``resultContract``) then a :ref:`CIS-1-ReceiveHookName` (``resultHook``) followed by 1 byte for the number of queries (``n``) and then this number of :ref:`CIS-1-TokenID` (``ids``)::
 
@@ -480,7 +480,7 @@ The ``UpdateOperatorEvent`` event is serialized as: first a byte with the value 
 
 The event to log when setting the metadata url for a token type.
 It consists of a token ID and an URL (:rfc:`3986`) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
-Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for certain token id should be used to get the token metadata.
+Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for a certain token ID should be used to get the token metadata.
 
 The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-1-TokenID` (``id``) and then a :ref:`CIS-1-MetadataUrl` (``metadata``)::
 
@@ -722,23 +722,23 @@ Having a requirement that only owners and operators can transfer would prevent i
 
 Adding a requirement for owners and operators being authorized to transfer tokens would prevent introducing custom contract logic rejecting transfers, such as limiting the daily transfers, temporary token lockups or non-transferrable tokens.
 
-Instead this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.
+Instead, this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.
 
-Most contract implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not really relevant for the interface described in this specification.
+Most contracts implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not really relevant for the interface described in this specification.
 
-No token level approval/allowance like in ERC20 and ERC721
+No token-level approval/allowance like in ERC20 and ERC721
 ----------------------------------------------------------
 
-This standard only specifies address-level operators and is not scoped to a token type.
+This standard only specifies address-level operators and not token-level operators.
 The main argument is simplicity and to save energy cost on common cases, but other reasons are:
 
-- A token level operator requires the token smart contract to track more state, which increases the overall energy cost.
-- For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, a token level operator could become very expensive.
+- Token-level operators requires the token smart contract to track more state, which increases the overall energy cost.
+- For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, token-level operators could become very expensive.
 - For fungible tokens; `approval/allowance introduces an attack vector <https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit>`_.
 
 .. note::
 
-  The specification does not prevent adding more fine-grained authorization, such as a token level operators.
+  The specification does not prevent adding more fine-grained authorization, such as token-level operators.
 
 Receive hook function
 ---------------------
