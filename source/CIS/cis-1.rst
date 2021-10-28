@@ -274,6 +274,7 @@ Requirements
 
 - The list of updates MUST be executed in order.
 - The contract function MUST NOT increase or decrease the balance of any address for any token type.
+- The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.
 - The contract function MUST reject if any of the updates fails to be executed.
 
 .. _CIS-1-functions-balanceOf:
@@ -302,7 +303,7 @@ A query is serialized as :ref:`CIS-1-TokenID` (``id``) followed by :ref:`CIS-1-A
 Result parameter
 ~~~~~~~~~~~~~~~~
 
-The parameter for the callback receive function is a list of query and token amount pairs.
+The parameter for the callback receive function is a list of pairs, where each pair is a query and an amount of tokens.
 
 It is serialized as: 2 bytes for the number of query-amount pairs (``n``) and then this number of pairs (``results``).
 A query-amount pair is serialized as a query (``query``) and then a :ref:`CIS-1-TokenAmount` (``amount``)::
@@ -347,7 +348,7 @@ A query is serialized as :ref:`CIS-1-Address` (``owner``) followed by :ref:`CIS-
 Result parameter
 ~~~~~~~~~~~~~~~~
 
-The parameter for the callback receive function is a list of query and boolean pairs.
+The parameter for the callback receive function is a list of pairs, where each pair consist of a query and a boolean.
 
 It is serialized as: 2 bytes for the number of query-boolean pairs (``n``) and then this number of pairs (``results``).
 A query-boolean pair is serialized as a query (``query``) and then a byte with value 0 for false and 1 for true (``isOperator``)::
@@ -390,9 +391,9 @@ It is serialized as: a :ref:`CIS-1-ContractAddress` (``resultContract``) then a 
 Result parameter
 ~~~~~~~~~~~~~~~~
 
-The parameter for the callback receive function is a list of token ID and metadata URL pairs.
+The parameter for the callback receive function is a list of pairs, where each pair consist of a token ID and the corresponding token metadata URL.
 
-It is serialized as: 2 bytes for the number of query-amount pairs (``n``) and then this number of pairs (``results``).
+It is serialized as: 2 bytes for the number of queries (``n``) and then this number of result pairs (``results``).
 A pair is serialized as a :ref:`CIS-1-TokenID` (``id``) and then a :ref:`CIS-1-MetadataUrl` (``metadata``)::
 
   TokenMetadataResult ::= (id: TokenID) (metadata: MetadataUrl)
@@ -479,8 +480,9 @@ The ``UpdateOperatorEvent`` event is serialized as: first a byte with the value 
 ^^^^^^^^^^^^^^^^^^^^^^
 
 The event to log when setting the metadata url for a token type.
-It consists of a token ID and an URL (:rfc:`3986`) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
-Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for a certain token ID should be used to get the token metadata.
+
+It consists of a token ID and a URL (:rfc:`3986`) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
+Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for certain token id should be used to get the token metadata.
 
 The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-1-TokenID` (``id``) and then a :ref:`CIS-1-MetadataUrl` (``metadata``)::
 
@@ -577,7 +579,7 @@ To associate a hash with a URL the JSON value is an object:
     - Description
   * - ``url``
     - string (:rfc:`3986`) [``uri-reference``]
-    - An URL.
+    - A URL.
   * - ``hash`` (optional)
     - string
     - A SHA256 hash of the URL content encoded as a hex string.
