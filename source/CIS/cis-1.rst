@@ -365,7 +365,7 @@ Requirements
 
 - The contract function MUST NOT increase or decrease the balance of any address for any token type.
 - The contract function MUST NOT add or remove any operator for any address.
-- The contract function MUST reject if any of the queries fails.
+- The contract function MUST reject if any of the queries fail.
 
 .. _CIS-1-functions-tokenMetadata:
 
@@ -385,7 +385,7 @@ It is serialized as: a :ref:`CIS-1-ContractAddress` (``resultContract``) then a 
 
 .. note::
 
-  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.
+  Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.
 
 
 Result parameter
@@ -734,7 +734,7 @@ No token-level approval/allowance like in ERC20 and ERC721
 This standard only specifies address-level operators and not token-level operators.
 The main argument is simplicity and to save energy cost on common cases, but other reasons are:
 
-- Token-level operators requires the token smart contract to track more state, which increases the overall energy cost.
+- Token-level operators require the token smart contract to track more state, which increases the overall energy cost.
 - For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, token-level operators could become very expensive.
 - For fungible tokens; `approval/allowance introduces an attack vector <https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit>`_.
 
