@@ -8,9 +8,7 @@ CIS-1: Concordium Token Standard
    * - Created
      - Sep 22, 2021
    * - Final
-     - planned Nov 1, 2021
-   * - Draft version
-     - 3 (Oct 18, 2021)
+     - Nov 1, 2021
 
 Abstract
 ========
@@ -726,7 +724,7 @@ Adding a requirement for owners and operators being authorized to transfer token
 
 Instead, this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.
 
-Most contracts implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not really relevant for the interface described in this specification.
+Most contracts implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not in the scope of this standard.
 
 No token-level approval/allowance like in ERC20 and ERC721
 ----------------------------------------------------------
