@@ -204,18 +204,15 @@
 <td><p>Sep 22, 2021</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Final</p></th>
-<td><p>planned Nov 1, 2021</p></td>
-</tr>
-<tr class="row-odd"><th class="stub"><p>Draft version</p></th>
-<td><p>2 (Oct 11, 2021)</p></td>
+<td><p>Nov 1, 2021</p></td>
 </tr>
 </tbody>
 </table></div>
 <section id="abstract">
 <h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
 <p>A standard interface for both fungible and non-fungible tokens implemented in a smart contract.
-The interface provides functions for transferring token ownership, authenticating other addresses to transfer tokens and for other smart contracts to access token balances.
-It allows for off-chain applications to track token balances, authentication and the location of token metadata using logged events.</p>
+The interface provides functions for transferring token ownership, allowing other addresses to transfer tokens and for querying token balances and token metadata.
+It allows for off-chain applications to track token balances and the location of token metadata using logged events.</p>
 </section>
 <section id="specification">
 <h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
@@ -327,6 +324,18 @@ In case the first byte is 1 then <code class="docutils literal notranslate"><spa
 Be aware of the parameter size limit of 1024 bytes.</p>
 </div>
 </section>
+<section id="metadataurl">
+<span id="cis-1-metadataurl"></span><h4><code class="docutils literal notranslate"><span class="pre">MetadataUrl</span></code><a class="headerlink" href="#metadataurl" title="Permalink to this headline">¶</a></h4>
+<p>A URL and optional checksum for metadata stored outside of this contract.</p>
+<p>It is serialized as: 2 bytes for the length of the metadata url (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this many bytes for the url to the metadata (<code class="docutils literal notranslate"><span class="pre">url</span></code>) followed by an optional checksum.
+The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (<code class="docutils literal notranslate"><span class="pre">hash</span></code>) is followed:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MetadataChecksum ::= (0: Byte)
+                   | (1: Byte) (hash: Byte³²)
+
+MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
+</pre></div>
+</div>
+</section>
 </section>
 <section id="contract-functions">
 <span id="cis-1-functions"></span><h3>Contract functions<a class="headerlink" href="#contract-functions" title="Permalink to this headline">¶</a></h3>
@@ -379,6 +388,7 @@ Currently, with the smallest possible transfers, the parameter can contain 21 tr
 <li><p>A transfer of any amount of a token type to a contract address MUST call receive hook function on the receiving smart contract with a <a class="reference internal" href="#cis-1-functions-transfer-receive-hook-parameter"><span class="std std-ref">receive hook parameter</span></a>.</p></li>
 <li><p>Let <code class="docutils literal notranslate"><span class="pre">operator</span></code> be an operator of the address <code class="docutils literal notranslate"><span class="pre">owner</span></code>. A transfer of any amount of a token type from an address <code class="docutils literal notranslate"><span class="pre">owner</span></code> sent by an address <code class="docutils literal notranslate"><span class="pre">operator</span></code> MUST be executed as if the transfer was sent by <code class="docutils literal notranslate"><span class="pre">owner</span></code>.</p></li>
 <li><p>The contract function MUST reject if a receive hook function called on the contract receiving tokens rejects.</p></li>
+<li><p>The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -411,21 +421,23 @@ UpdateOperatorParameter ::= (n: Byte²) (updates: UpdateOperatorⁿ)
 <h5>Requirements<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h5>
 <ul class="simple">
 <li><p>The list of updates MUST be executed in order.</p></li>
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
 <li><p>The contract function MUST reject if any of the updates fails to be executed.</p></li>
 </ul>
 </section>
 </section>
 <section id="balanceof">
 <span id="cis-1-functions-balanceof"></span><h4><code class="docutils literal notranslate"><span class="pre">balanceOf</span></code><a class="headerlink" href="#balanceof" title="Permalink to this headline">¶</a></h4>
-<p>Query balances of a list of addresses and token IDs, the result is then sent back to the sender.</p>
+<p>Query balances of a list of addresses and token IDs, the result is then sent to a provided contract address.</p>
 <section id="id3">
 <h5>Parameter<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h5>
-<p>The parameter consists of a name of the receive function to callback with the result and a list of token ID and address pairs.</p>
-<p>It is serialized as: <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">callback</span></code>) followed by 1 byte for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of queries (<code class="docutils literal notranslate"><span class="pre">queries</span></code>).
+<p>The parameter consists of a name of the contract address and receive function to callback with the result and a list of token ID and address pairs.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">resultContract</span></code>) then a <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">resultHook</span></code>) followed by 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of queries (<code class="docutils literal notranslate"><span class="pre">queries</span></code>).
 A query is serialized as <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>) followed by <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">address</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BalanceOfQuery ::= (id: TokenID) (address: Address)
 
-BalanceOfParameter ::= (callback: ReceiveFunctionName) (n: Byte) (queries: BalanceOfQueryⁿ)
+BalanceOfParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (queries: BalanceOfQueryⁿ)
 </pre></div>
 </div>
 <div class="admonition note">
@@ -433,21 +445,103 @@ BalanceOfParameter ::= (callback: ReceiveFunctionName) (n: Byte) (queries: Balan
 <p>Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.</p>
 </div>
 </section>
-<section id="callback-parameter">
-<h5>Callback parameter<a class="headerlink" href="#callback-parameter" title="Permalink to this headline">¶</a></h5>
-<p>The parameter for the callback receive function is a list of query and token amount pairs.</p>
+<section id="result-parameter">
+<h5>Result parameter<a class="headerlink" href="#result-parameter" title="Permalink to this headline">¶</a></h5>
+<p>The parameter for the callback receive function is a list of pairs, where each pair is a query and an amount of tokens.</p>
 <p>It is serialized as: 2 bytes for the number of query-amount pairs (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of pairs (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
 A query-amount pair is serialized as a query (<code class="docutils literal notranslate"><span class="pre">query</span></code>) and then a <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BalanceOfQueryResult ::= (query: BalanceOfQuery) (balance: TokenAmount)
 
-BalanceOfCallbackParameter ::= (n: Byte²) (results: BalanceOfQueryResultⁿ)
+BalanceOfResultParameter ::= (n: Byte²) (results: BalanceOfQueryResultⁿ)
 </pre></div>
 </div>
 </section>
 <section id="id4">
 <h5>Requirements<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h5>
 <ul class="simple">
-<li><p>The contract function MUST reject if the sender is not a contract address with error <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">CONTRACT_ONLY</span></a>.</p></li>
+<li><p>The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The contract function MUST NOT add or remove any operator for any address.</p></li>
+<li><p>The contract function MUST reject if any of the queries fail:</p>
+<ul>
+<li><p>A query MUST fail if the token ID is unknown with error: <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">INVALID_TOKEN_ID</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="operatorof">
+<span id="cis-1-functions-operatorof"></span><h4><code class="docutils literal notranslate"><span class="pre">operatorOf</span></code><a class="headerlink" href="#operatorof" title="Permalink to this headline">¶</a></h4>
+<p>Query operators with a list of pairs, an owner address and a potential operator address, to check whether the potential operator address is an operator for the owner address.</p>
+<section id="id5">
+<h5>Parameter<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h5>
+<p>The parameter consists of a name of the contract address and receive function to callback with the result and a list of address pairs.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">resultContract</span></code>) then a <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">resultHook</span></code>) followed by 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of queries (<code class="docutils literal notranslate"><span class="pre">queries</span></code>).
+A query is serialized as <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>) followed by <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">address</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OperatorOfQuery ::= (owner: Address) (address: Address)
+
+OperatorOfParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (queries: OperatorOfQueryⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the name of the receive function.</p>
+</div>
+</section>
+<section id="id6">
+<h5>Result parameter<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h5>
+<p>The parameter for the callback receive function is a list of pairs, where each pair consist of a query and a boolean.</p>
+<p>It is serialized as: 2 bytes for the number of query-boolean pairs (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of pairs (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
+A query-boolean pair is serialized as a query (<code class="docutils literal notranslate"><span class="pre">query</span></code>) and then a byte with value 0 for false and 1 for true (<code class="docutils literal notranslate"><span class="pre">isOperator</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bool ::= (0: Byte) // False
+       | (1: Byte) // True
+
+OperatorOfQueryResult ::= (query: OperatorOfQuery) (isOperator: Bool)
+
+OperatorOfResultParameter ::= (n: Byte²) (results: OperatorOfQueryResultⁿ)
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h5>Requirements<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h5>
+<ul class="simple">
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The contract function MUST NOT add or remove any operator for any address.</p></li>
+<li><p>The contract function MUST reject if any of the queries fail.</p></li>
+</ul>
+</section>
+</section>
+<section id="tokenmetadata">
+<span id="cis-1-functions-tokenmetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code><a class="headerlink" href="#tokenmetadata" title="Permalink to this headline">¶</a></h4>
+<p>Query the current token metadata URLs for a list of token IDs, and send the result to a provided contract address.</p>
+<section id="id8">
+<h5>Parameter<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h5>
+<p>The parameter consists of a name of the contract address and receive function to callback with the result and a list of token IDs.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">resultContract</span></code>) then a <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">resultHook</span></code>) followed by 1 byte for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">ids</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (ids: TokenIDⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.</p>
+</div>
+</section>
+<section id="id9">
+<h5>Result parameter<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h5>
+<p>The parameter for the callback receive function is a list of pairs, where each pair consist of a token ID and the corresponding token metadata URL.</p>
+<p>It is serialized as: 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of result pairs (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
+A pair is serialized as a <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>) and then a <a class="reference internal" href="#cis-1-metadataurl"><span class="std std-ref">MetadataUrl</span></a> (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataResult ::= (id: TokenID) (metadata: MetadataUrl)
+
+TokenMetadataResultParameter ::= (n: Byte²) (results: TokenMetadataResultⁿ)
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h5>Requirements<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h5>
+<ul class="simple">
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The contract function MUST NOT add or remove any operator for any address.</p></li>
 <li><p>The contract function MUST reject if any of the queries fail:</p>
 <ul>
 <li><p>A query MUST fail if the token ID is unknown with error: <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">INVALID_TOKEN_ID</span></a>.</p></li>
@@ -509,17 +603,11 @@ The total supply of a token type MUST be in the inclusive range of [0, 2^64 - 1]
 </section>
 <section id="tokenmetadataevent">
 <span id="cis-1-event-tokenmetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code><a class="headerlink" href="#tokenmetadataevent" title="Permalink to this headline">¶</a></h4>
-<p>The event to log when setting the metadata url for a token type.
-It consists of a token ID and an URL (<span class="target" id="index-1"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3986.html"><strong>RFC 3986</strong></a>) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
+<p>The event to log when setting the metadata url for a token type.</p>
+<p>It consists of a token ID and a URL (<span class="target" id="index-1"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3986.html"><strong>RFC 3986</strong></a>) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
 Logging the <code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code> event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for certain token id should be used to get the token metadata.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code> event is serialized as: first a byte with the value of 251, followed by the token ID <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), two bytes for the length of the metadata url (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this many bytes for the url to the metadata (<code class="docutils literal notranslate"><span class="pre">url</span></code>).
-Lastly a byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (<code class="docutils literal notranslate"><span class="pre">hash</span></code>) is followed:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MetadataUrl ::= (n: Byte²) (url: Byteⁿ)
-
-MetadataChecksum ::= (0: Byte)
-                   | (1: Byte) (hash: Byte³²)
-
-TokenMetadataEvent ::= (251: Byte) (id: TokenID) (metadata: MetadataUrl) (checksum: MetadataChecksum)
+<p>The <code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code> event is serialized as: first a byte with the value of 251, followed by the token ID <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>) and then a <a class="reference internal" href="#cis-1-metadataurl"><span class="std std-ref">MetadataUrl</span></a> (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataEvent ::= (251: Byte) (id: TokenID) (metadata: MetadataUrl)
 </pre></div>
 </div>
 <div class="admonition note">
@@ -556,11 +644,7 @@ With the largest possible token ID and a content hash included; the URL can be u
 </tr>
 <tr class="row-even"><td><p>UNAUTHORIZED</p></td>
 <td><p>-42000003</p></td>
-<td><p>Sender is not the address owning the tokens or an operator of the owning address. Note this can also be used if adding another authentication level on top of the standard.</p></td>
-</tr>
-<tr class="row-odd"><td><p>CONTRACT_ONLY</p></td>
-<td><p>-42000004</p></td>
-<td><p>The sender is not a contract address.</p></td>
+<td><p>Sender is unauthorized to call this function. Note authorization is not mandated anywhere in this specification, but can still be introduced on top of the standard.</p></td>
 </tr>
 </tbody>
 </table></div>
@@ -570,8 +654,8 @@ With the largest possible token ID and a content hash included; the URL can be u
 <h3>Token metadata JSON<a class="headerlink" href="#token-metadata-json" title="Permalink to this headline">¶</a></h3>
 <p>The token metadata is stored off chain and MUST be a JSON (<span class="target" id="index-2"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc8259.html"><strong>RFC 8259</strong></a>) file.</p>
 <p>All of the fields in the JSON file are optional, and this specification reserves a number of field names, shown in the table below.</p>
-<div class="table-wrapper"><table class="docutils align-default" id="id5">
-<caption><span class="caption-text">Token metadata JSON Object</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<div class="table-wrapper"><table class="docutils align-default" id="id11">
+<caption><span class="caption-text">Token metadata JSON Object</span><a class="headerlink" href="#id11" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%"/>
 <col style="width: 33%"/>
@@ -631,8 +715,8 @@ Attributes can be used to include extra information about the token type.</p></t
 <p>Optionally a SHA256 hash of the JSON file can be logged with the TokenMetadata event for checking integrity.
 Since the metadata json file could contain URLs, a SHA256 hash can optionally be associated with the URL.
 To associate a hash with a URL the JSON value is an object:</p>
-<div class="table-wrapper"><table class="docutils align-default" id="id6">
-<caption><span class="caption-text">URL JSON Object</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<div class="table-wrapper"><table class="docutils align-default" id="id12">
+<caption><span class="caption-text">URL JSON Object</span><a class="headerlink" href="#id12" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%"/>
 <col style="width: 33%"/>
@@ -647,7 +731,7 @@ To associate a hash with a URL the JSON value is an object:</p>
 <tbody>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">url</span></code></p></td>
 <td><p>string (<span class="target" id="index-4"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3986.html"><strong>RFC 3986</strong></a>) [<code class="docutils literal notranslate"><span class="pre">uri-reference</span></code>]</p></td>
-<td><p>An URL.</p></td>
+<td><p>A URL.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hash</span></code> (optional)</p></td>
 <td><p>string</p></td>
@@ -656,8 +740,8 @@ To associate a hash with a URL the JSON value is an object:</p>
 </tbody>
 </table></div>
 <p>Attributes are objects with the following fields:</p>
-<div class="table-wrapper"><table class="docutils align-default" id="id7">
-<caption><span class="caption-text">Attribute JSON object</span><a class="headerlink" href="#id7" title="Permalink to this table">¶</a></caption>
+<div class="table-wrapper"><table class="docutils align-default" id="id13">
+<caption><span class="caption-text">Attribute JSON object</span><a class="headerlink" href="#id13" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col style="width: 33%"/>
 <col style="width: 33%"/>
@@ -785,26 +869,28 @@ This is why we chose to let the first byte indicate the size of the token ID, me
 This will result in lower energy cost compared to multiple contract calls and only introduces a small overhead for single transfers.
 The reason for not also including a single transfer function is to have smaller smart contract modules, which in turn leads to saving cost on every function call.</p>
 </section>
+<section id="no-explicit-authorization">
+<h3>No explicit authorization<a class="headerlink" href="#no-explicit-authorization" title="Permalink to this headline">¶</a></h3>
+<p>The specification does not mandate any authorization scheme and one might expect a requirement for the owner and operators being authorized to transfer tokens.
+This is very much intentional and the reasoning for this is to keep the specification focused on the interface for transferring token ownership with as few restrictions as possible.</p>
+<p>Having a requirement that only owners and operators can transfer would prevent introducing any other authorization scheme on top of this specification.</p>
+<p>Adding a requirement for owners and operators being authorized to transfer tokens would prevent introducing custom contract logic rejecting transfers, such as limiting the daily transfers, temporary token lockups or non-transferrable tokens.</p>
+<p>Instead, this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.</p>
+<p>Most contracts implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not in the scope of this standard.</p>
+</section>
 <section id="no-token-level-approval-allowance-like-in-erc20-and-erc721">
-<h3>No token level approval/allowance like in ERC20 and ERC721<a class="headerlink" href="#no-token-level-approval-allowance-like-in-erc20-and-erc721" title="Permalink to this headline">¶</a></h3>
-<p>This standard only specifies address-level operators and no authentication on per token level.
+<h3>No token-level approval/allowance like in ERC20 and ERC721<a class="headerlink" href="#no-token-level-approval-allowance-like-in-erc20-and-erc721" title="Permalink to this headline">¶</a></h3>
+<p>This standard only specifies address-level operators and not token-level operators.
 The main argument is simplicity and to save energy cost on common cases, but other reasons are:</p>
 <ul class="simple">
-<li><p>A token level authentication requires the token smart contract to track more state, which increases the overall energy cost.</p></li>
-<li><p>For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, a token level authentication could become very expensive.</p></li>
+<li><p>Token-level operators require the token smart contract to track more state, which increases the overall energy cost.</p></li>
+<li><p>For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, token-level operators could become very expensive.</p></li>
 <li><p>For fungible tokens; <a class="reference external" href="https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit">approval/allowance introduces an attack vector</a>.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The specification does not prevent adding more fine-grained authentication, such as a token level authentication.</p>
+<p>The specification does not prevent adding more fine-grained authorization, such as token-level operators.</p>
 </div>
-</section>
-<section id="operator-can-transfer-any-amount-of-any-token-type-for-the-owner">
-<h3>Operator can transfer any amount of any token type for the owner<a class="headerlink" href="#operator-can-transfer-any-amount-of-any-token-type-for-the-owner" title="Permalink to this headline">¶</a></h3>
-<p>An operator of an address can transfer any amount of any token type owned by the address.
-An alternative approach could be to scope the operators per token type and the owner could then add the operator for every token type to achieve the same.
-Although it is a more flexible approach in terms of functionality, the complexity will require more of the contract implementation and the general interaction by off-chain integrations and other smart contracts, which in turn would increase the energy cost.</p>
-<p>However, if a more fine grained authentication system is needed it can still exist next to the operators.</p>
 </section>
 <section id="receive-hook-function">
 <h3>Receive hook function<a class="headerlink" href="#receive-hook-function" title="Permalink to this headline">¶</a></h3>
@@ -903,6 +989,7 @@ This checksum can be updated by logging a new event.</p>
 <li><a class="reference internal" href="#address"><code class="docutils literal notranslate"><span class="pre">Address</span></code></a></li>
 <li><a class="reference internal" href="#receiver"><code class="docutils literal notranslate"><span class="pre">Receiver</span></code></a></li>
 <li><a class="reference internal" href="#additionaldata"><code class="docutils literal notranslate"><span class="pre">AdditionalData</span></code></a></li>
+<li><a class="reference internal" href="#metadataurl"><code class="docutils literal notranslate"><span class="pre">MetadataUrl</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#contract-functions">Contract functions</a><ul>
@@ -919,8 +1006,20 @@ This checksum can be updated by logging a new event.</p>
 </li>
 <li><a class="reference internal" href="#balanceof"><code class="docutils literal notranslate"><span class="pre">balanceOf</span></code></a><ul>
 <li><a class="reference internal" href="#id3">Parameter</a></li>
-<li><a class="reference internal" href="#callback-parameter">Callback parameter</a></li>
+<li><a class="reference internal" href="#result-parameter">Result parameter</a></li>
 <li><a class="reference internal" href="#id4">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#operatorof"><code class="docutils literal notranslate"><span class="pre">operatorOf</span></code></a><ul>
+<li><a class="reference internal" href="#id5">Parameter</a></li>
+<li><a class="reference internal" href="#id6">Result parameter</a></li>
+<li><a class="reference internal" href="#id7">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tokenmetadata"><code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code></a><ul>
+<li><a class="reference internal" href="#id8">Parameter</a></li>
+<li><a class="reference internal" href="#id9">Result parameter</a></li>
+<li><a class="reference internal" href="#id10">Requirements</a></li>
 </ul>
 </li>
 </ul>
@@ -945,8 +1044,8 @@ This checksum can be updated by logging a new event.</p>
 <li><a class="reference internal" href="#decisions-and-rationale">Decisions and rationale</a><ul>
 <li><a class="reference internal" href="#token-id-bytes-instead-an-integer">Token ID bytes instead an integer</a></li>
 <li><a class="reference internal" href="#only-batched-transfers">Only batched transfers</a></li>
-<li><a class="reference internal" href="#no-token-level-approval-allowance-like-in-erc20-and-erc721">No token level approval/allowance like in ERC20 and ERC721</a></li>
-<li><a class="reference internal" href="#operator-can-transfer-any-amount-of-any-token-type-for-the-owner">Operator can transfer any amount of any token type for the owner</a></li>
+<li><a class="reference internal" href="#no-explicit-authorization">No explicit authorization</a></li>
+<li><a class="reference internal" href="#no-token-level-approval-allowance-like-in-erc20-and-erc721">No token-level approval/allowance like in ERC20 and ERC721</a></li>
 <li><a class="reference internal" href="#receive-hook-function">Receive hook function</a></li>
 <li><a class="reference internal" href="#receive-hook-function-callback-argument">Receive hook function callback argument</a></li>
 <li><a class="reference internal" href="#no-sender-hook-function">No sender hook function</a></li>
