@@ -45,8 +45,7 @@ account's canonical address.
 
 4. When a self-transfer is attempted for a transfer with schedule or an
 encrypted amount transfer the transaction is rejected (as before), the
-address in the rejection reason is the canonical address of the
-account that attempted the self-transfer.
+address in the rejection reason is the sender address of the transaction.
 
                                Effects
 

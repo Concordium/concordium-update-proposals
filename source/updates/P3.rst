@@ -1,5 +1,5 @@
 =============================================================
-Protocol Update 3 - ???? - Account Aliases
+Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases
 =============================================================
 
 .. list-table::
