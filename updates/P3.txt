@@ -1,0 +1,113 @@
+                           Protocol update
+
+Protocol Version: 3
+Builds on Protocol Version: 2
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 3
+compared to protocol version 2.
+
+The protocol change adds support for multiple addresses for the same
+account, also referred to as account aliases. In protocol version 3
+each account can have up to 16777216 addresses.
+
+
+                              Background
+
+In protocol versions 1 and 2 accounts and account addresses are in 1-1
+relationship. An account address is defined as the SHA256(credId)
+where credId is the credential registration ID of the first credential
+that creates the account. In case creating a new account would cause a
+collision with an existing account that account creation transaction
+is rejected. In the rest of this document we refer to this account
+address as the canonical account address.
+
+Account addresses are used when specifying the sender of a
+transaction, as target addresses in account transfers, as well as in
+reward transfers.
+
+                               Changes
+
+1. In protocol version 3 accounts can be referred to by any address
+whose initial 29 bytes match the canonical account address. This
+applies to both senders and receivers of a transaction. This applies
+only to accounts which are uniquely identified by the first 29 of
+their canonical address. Accounts for which this property does not
+hold can only be referred via the exact canonical address.
+
+2. New accounts cannot be created if their canonical address would
+clash with any existing account on the first 29 bytes of their
+canonical address.
+
+3. Finalization, block, and baking rewards are always issued with the
+account's canonical address.
+
+4. When a self-transfer is attempted for a transfer with schedule or an
+encrypted amount transfer the transaction is rejected (as before), the
+address in the rejection reason is the canonical address of the
+account that attempted the self-transfer.
+
+                               Effects
+
+1. All existing account transactions that are valid in protocol
+version 2 retain their semantics exactly; their outcomes are the same,
+as well as their effects on the state of the chain.
+
+2. It is theoretically possible that an account creation transaction
+(credential deployment) would be deemed invalid according to protocol
+version 3. This would happen if the address of the account that would
+be created would match the first 29 bytes, but not the full 32 bytes,
+of an existing account.
+
+                         Genesis data format
+
+The genesis data format at protocol version 3 is the same as at
+protocol version 1, except that the version tag is 5 instead of 4.  In
+particular, the `GDP3Initial` and `GDP3Regenesis` genesis data formats
+are the same as `GDP2Initial` and `GDP2Regenesis` respectively.
+`GDP3Initial` specifies core genesis parameters and an initial state,
+which may be used as an initial genesis block. `GDP3Regenesis`
+specifies core genesis parameters, the hashes of the first genesis
+block, previous genesis block and terminal block of the preceding
+chain, and the state at regenesis. This is used when restarting a chain
+as a result of a protocol update.
+
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of
+this file. The instruction does not need any auxiliary data.
+
+The protocol update starts a new chain with the genesis block
+containing genesis data in the `GDP3Regenesis` format. The parameters
+are determined as follows:
+
+- The core genesis parameters are unchanged, except that the genesis
+  time is the timestamp of the last finalized block of the preceding
+  chain.
+
+- The hash of the first genesis block is either
+  - the hash of the genesis block of the preceding chain, if it is
+    a `GDP2Initial` genesis block; or
+  - the first genesis block recorded in the genesis block of the
+    preceding chain, if it is a `GDP2Regenesis` genesis block.
+
+- The hash of the previous genesis block is the hash of the genesis
+  block of the preceding chain.
+
+- The hash of the terminal block is the hash of the last finalized
+  block of the preceding chain.
+
+- The state is derived from the state at the last finalized block of
+  the preceding chain as follows:
+  - The `SeedState` data structure is updated with:
+    - the `epoch` is reset to 0;
+    - the `currentLeadershipElectionNonce` is the SHA256 hash of the
+      concatenation of the string `"Regenesis"` with the previous value
+      of `updatedNonce`; and
+    - the `updatedNonce` is the same as
+      `currentLeadershipElectionNonce`.
+  - The `Updates` data structure is updated with:
+    - the current protocol update is unset; and
+    - the protocol update queue is emptied.
