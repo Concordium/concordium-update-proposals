@@ -50,15 +50,20 @@ account that attempted the self-transfer.
 
                                Effects
 
-1. All existing account transactions that are valid in protocol
-version 2 retain their semantics exactly; their outcomes are the same,
-as well as their effects on the state of the chain.
+1. All existing account transactions that are valid and have the
+intended effect in protocol version 2 retain their semantics exactly;
+their outcomes are the same, as well as their effects on the state of
+the chain. If a transaction was invalid or rejected due to
+non-existing account address it might be valid in protocol version 3,
+or in some cases rejected for a different reason if the failure was
+not solely due to non-existent account address.
 
 2. It is theoretically possible that an account creation transaction
 (credential deployment) would be deemed invalid according to protocol
-version 3. This would happen if the address of the account that would
-be created would match the first 29 bytes, but not the full 32 bytes,
-of an existing account.
+version 3 even if it was valid according to protocol version 2. This
+would happen if the address of the account that would be created would
+match the first 29 bytes, but not the full 32 bytes, of an existing
+account.
 
                          Genesis data format
 
