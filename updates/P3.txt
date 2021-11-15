@@ -63,7 +63,7 @@ of an existing account.
                          Genesis data format
 
 The genesis data format at protocol version 3 is the same as at
-protocol version 1, except that the version tag is 5 instead of 4.  In
+protocol version 2, except that the version tag is 5 instead of 4.  In
 particular, the `GDP3Initial` and `GDP3Regenesis` genesis data formats
 are the same as `GDP2Initial` and `GDP2Regenesis` respectively.
 `GDP3Initial` specifies core genesis parameters and an initial state,

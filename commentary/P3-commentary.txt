@@ -1,0 +1,12 @@
+                      Protocol update commentary
+
+Protocol Version: 3
+Builds on Protocol Version: 2
+
+This protocol update adds support for multiple addresses for the same
+account. In protocol version 3 each account has 16777216 addresses.
+
+This allows each account to have aliases for different uses and
+creates a kind of sub-account structure. An account owner can give out
+different aliases for different uses to keep track of transfers and
+assign them meaning.
