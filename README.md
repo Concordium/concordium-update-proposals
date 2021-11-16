@@ -19,7 +19,7 @@ The table lists already effective as well as *planned/draft* protocol updates.
 | :---: | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
 | Alpha Centauri 1.0 (P1) | Initial protocol at launch of mainnet | - | Jun 09, 2021 | - | - | - | - | - |
 | Alpha Centauri 2.0 (P2) | Transaction Memos | Sep 22, 2021 | Oct 13, 2021 | [P2.txt](../main/updates/P2.txt) | [P2-commentary.txt](../main/commentary/P2-commentary.txt) | `9b1f206bbe230fef248c9312805460b4f1b05c1ef3964946981a8d4abb58b923` | `bfa62d327aeffb82978b4bad9e23d9776dddccd5fad100bc26d470c0ed5c322c` | `81bec0077c29616799e4ad9ccde28b5de76c218045eea036a173a2441725fdb3` |
-| Alpha Centauri 3.0 (P3) | Account aliases | ??? | ??? | [P3.txt](../main/updates/P3.txt) | [P3-commentary.txt](../main/commentary/P3-commentary.txt) | `???` | `???` | `???` |
+| Alpha Centauri 3.0 (P3) | Account aliases | *Planned Dec 06, 2021* | *Planned Jan 07, 2022* | [P3.txt](../main/updates/P3.txt) | [P3-commentary.txt](../main/commentary/P3-commentary.txt) | `???` | `???` | `???` |
 
 
 ## Website
