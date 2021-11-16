@@ -2,7 +2,7 @@
 
 Protocol Version: 3
 Builds on Protocol Version: 2
-
+Protocol Name: Alpha Centauri 3.0
 
 In protocol versions 1 and 2 accounts and account addresses are in 1-1
 relationship. In protocol version 3 each account has 16777216
@@ -25,7 +25,10 @@ the same account do not change the balance of the account, apart from
 cost. Finalization, block, and baking rewards are always received on
 the account's canonical address.
 
-It is ensured that the protocol update is fully backwards compatible.
+It is ensured that the protocol update is backwards compatible such
+that all existing accounts and smart contracts are carried over
+without any changes, and all existing successful transactions retain
+their meaning.
 
 Because existing nodes do not support account aliases, node runners
 will have to update their nodes before the protocol update will take

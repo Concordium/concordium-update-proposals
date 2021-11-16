@@ -2,6 +2,7 @@
 
 Protocol Version: 3
 Builds on Protocol Version: 2
+Protocol Name: Alpha Centauri 3.0
 
                                Abstract
 
