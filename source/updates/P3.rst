@@ -1,25 +1,25 @@
 =============================================================
-Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos
+Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases
 =============================================================
 
 .. list-table::
    :stub-columns: 1
 
    * - Effective on Mainnet
-     - Oct 13, 2021
+     - planned Jan 07, 2022
    * - Effective on Testnet
-     - Sep 22, 2021
+     - planned Dec 06, 2021
    * - Specification hash
-     - ``9b1f206bbe230fef248c9312805460b4f1b05c1ef3964946981a8d4abb58b923``
+     - ``???``
 
 Specification
 =============
 
-.. include:: ../../updates/P2.txt
+.. include:: ../../updates/P3.txt
    :literal:
 
 Commentary
 ==========
 
-.. include:: ../../commentary/P2-commentary.txt
+.. include:: ../../commentary/P3-commentary.txt
    :literal:
