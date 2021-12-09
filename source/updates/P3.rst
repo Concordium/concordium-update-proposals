@@ -6,11 +6,11 @@ Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases
    :stub-columns: 1
 
    * - Effective on Mainnet
-     - planned Jan 07, 2022
+     - planned Jan 17, 2022
    * - Effective on Testnet
-     - planned Dec 06, 2021
+     - Dec 06, 2021
    * - Specification hash
-     - ``???``
+     - ``ec9f7733e872ed0b8f1f386d12c5c725379fc609ce246ffdce28cfb9163ea350``
 
 Specification
 =============
