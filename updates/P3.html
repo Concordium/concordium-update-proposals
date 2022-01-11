@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases" href="P3.html" /><link rel="prev" title="Concordium Interoperability Specifications" href="../index.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-1: Concordium Token Standard" href="../CIS/cis-1.html" /><link rel="prev" title="Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos" href="P2.html" />
 
     <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos - Interoperability Specifications</title>
+        <title>Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases - Interoperability Specifications</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -161,8 +161,8 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Protocol Updates</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
-<li class="toctree-l1"><a class="reference internal" href="P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul>
@@ -193,8 +193,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="protocol-update-2-alpha-centauri-2-0-transaction-memos">
-<h1>Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos<a class="headerlink" href="#protocol-update-2-alpha-centauri-2-0-transaction-memos" title="Permalink to this headline">¶</a></h1>
+          <section id="protocol-update-3-alpha-centauri-3-0-account-aliases">
+<h1>Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases<a class="headerlink" href="#protocol-update-3-alpha-centauri-3-0-account-aliases" title="Permalink to this headline">¶</a></h1>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
 <col style="width: 50%"/>
@@ -202,13 +202,13 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><th class="stub"><p>Effective on Mainnet</p></th>
-<td><p>Oct 13, 2021</p></td>
+<td><p>Jan 11, 2022</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Effective on Testnet</p></th>
-<td><p>Sep 22, 2021</p></td>
+<td><p>Dec 06, 2021</p></td>
 </tr>
 <tr class="row-odd"><th class="stub"><p>Specification hash</p></th>
-<td><p><code class="docutils literal notranslate"><span class="pre">9b1f206bbe230fef248c9312805460b4f1b05c1ef3964946981a8d4abb58b923</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ec9f7733e872ed0b8f1f386d12c5c725379fc609ce246ffdce28cfb9163ea350</span></code></p></td>
 </tr>
 </tbody>
 </table></div>
@@ -216,134 +216,79 @@
 <h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                           Protocol update
 
-Protocol Version: 2
-Builds on Protocol Version: 1
+Protocol Version: 3
+Builds on Protocol Version: 2
+Protocol Name: Alpha Centauri 3.0
 
                                Abstract
 
-This document describes the changes in Concordium protocol version 2
-compared to protocol version 1, which is the initial protocol at the
-launch of mainnet.
+This document describes the changes in Concordium protocol version 3
+compared to protocol version 2.
 
-The protocol change adds three new transaction types to the set of
-supported transactions. These three transactions are transfer with
-memo, encrypted transfer with memo, and transfer with schedule and
-memo. These transactions behave akin to the analogously named existing
-transactions without a memo, but allow the sender to add a message to
-the transfer. This message is recorded on the chain.
+The protocol change adds support for multiple addresses for the same
+account, also referred to as account aliases. In protocol version 3
+each account can have up to 16777216 addresses.
 
 
                               Background
 
-Concordium protocol version 1 supports the following 16 account
-transaction types `DeployModule`, `InitContract`, `Update`,
-`Transfer`, `AddBaker`, `RemoveBaker`, `UpdateBakerStake`,
-`UpdateBakerRestakeEarnings`, `UpdateBakerKeys`,
-`UpdateCredentialKeys`, `EncryptedAmountTransfer`,
-`TransferToEncrypted`, `TransferToPublic`, `TransferWithSchedule`,
-`UpdateCredentials`, `RegisterData`. Each transaction has a common
-signature and header, and a transaction-type specific payload.
+In protocol versions 1 and 2 accounts and account addresses are in 1-1
+relationship. An account address is defined as the SHA256(credId)
+where credId is the credential registration ID of the first credential
+that creates the account. In case creating a new account would cause a
+collision with an existing account that account creation transaction
+is rejected. In the rest of this document we refer to this account
+address as the canonical account address.
 
-If a transaction payload is not among the above listed recognized
-payloads then the transaction can still be included in a block, but
-its outcome will be `SerializationFailure`, and it will have no other
-effect on the state of the chain.
-
-When transactions are parsed their type is determined by a single-byte
-tag value. Each supported transaction type has a protocol-defined tag.
-
-When a valid transaction is included in a block it generates a list of
-one or more events. In protocol version 1 there are 21 possible events
-that can be generated. For example an event is "Transferred" a given
-amount of GTU from address A to address B. These events are part of a
-transaction outcome. Outcomes of all transactions in a block are
-hashed, and their combined hash is included in a block.
+Account addresses are used when specifying the sender of a
+transaction, as target addresses in account transfers, as well as in
+reward transfers.
 
                                Changes
 
-1. Protocol version 2 will have all protocol 1 transaction types with
-the same meaning, and three additional transaction types. These are
+1. In protocol version 3 accounts can be referred to by any address
+whose initial 29 bytes match the canonical account address. This
+applies to both senders and receivers of a transaction. This applies
+only to accounts which are uniquely identified by the first 29 of
+their canonical address. Accounts for which this property does not
+hold can only be referred via the exact canonical address.
 
-- TransferWithMemo
-- EncryptedAmountTransferWithMemo
-- TransferWithScheduleAndMemo
+2. New accounts cannot be created if their canonical address would
+clash with any existing account on the first 29 bytes of their
+canonical address.
 
-with tags 22, 23, and 24, respectively. These will have the same
-payloads as the corresponding existing transactions, and an additional
-memo field. The memo is a byte array with a maximum size of 256.
-The protocol does not give any meaning to the memo, it is an
-uninterpreted part of the transaction that is recorded by the chain.
+3. Finalization, block, and baking rewards are always issued with the
+account's canonical address.
 
-2. Protocol 2 will have all protocol 1 events, and additionally a new
-event `TransferMemo` that will be generated by the three new
-transaction types. The event contains verbatim the memo that was part
-of the transaction.
-
-3. The cost of the three new transaction types uses the same formula
-as the cost of the corresponding existing transaction types. The
-per-transaction-type cost factor is the same. As a consequence the
-cost C(tₘ) of a transaction with a memo is
-
-             C(tₘ) = C(t) + size + 2
-
-where t is the corresponding existing transaction without a memo and
-size is the size in bytes of the memo. The +2 accounts for the
-recording of the size of the memo, which uses 2 bytes.
+4. When a self-transfer is attempted for a transfer with schedule or an
+encrypted amount transfer the transaction is rejected (as before), the
+address in the rejection reason is the sender address of the transaction.
 
                                Effects
 
-1. All existing transactions that are valid retain their semantics
-exactly; their outcomes are the same, as well as their effects on the
-state of the chain.
+1. All existing account transactions that are valid and have the
+intended effect in protocol version 2 retain their semantics exactly;
+their outcomes are the same, as well as their effects on the state of
+the chain. If a transaction was invalid or rejected due to
+non-existing account address it might be valid in protocol version 3,
+or in some cases rejected for a different reason if the failure was
+not solely due to non-existent account address.
 
-2. If a transaction would be included in a block, but fail with
-`SerializationFailure` rejection reason in protocol version 1 then it
-might be valid in protocol version 2 and interpreted as either
-`TransferWithMemo`, `EncryptedAmountTransferWithMemo`, or
-`TransferWithScheduleAndMemo`. This will only happen if the
-transaction payload tag is 22, 23, or 24, which have no assigned
-meaning in protocol version 1.
-
-
-                           Serialization
-
-The new transaction payload types are serialized as follows.
-
-TransferWithMemo
-  - tag 22: byte (1 byte)
-  - receiver address: account address (32 bytes)
-  - memo: memo (variable length)
-  - amount: amount (8 bytes)
-
-EncryptedAmountTransferWithMemo
-  - tag 23: byte (1 byte)
-  - receiver address: account address (32 bytes)
-  - memo: memo (variable length)
-  - remaining amount: encrypted amount (192 bytes)
-  - amount to transfer: encrypted amount (192 bytes)
-  - index: encrypted amount index (8 bytes)
-  - proof: encrypted transfer proof (2192 bytes)
-
-TransferWithScheduleAndMemo
-  - tag 24: byte (1 byte)
-  - receiver address: account address (32 bytes)
-  - memo: memo (variable length)
-  - schedule length: byte (1 byte)
-  - schedule: sequence of pairs (timestamp, amount) (variable length)
-
-where `memo` is serialized as
-  - length: u16 (2 bytes big endian)
-  - bytes: byte array (variable length)
-
+2. It is theoretically possible that an account creation transaction
+(credential deployment) would be deemed invalid according to protocol
+version 3 even if it was valid according to protocol version 2. This
+would happen if the address of the account that would be created would
+match the first 29 bytes, but not the full 32 bytes, of an existing
+account.
 
                          Genesis data format
 
-The genesis data format at protocol version 2 is the same as at
-protocol version 1, except that the version tag is 4 instead of 3.  In
-particular, the `GDP2Initial` and `GDP2Regenesis` genesis data formats
-are the same as `GDP1Initial` and `GDP1Regenesis` respectively.
-`GDP2Initial` specifies core genesis parameters and an initial state,
-which may be used as an initial genesis block. `GDP2Regenesis`
+The genesis data format at protocol version 3 is the same as at
+protocol version 2, except that the version tag is 5 instead of 4.  In
+particular, the `GDP3Initial` and `GDP3Regenesis` genesis data formats
+are the same as `GDP2Initial` and `GDP2Regenesis` respectively.
+`GDP3Initial` specifies core genesis parameters and an initial state,
+which may be used as an initial genesis block. `GDP3Regenesis`
 specifies core genesis parameters, the hashes of the first genesis
 block, previous genesis block and terminal block of the preceding
 chain, and the state at regenesis. This is used when restarting a chain
@@ -356,7 +301,7 @@ The protocol update instruction is identified by the SHA256 hash of
 this file. The instruction does not need any auxiliary data.
 
 The protocol update starts a new chain with the genesis block
-containing genesis data in the `GDP2Regenesis` format. The parameters
+containing genesis data in the `GDP3Regenesis` format. The parameters
 are determined as follows:
 
 - The core genesis parameters are unchanged, except that the genesis
@@ -365,9 +310,9 @@ are determined as follows:
 
 - The hash of the first genesis block is either
   - the hash of the genesis block of the preceding chain, if it is
-    a `GDP1Initial` genesis block; or
+    a `GDP2Initial` genesis block; or
   - the first genesis block recorded in the genesis block of the
-    preceding chain, if it is a `GDP1Regenesis` genesis block.
+    preceding chain, if it is a `GDP2Regenesis` genesis block.
 
 - The hash of the previous genesis block is the hash of the genesis
   block of the preceding chain.
@@ -394,48 +339,43 @@ are determined as follows:
 <h2>Commentary<a class="headerlink" href="#commentary" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                      Protocol update commentary
 
-Protocol Version: 2
-Builds on Protocol Version: 1
+Protocol Version: 3
+Builds on Protocol Version: 2
+Protocol Name: Alpha Centauri 3.0
 
-This protocol update adds the ability for the sender of a GTU transfer
-to add a memo to the transfer to convey additional information to the
-recipient. This functionality corresponds to the typical reference
-field in a conventional bank transfer. The memo is optional.
+In protocol versions 1 and 2 accounts and account addresses are in 1-1
+relationship. In protocol version 3 each account has 16777216
+addresses, namely a so-called canonical account address together with
+matching account aliases. The canonical account address is derived
+when an account is created on chain. The other 16 million addresses
+with matching initial 29 bytes are referred to as account aliases for
+the same account. Thus, accounts can be referred to by any address
+whose initial 29 bytes match.
 
-The memo is recorded on the chain as part of the transaction, and it
-can never be retracted. In particular this means it is publicly
-visible to anyone who is observing the chain. As a consequence it
-should not contain sensitive information or information that can be
-misused by copying.
+This allows each account to have aliases for different uses and
+creates a kind of sub-account structure. An account owner can give out
+different aliases for different uses to keep track of transfers and
+assign them meaning.
 
-The memo will be visible in all the clients, e.g., mobile wallets,
-desktop wallet, concordium-client, both for the sender and the
-recepient of the transfer.
+Each account still has one total account balance. Hence, transfers to
+and from aliases of an account add to and subtract from that total
+account balance, respectively. Transfers between different aliases of
+the same account do not change the balance of the account, apart from
+cost. Finalization, block, and baking rewards are always received on
+the account's canonical address.
 
-The data in the memo can be arbitrary strings, integers, or more
-complex values. The only limit is the size of the data. The data is
-not checked by the chain, it is simply recorded there. In order for
-the tools to understand the data and display it in a readable way to
-the users it is conventional to use CBOR encoding. Concordium's tools
-will use this, and expect it. If this convention is not adhered to
-then user experience will be degraded.
+It is ensured that the protocol update is backwards compatible such
+that all existing accounts and smart contracts are carried over
+without any changes, and all existing successful transactions retain
+their meaning.
 
-The protocol update is fully backwards compatible. This means that all
-existing valid transactions will retain their validity and semantics,
-e.g., a transfer of 10GTU will still mean a transfer of 10GTU.
-
-New transaction types have a cost in-line with existing transactions,
-but accounting for the increased transaction size. For example, a
-transfer of GTU with memo will cost as much as a transfer of GTU
-without a memo plus a cost based on the size of the memo, which is a
-linear function fo the size.
-
-Because existing nodes do not support new transaction types node
-runners will have to update their nodes before the protocol update
-will take effect. The updated node that supports the update will be
-released ahead of time to give node runners time to update. Clients
-such as wallets and the concordium-client will be released
-concurrently with the updated node as well.
+Because existing nodes do not support account aliases, node runners
+will have to update their nodes before the protocol update will take
+effect. The updated node software that supports the update will be
+released ahead of time to give node runners time to update. A new
+concordium-client tool will be released concurrently. Wallets do not
+require a new version to be compatible with the account alias
+functionality.
 </pre></div>
 </div>
 </section>
@@ -446,23 +386,23 @@ concurrently with the updated node as well.
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="P3.html">
+          <a class="next-page" href="../CIS/cis-1.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</div>
+                <div class="title">CIS-1: Concordium Token Standard</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../index.html">
+          <a class="prev-page" href="P2.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Home</div>
+                <div class="title">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</div>
                 
               </div>
             </a>
@@ -474,7 +414,7 @@ concurrently with the updated node as well.
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../_sources/updates/P2.rst.txt"
+            <a class="muted-link" href="../_sources/updates/P3.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -494,7 +434,7 @@ concurrently with the updated node as well.
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a><ul>
+<li><a class="reference internal" href="#">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a><ul>
 <li><a class="reference internal" href="#specification">Specification</a></li>
 <li><a class="reference internal" href="#commentary">Commentary</a></li>
 </ul>

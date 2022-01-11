@@ -7,6 +7,7 @@ Concordium Interoperability Specifications
    :caption: Protocol Updates
 
    updates/P2
+   updates/P3
 
 .. toctree::
    :maxdepth: 1
