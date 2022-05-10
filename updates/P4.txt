@@ -1,0 +1,128 @@
+                           Protocol update
+
+Protocol Version: 4
+Builds on Protocol Version: 3
+Protocol Name: Sirius
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 4
+compared to protocol version 3.
+
+The protocol change adds support for delegation, new smart contracts
+that support larger state, synchronous calls, and a number of
+cryptographic primitives.
+
+
+                              Background
+
+Protocol version 4 improves protocol version 3 in two areas,
+tokenomics and smart contracts.
+
+With regards to tokenomics, in protocol versions 1, 2, and 3 accounts
+can either be bakers and thus stake their own CCD, or do nothing. In
+protocol version 4 accounts can also delegate to a baker, and the
+notion of a baker is expanded to a baker pool, which is a collection
+of a baker, together with zero or more delegating accounts. Accounts
+which delegate get rewards, at the cost of locking their stake for the
+duration of delegation.
+
+With regards to smart contracts, in protocol versions 1, 2, and 3
+smart contracts have limited state (16kB) and communicate via message
+passing. The former limitation prevents use-cases such as exchanges,
+or stablecoins which require a large database. The choice of
+message-passing is not a technical limitation, but it does make
+contracts harder to write. In protocol version 4 the state will not
+have an explicit upper limit, however its growth is still limited by
+the costs. The message passing communication is replaced by direct
+contract calls.
+
+                               Changes
+
+1. In protocol version 4 the existing baker transactions (`AddBaker`,
+`RemoveBaker`, `UpdateBakerStake`, `UpdateBakerRestakeEarnings`,
+`UpdateBakerKeys`) are no longer allowed and will fail with
+`SerializationFailure` error.
+
+2. Two new transactions are added, `ConfigureBaker` and
+`ConfigureDelegation` for adding, modifying, and removing a baker
+pool, and for adding, modifying, and removing delegation from an
+account, respectively. An account can delegate either to one of the
+existing baker pools, or to a special passive pool. Delegating to a
+passive pool does not change the distribution of the stake of active
+baker pools.
+
+3. There are many changes in handling of reward distribution. A key
+highlight is that all rewards are distributed once per payday. This is
+a change from the previous distribution, where some rewards were
+distributed either once an epoch, or once per finalization. Finalizers
+are now only rewarded if a finalization record that they signed was
+included in a block inside the payday.
+
+4. The `DeployModule` transaction supports module versions 0 and 1 in
+protocol version 4. The difference between the two is the set of host
+functions that are allowed. Additionally, module size limit is 512kB
+for version 1 modules, but still 64kB for version 0 modules.
+
+5. The version of the smart contract module determines the version of
+the smart contract instance. The behaviour of `InitContract` and
+`Update` transactions is dependent on the module version. Version 1
+contracts can access the new contract state, can call other contracts
+and synchronously transfer CCD to an account. Version 1 contracts also
+have access to cryptographic primitives `verify_ed25519_signature`,
+`verify_ecdsa_secp256k1_signature`, `hash_sha2_256`, `hash_sha3_256`,
+and `hash_keccak_256`. Finally, version 1 contracts can have a
+fallback entrypoint, which is invoked if none of the other entrypoints
+in the contract matches. The semantics of version 0 contracts stays
+exactly as it was in protocol versions 1, 2, and 3. directly
+
+                               Effects
+
+1. All other existing transactions not explicitly mentioned above
+retain their exact semantics.
+
+2. All bakers existing at the time of the protocol update will be
+converted to baker pools. The parameters of the pool will be
+determined by the payload of the protocol update instruction.
+
+3. The initial parameters related to payday duration, cooldown
+duration, for bakers and delegators, as well as allowed ranges of
+parameters are provided by the protocol update instruction.
+
+4. Two new chain parameter update types are added, updating cooldown
+parameters (for bakers and delegators), and updating payday length
+together with the mint rate. The existing parameter updates for
+updating the mint distribution, and minimum baker stake threshold are
+no longer valid.
+
+5. All existing contracts are migrated with no change in their
+behaviour.
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of
+this file. The instruction needs the following auxiliary data
+
+- The commission rate to apply to bakers on migration (commission
+  rates for finalization, baking, and transaction rewards).
+
+- The initial state state of a baking pool on migration. Either open
+  for all delegators, closed for new delegators, or closed for all.
+
+- Access structure defining the keys and threshold for cooldown parameter
+  updates.
+
+- Access structure defining the keys and threshold for time parameter
+  updates. Time parameters are the mint rate per payday and the length
+  of the payday.
+
+- New cooldown parameters, for bakers and delegators.
+
+- New values of time parameters, length of the payday and mint rate
+  per payday.
+
+- New baker and passive pool parameters. These are
+  - passive finalization, baking, and transaction commissions
+  - commision ranges for baker pools
+  - minimum equity capital for new baker pools
+  - capital bound and leverage factor for baker pools
