@@ -35,10 +35,12 @@ smart contracts have limited state (16kB) and communicate via message
 passing. The former limitation prevents use-cases such as exchanges,
 or stablecoins which require a large database. The choice of
 message-passing is not a technical limitation, but it does make
-contracts harder to write. In protocol version 4 the state will not
-have an explicit upper limit, however its growth is still limited by
-the costs. The message passing communication is replaced by direct
-contract calls.
+contracts harder to write. In protocol version 4 a new version 1 of
+smart contracts is introduced whose state will not have an explicit
+upper limit, however its growth is still limited by the costs. The
+message passing communication in new smart contracts is replaced with
+direct contract calls. Existing version 0 smart contracts continue to
+have the same semantics as in protocol version 1, 2, and 3.
 
                                Changes
 
