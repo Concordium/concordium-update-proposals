@@ -1,0 +1,37 @@
+                      Protocol update commentary
+
+Protocol Version: 4
+Builds on Protocol Version: 3
+Protocol Name: Sirius
+
+Protocol version 4 adds support for two major features, delegation and
+improved smart contracts.
+
+In the delegation model in protocol version 4, bakers can open pools,
+and accounts can delegate part of their capital to such a pool.
+Rewards for baking are distributed proportionally to each pool’s
+stake. The baker gets a portion of the pool rewards, the remaining
+rewards are then distributed amongst the pool participants,
+proportionally to their stake. To ensure security of the chain each
+pool has a leverage bound, ensuring bakers have to stake a minimum
+amount of their own capital, and there is a global bound to ensure no
+pool grows too large relative to all other pools.
+
+The smart contracts are updated by adding a new variant, version 1
+contracts. The new smart contracts expand the range of use-cases
+supported on the concordium chain, make it easier to build smart
+contracts that interact with other contracts, and natively support
+cryptographic functions `verify_ed25519_signature`,
+`verify_ecdsa_secp256k1_signature`, `hash_sha2_256`, `hash_sha3_256`,
+and `hash_keccak_256`.
+
+The key technical features of the new contracts are unlimited contract
+state based on a key-value store API, synchronous contract calls to
+make it simpler to interact with other contracts, and increased
+contract size allowance. Version 1 contracts can also support fallback
+or default entrypoints to enable easier building of proxy contracts.
+
+Existing version 0 contracts will retain their semantics and continue
+to function as they have. New version 0 contracts can still be
+created.
+
