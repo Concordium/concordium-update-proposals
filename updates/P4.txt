@@ -46,7 +46,7 @@ contract calls.
 
 2. Two new transactions are added, `ConfigureBaker` and
 `ConfigureDelegation` for adding, modifying, and removing a baker
-pool, and for adding, modifying, and removing delegation from an
+pool, and for adding, modifying, and removing delegation of an
 account, respectively. An account can delegate either to one of the
 existing baker pools, or to a special passive pool. Delegating to a
 passive pool does not change the distribution of the stake of active
@@ -59,12 +59,18 @@ distributed either once an epoch, or once per finalization. Finalizers
 are now only rewarded if a finalization record that they signed was
 included in a block inside the payday.
 
-4. The `DeployModule` transaction supports module versions 0 and 1 in
+4. Two new chain parameter update types are added, updating cooldown
+parameters (for bakers and delegators), and updating payday length
+together with the mint rate. The existing parameter updates for
+updating the mint distribution, and minimum baker stake threshold are
+no longer valid.
+
+5. The `DeployModule` transaction supports module versions 0 and 1 in
 protocol version 4. The difference between the two is the set of host
 functions that are allowed. Additionally, module size limit is 512kB
 for version 1 modules, but still 64kB for version 0 modules.
 
-5. The version of the smart contract module determines the version of
+6. The version of the smart contract module determines the version of
 the smart contract instance. The behaviour of `InitContract` and
 `Update` transactions is dependent on the module version. Version 1
 contracts can access the new contract state, can call other contracts
@@ -89,14 +95,11 @@ determined by the payload of the protocol update instruction.
 duration, for bakers and delegators, as well as allowed ranges of
 parameters are provided by the protocol update instruction.
 
-4. Two new chain parameter update types are added, updating cooldown
-parameters (for bakers and delegators), and updating payday length
-together with the mint rate. The existing parameter updates for
-updating the mint distribution, and minimum baker stake threshold are
-no longer valid.
-
-5. All existing contracts are migrated with no change in their
+4. All existing contracts are migrated with no change in their
 behaviour.
+
+5. New version 0 contracts can continue to be deployed and
+initialized.
 
                      Protocol update instruction
 
