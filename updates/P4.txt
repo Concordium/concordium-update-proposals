@@ -16,16 +16,19 @@ cryptographic primitives.
 
                               Background
 
-Protocol version 4 improves protocol version 3 in two areas,
+Protocol version 4 changes protocol version 3 in two areas,
 tokenomics and smart contracts.
 
 With regards to tokenomics, in protocol versions 1, 2, and 3 accounts
 can either be bakers and thus stake their own CCD, or do nothing. In
-protocol version 4 accounts can also delegate to a baker, and the
-notion of a baker is expanded to a baker pool, which is a collection
-of a baker, together with zero or more delegating accounts. Accounts
-which delegate get rewards, at the cost of locking their stake for the
-duration of delegation.
+protocol version 4, each baker is associated with a baker pool.
+A non-baker account can delegate stake to a baker pool, which
+contributes to the lottery power of the baker. A delegator receives a
+proportion of the rewards from the baker pool, but cannot spend their
+stake while it is delegated, and are subject to a cool-down period when
+reducing their stake. Instead of delegating to a specific baker pool, an
+account can opt for passive delegation, which does not back any specific
+baker and (typically) gives a lower rate of return.
 
 With regards to smart contracts, in protocol versions 1, 2, and 3
 smart contracts have limited state (16kB) and communicate via message
@@ -41,29 +44,60 @@ contract calls.
 
 1. In protocol version 4 the existing baker transactions (`AddBaker`,
 `RemoveBaker`, `UpdateBakerStake`, `UpdateBakerRestakeEarnings`,
-`UpdateBakerKeys`) are no longer allowed and will fail with
+`UpdateBakerKeys`) are no longer allowed and will fail with a
 `SerializationFailure` error.
 
 2. Two new transactions are added, `ConfigureBaker` and
 `ConfigureDelegation` for adding, modifying, and removing a baker
 pool, and for adding, modifying, and removing delegation of an
-account, respectively. An account can delegate either to one of the
-existing baker pools, or to a special passive pool. Delegating to a
-passive pool does not change the distribution of the stake of active
-baker pools.
+account, respectively. An account can delegate to one of the
+existing baker pools, or delegate passively. Passive delegation
+does not change the distribution of the stake of active baker pools.
 
-3. There are many changes in handling of reward distribution. A key
-highlight is that all rewards are distributed once per payday. This is
-a change from the previous distribution, where some rewards were
-distributed either once an epoch, or once per finalization. Finalizers
-are now only rewarded if a finalization record that they signed was
-included in a block inside the payday.
+3. The minting and distribution of rewards are changed as follows:
+
+  * Minting does not happen once per slot, but at each payday. Paydays
+    occur at intervals of a specified number of epochs. As before, the
+    minted CCDs are divided between baking rewards, finalization
+    rewards, and the foundation.
+
+  * Transaction fees are not paid out at each block, but at each payday.
+    The transaction fees are split between the GAS account, an amount
+    accruing to the foundation, an amount accruing to the pool of the
+    block's baker, and an amount accruing to the passive delegators. A
+    proportion of the GAS account is also accrued to the baker pool.
+
+  * Baking rewards (from minting) are not paid out at each epoch
+    boundary, but at each payday. Each pool receives a share
+    proportional to the number of blocks baked by the pool's baker,
+    while the passive delegators receive a share proportional to their
+    relative stake.
+
+  * Finalization rewards (also from minting) are not paid out each time
+    a finalization proof is included in a block, but at each payday.
+    The finalization rewards are distributed to the baking pools that
+    signed finalization proofs that were included in blocks since the
+    previous payday.  The reward to each pool is proportional to its
+    relative stake.
+
+  * Transaction fees, baking rewards, and finalization rewards are
+    distributed to the participants of a baker pool in proportion to
+    their relative stakes, with the baker taking an additional
+    commission from the delegators. (The commission rates can be set
+    independently for the three reward types.) The passive delegators
+    are similarly rewarded in proportion to their relative stakes, with
+    separate commission rates applying to passive delegation.
 
 4. Two new chain parameter update types are added, updating cooldown
 parameters (for bakers and delegators), and updating payday length
-together with the mint rate. The existing parameter updates for
-updating the mint distribution, and minimum baker stake threshold are
-no longer valid.
+together with the mint rate. The mint distribution update is changed to
+no longer update the mint rate. The minimum baker stake threshold update
+is replaced with a broader pool parameters update, which determines: the
+commission rates for passive delegation; the allowable commission ranges
+for baker pools; the minimum equity capital that must be staked by a
+baker; the maximum effective stake a pool may have as a proportion of
+the total staked capital; and the maximum effective ratio between a
+pool's effective stake and the baker's equity capital.
 
 5. The `DeployModule` transaction supports module versions 0 and 1 in
 protocol version 4. The difference between the two is the set of host
@@ -80,7 +114,7 @@ have access to cryptographic primitives `verify_ed25519_signature`,
 and `hash_keccak_256`. Finally, version 1 contracts can have a
 fallback entrypoint, which is invoked if none of the other entrypoints
 in the contract matches. The semantics of version 0 contracts stays
-exactly as it was in protocol versions 1, 2, and 3. directly
+exactly as it was in protocol versions 1, 2, and 3.
 
                                Effects
 
