@@ -1,0 +1,25 @@
+==============================================================
+Protocol Update 4 - Sirius - Delegation and new contract state
+==============================================================
+
+.. list-table::
+   :stub-columns: 1
+
+   * - Effective on Mainnet
+     - TBD
+   * - Effective on Testnet
+     - TBD
+   * - Specification hash
+     - ``TBD``
+
+Specification
+=============
+
+.. include:: ../../updates/P4.txt
+   :literal:
+
+Commentary
+==========
+
+.. include:: ../../commentary/P4-commentary.txt
+   :literal:
