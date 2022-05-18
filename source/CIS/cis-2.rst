@@ -786,3 +786,14 @@ Adding SHA256 checksum for token metadata event
 
 A token can optionally include a SHA256 checksum when logging the token metadata event, this is to ensure the integrity of the token metadata.
 This checksum can be updated by logging a new event.
+
+Differences from CIS1
+---------------------
+
+Only the query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf` and :ref:`CIS-2-functions-tokenMetadata` are different from CIS1.
+The query functions in CIS1 use a callback pattern to output the result of a query, but starting from Concordium smart contract v1; a smart contract receive function can output bytes back to the function caller.
+CIS2 uses this output instead of a callback pattern to return the query result.
+Using output instead of callbacks require less energy and will reduce contract code needed for querying.
+
+In CIS1 the callback result includes the corresponding query to ease the use with callback pattern, which is not needed for the output result in CIS2 query functions.
+Instead the result are required to be the same length and order as the queries.
