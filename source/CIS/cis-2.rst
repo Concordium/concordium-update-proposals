@@ -20,10 +20,10 @@ Abstract
 ========
 
 A standard interface for both fungible and non-fungible tokens implemented in a smart contract.
-The interface provides functions for transferring token ownership, allowing other addresses to transfer tokens and for querying token balances and token metadata.
+The interface provides functions for transferring token ownership, allowing other addresses to transfer tokens and for querying token balances, operators and token metadata.
 It allows for off-chain applications to track token balances and the location of token metadata using logged events.
 
-This standard simplifies :ref:`CIS-1<CIS-1>` by using features introduced in smart contract version 1.
+This standard is a modification of :ref:`CIS-1<CIS-1>` to use features introduced in smart contract version 1.
 
 Specification
 =============
@@ -612,15 +612,15 @@ Attributes are objects with the following fields:
 Example token metadata: Fungible
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-An example of token metadata for a CIS2 implementation wrapping the GTU could be:
+An example of token metadata for a CIS2 implementation wrapping the CCD could be:
 
 .. code-block:: json
 
   {
-    "name": "Wrapped GTU Token",
-    "symbol": "wGTU",
+    "name": "Wrapped CCD Token",
+    "symbol": "wCCD",
     "decimals": 6,
-    "description": "A CIS2 token wrapping the Global Transaction Unit",
+    "description": "A CIS2 token wrapping the Concordium native token (CCD)",
     "thumbnail": { "url": "https://location.of/the/thumbnail.png" },
     "display": { "url": "https://location.of/the/display.png" },
     "artifact": { "url": "https://location.of/the/artifact.png" },
@@ -637,7 +637,7 @@ The danish localization JSON file could be:
 .. code-block:: json
 
   {
-    "description": "CIS2 indpakket GTU"
+    "description": "CIS2 indpakket CCD"
   }
 
 Example token metadata: Non-fungible
