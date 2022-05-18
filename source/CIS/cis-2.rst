@@ -233,8 +233,8 @@ Requirements
 - The contract function MUST reject if any of the transfers fails to be executed.
 - A transfer MUST fail if:
 
-  - The token balance of the ``from`` address is insufficient to do the transfer with error :ref:`INSUFFICIENT_FUNDS<CIS-2-rejection-errors>`.
-  - TokenID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-2-rejection-errors>`.
+  - The token balance of the ``from`` address is insufficient to do the transfer.
+  - TokenID is not known by the contract.
 
 - A transfer MUST non-strictly decrease the balance of the ``from`` address and non-strictly increase the balance of the ``to`` address or fail.
 - A transfer with the same address as ``from`` and ``to`` MUST be executed as a normal transfer.
@@ -325,7 +325,7 @@ Requirements
 - The contract function MUST NOT add or remove any operator for any address.
 - The contract function MUST reject if any of the queries fail:
 
-  - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-2-rejection-errors>`.
+  - A query MUST fail if the token ID is unknown.
 
 .. _CIS-2-functions-operatorOf:
 
@@ -413,7 +413,7 @@ Requirements
 - The contract function MUST NOT add or remove any operator for any address.
 - The contract function MUST reject if any of the queries fail:
 
-  - A query MUST fail if the token ID is unknown with error: :ref:`INVALID_TOKEN_ID<CIS-2-rejection-errors>`.
+  - A query MUST fail if the token ID is unknown.
 
 Logged events
 -------------
@@ -506,7 +506,7 @@ The ``TokenMetadataEvent`` event is serialized as: first a byte with the value o
 Rejection errors
 ----------------
 
-A smart contract following this specification MUST reject the specified errors found in this specification with the following error codes:
+A smart contract following this specification MAY reject using the following error codes:
 
 .. list-table::
   :header-rows: 1
@@ -523,6 +523,8 @@ A smart contract following this specification MUST reject the specified errors f
   * - UNAUTHORIZED
     - -42000003
     - Sender is unauthorized to call this function. Note authorization is not mandated anywhere in this specification, but can still be introduced on top of the standard.
+
+Rejecting using an error code from the table above MUST only occur in a situation as described in the corresponding error description.
 
 The smart contract implementing this specification MAY introduce custom error codes other than the ones specified in the table above.
 
@@ -797,3 +799,5 @@ Using output instead of callbacks require less energy and will reduce contract c
 
 In CIS1 the callback result includes the corresponding query to ease the use with callback pattern, which is not needed for the output result in CIS2 query functions.
 Instead the result are required to be the same length and order as the queries.
+
+In CIS2 smart contract functions are not required to fail with a specific error code as in CIS1. This is to allow receive functions to fail early for reason specific to the implementation such as authorization or serialization.
