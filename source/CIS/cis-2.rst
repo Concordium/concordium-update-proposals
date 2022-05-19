@@ -787,4 +787,4 @@ Instead the result are required to be the same length and order as the queries.
 In CIS2 smart contract functions are not required to fail with a specific error code as in CIS1. This is to allow receive functions to fail early for reason specific to the implementation such as authorization or serialization.
 
 Prior to smart contract version 1 invoking another smart contract required to know the contract name as well as the contract address and endpoint.
-Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-ReceiveHookParameter` does not included the token contract name anymore.
+Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-functions-transfer-receive-hook-parameter` does not included the token contract name anymore.
