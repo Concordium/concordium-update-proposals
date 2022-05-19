@@ -10,7 +10,7 @@ CIS-2: Concordium Token Standard 2
    * - Created
      - May 16, 2021
    * - Draft version
-     - 1
+     - 2
    * - Supported Smart Contract Versions
      - 1+
    * - Deprecates
@@ -69,9 +69,7 @@ It is serialized using 8 bytes little endian::
 ^^^^^^^^^^^^^^^^^^^
 
 A smart contract receive function name.
-A receive function name is prefixed with the contract name, followed by a ``.`` and a name for the function.
-It MUST consist only of ASCII alphanumeric or punctuation characters.
-The contract name is not allowed to contain ``.``.
+A receive function MUST consist only of ASCII alphanumeric or punctuation characters.
 
 It is serialized as: the function name byte length (``n``) is represented by the first 2 bytes, followed by this many bytes for the function name (``name``).
 The receive function name MUST be 100 bytes or less::
@@ -81,20 +79,6 @@ The receive function name MUST be 100 bytes or less::
 .. note::
 
   This type is passed in a parameter for smart contract function calls, be aware of the parameter size limit of 1024 bytes.
-
-.. _CIS-2-ContractName:
-
-``ContractName``
-^^^^^^^^^^^^^^^^
-
-A name of a smart contract.
-It must be prefixed with ``init_`` and MUST consist only of ASCII alphanumeric or punctuation characters.
-The contract name is not allowed to contain ``.``.
-
-It is serialized as: the contract name byte length (``n``) is represented by the first 2 bytes, followed by this many bytes for the contract name (``name``).
-The contract name MUST be 100 bytes or less::
-
-  ContractName ::= (n: Byte²) (name: Byteⁿ)
 
 .. _CIS-2-AccountAddress:
 
@@ -220,11 +204,11 @@ Each transfer is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-T
 Receive hook parameter
 ~~~~~~~~~~~~~~~~~~~~~~
 
-The parameter for the receive function hook contains information about the transfer, the name of the token contract and some additional data bytes.
+The parameter for the receive function hook contains information about the transfer and some additional data bytes.
 
-It is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-TokenAmount` (``amount``), the token owner address :ref:`CIS-2-Address` (``from``), the name of the token contract :ref:`CIS-2-ContractName` (``contract``) and :ref:`CIS-2-AdditionalData` (``data``)::
+It is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-TokenAmount` (``amount``), the token owner address :ref:`CIS-2-Address` (``from``) and :ref:`CIS-2-AdditionalData` (``data``)::
 
-  ReceiveHookParameter ::= (id: TokenID) (amount: TokenAmount) (from: Address) (contract: ContractName) (data: AdditionalData)
+  ReceiveHookParameter ::= (id: TokenID) (amount: TokenAmount) (from: Address) (data: AdditionalData)
 
 Requirements
 ~~~~~~~~~~~~
@@ -801,3 +785,6 @@ In CIS1 the callback result includes the corresponding query to ease the use wit
 Instead the result are required to be the same length and order as the queries.
 
 In CIS2 smart contract functions are not required to fail with a specific error code as in CIS1. This is to allow receive functions to fail early for reason specific to the implementation such as authorization or serialization.
+
+Prior to smart contract version 1 invoking another smart contract required to know the contract name as well as the contract address and endpoint.
+Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-ReceiveHookParameter` does not included the token contract name anymore.
