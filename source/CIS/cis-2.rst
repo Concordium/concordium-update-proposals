@@ -11,10 +11,15 @@ CIS-2: Concordium Token Standard 2
      - May 16, 2021
    * - Draft version
      - 2
-   * - Supported Smart Contract Versions
-     - 1+
+   * - Supported versions
+     - | Smart contract version 1 or newer
+       | (Protocol version 4 or newer)
    * - Deprecates
      - :ref:`CIS-1<CIS-1>`
+
+.. warning::
+
+   This standard is still a draft and significant can still be made.
 
 Abstract
 ========
@@ -23,7 +28,7 @@ A standard interface for both fungible and non-fungible tokens implemented in a 
 The interface provides functions for transferring token ownership, allowing other addresses to transfer tokens and for querying token balances, operators and token metadata.
 It allows for off-chain applications to track token balances and the location of token metadata using logged events.
 
-This standard is a modification of :ref:`CIS-1<CIS-1>` to use features introduced in smart contract version 1.
+This standard is a modification of :ref:`CIS-1<CIS-1>` that uses features introduced in smart contract version 1.
 
 Specification
 =============
@@ -40,10 +45,10 @@ General types and serialization
 
 Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the globally unique identifier of a token type.
 
-- A token ID for a token type SHALL NOT change after a token type have been minted.
+- A token ID for a token type SHALL NOT change after a token type has been minted.
 - A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.
 
-It is serialized as 1 byte for the size (``n``) of the identifier, followed by this number of bytes for the token id (``id``)::
+A token ID is serialized as 1 byte for the size (``n``) of the identifier, followed by this number of bytes for the token id (``id``)::
 
   TokenID ::= (n: Byte) (id: Byteⁿ)
 
@@ -68,17 +73,17 @@ It is serialized using 8 bytes little endian::
 ``ReceiveHookName``
 ^^^^^^^^^^^^^^^^^^^
 
-A smart contract receive function name.
-A receive function MUST consist only of ASCII alphanumeric or punctuation characters.
+A smart contract entrypoint name.
+An entrypoint name MUST consist only of ASCII alphanumeric or punctuation characters.
 
 It is serialized as: the function name byte length (``n``) is represented by the first 2 bytes, followed by this many bytes for the function name (``name``).
-The receive function name MUST be 100 bytes or less::
+The entrypoint name MUST be 100 bytes or less::
 
   ReceiveHookName ::= (n: Byte²) (name: Byteⁿ)
 
 .. note::
 
-  This type is passed in a parameter for smart contract function calls, be aware of the parameter size limit of 1024 bytes.
+  This type is passed in a parameter for smart contract function calls. Be aware of the parameter size limit of 1024 bytes.
 
 .. _CIS-2-AccountAddress:
 
@@ -111,8 +116,8 @@ It is serialized as: first 8 bytes for the index (``index``) followed by 8 bytes
 Is either an account address or a contract address.
 
 It is serialized as: First byte indicates whether it is an account address or a contract address.
-In case the first byte is 0 then ``AccountAddress`` (``address``) is followed.
-In case the first byte is 1 then ``ContractAddress`` (``address``) is followed::
+In case the first byte is 0 then an ``AccountAddress`` (``address``) follows.
+In case the first byte is 1 then a ``ContractAddress`` (``address``) follows::
 
   Address ::= (0: Byte) (address: AccountAddress)
             | (1: Byte) (address: ContractAddress)
@@ -127,8 +132,8 @@ The receiving address of a transfer, which is either an account address or a con
 In the case of a contract address: a name of the hook receive function to invoke is also needed.
 
 It is serialized as: First byte indicates whether it is an account address or a contract address.
-In case the first byte is 0 then ``AccountAddress`` (``address``) is followed.
-In case the first byte is 1 then ``ContractAddress`` (``address``), bytes for :ref:`CIS-2-ReceiveHookName` (``hook``) is followed::
+In case the first byte is 0 then an ``AccountAddress`` (``address``) follows.
+In case the first byte is 1 then a ``ContractAddress`` (``address``) and bytes for :ref:`CIS-2-ReceiveHookName` (``hook``) follows::
 
     Receiver ::= (0: Byte) (address: AccountAddress)
                | (1: Byte) (address: ContractAddress) (hook: ReceiveHookName)
@@ -146,7 +151,7 @@ It is serialized as: the first 2 bytes encode the length (``n``) of the data, fo
 
 .. note::
 
-  This type is passed in a parameter for smart contract function calls.
+  This type is passed as part of a parameter for smart contract function calls.
   Be aware of the parameter size limit of 1024 bytes.
 
 .. _CIS-2-MetadataUrl:
@@ -697,9 +702,13 @@ This is why we chose to let the first byte indicate the size of the token ID, me
 Only batched transfers
 ----------------------
 
-The specification only has a ``transfer`` smart contract function which takes list of transfer and no function for a single transfer.
+The specification only has a :ref:`CIS-2-functions-transfer` smart contract function which takes list of transfer and no function for a single transfer.
 This will result in lower energy cost compared to multiple contract calls and only introduces a small overhead for single transfers.
 The reason for not also including a single transfer function is to have smaller smart contract modules, which in turn leads to saving cost on every function call.
+
+.. note::
+
+   Notice that :ref:`CIS-2-functions-transfer` is a more general than both ``safeTransferFrom`` and ``safeBatchTransferFrom`` found in ERC721 and ERC1155 as these standards only take a single sender and receiver for a batch of transfers.
 
 No explicit authorization
 -------------------------
@@ -739,15 +748,13 @@ The reason for this not being optional is to allow other smart contracts which i
 
 .. warning::
 
-  The smart contract receive hook function could be called by any smart contract and it is up to the integrating contract whether to trust the token contract.
+  The smart contract receive hook function can be called by any smart contract and it is up to the integrating contract whether to trust the token contract.
 
 Receive hook function callback argument
 ---------------------------------------
 
 The name of the receive hook function called on a smart contract receiving tokens is supplied as part of the parameter.
 This allows for a smart contract integrating with a token smart contract to have multiple hooks and leave it to the caller to know which hook they want to trigger.
-
-Another technical reason is that the name of the smart contract is part of the smart contract receive function name, which means the specification would include a requirement of the smart contract name for others to integrate reliably.
 
 No sender hook function
 -----------------------
@@ -777,14 +784,14 @@ Differences from CIS1
 ---------------------
 
 Only the query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf` and :ref:`CIS-2-functions-tokenMetadata` are different from CIS1.
-The query functions in CIS1 use a callback pattern to output the result of a query, but starting from Concordium smart contract v1; a smart contract receive function can output bytes back to the function caller.
+The query functions in CIS1 use a callback pattern to output the result of a query, but starting from Concordium smart contract v1; a smart contract receive function can output bytes back to the invoker.
 CIS2 uses this output instead of a callback pattern to return the query result.
-Using output instead of callbacks require less energy and will reduce contract code needed for querying.
+Using output instead of callbacks requires less energy and will reduce the contract code needed for querying.
 
-In CIS1 the callback result includes the corresponding query to ease the use with callback pattern, which is not needed for the output result in CIS2 query functions.
-Instead the result are required to be the same length and order as the queries.
+In CIS1 the callback result includes the corresponding query to ease the use of the callback pattern. The query information is not needed in the output result of CIS2 query functions.
+Instead, the results are required to be the same length and order as the queries.
 
 In CIS2 smart contract functions are not required to fail with a specific error code as in CIS1. This is to allow receive functions to fail early for reason specific to the implementation such as authorization or serialization.
 
-Prior to smart contract version 1 invoking another smart contract required to know the contract name as well as the contract address and endpoint.
-Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-functions-transfer-receive-hook-parameter` does not included the token contract name anymore.
+Prior to smart contract version 1 invoking another smart contract required knowing the contract name as well as the contract address and endpoint.
+Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-functions-transfer-receive-hook-parameter` does not included the token contract name as seen in CIS1.
