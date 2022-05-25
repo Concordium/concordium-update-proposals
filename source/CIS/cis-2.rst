@@ -162,7 +162,7 @@ It is serialized as: the first 2 bytes encode the length (``n``) of the data, fo
 A URL and optional checksum for metadata stored outside of this contract.
 
 It is serialized as: 2 bytes for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) followed by an optional checksum.
-The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) is followed::
+The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) follows::
 
   MetadataChecksum ::= (0: Byte)
                      | (1: Byte) (hash: Byte³²)
@@ -184,7 +184,7 @@ A smart contract implementing CIS2 MUST export the following functions :ref:`CIS
 Executes a list of token transfers.
 A transfer is a token ID, an amount of tokens to be transferred, and the ``from`` address and ``to`` address.
 
-When transferring tokens to a contract address additional information for a receive function hook to trigger is required.
+When transferring tokens to a contract address, additional information for a receive function hook to trigger is required.
 
 Parameter
 ~~~~~~~~~
@@ -219,11 +219,11 @@ Requirements
 ~~~~~~~~~~~~
 
 - The list of transfers MUST be executed in order.
-- The contract function MUST reject if any of the transfers fails to be executed.
+- The contract function MUST reject if any of the transfers fail to be executed.
 - A transfer MUST fail if:
 
   - The token balance of the ``from`` address is insufficient to do the transfer.
-  - TokenID is not known by the contract.
+  - The TokenID is not known by the contract.
 
 - A transfer MUST non-strictly decrease the balance of the ``from`` address and non-strictly increase the balance of the ``to`` address or fail.
 - A transfer with the same address as ``from`` and ``to`` MUST be executed as a normal transfer.
@@ -250,12 +250,12 @@ Add or remove a number of addresses as operators of the address sending this mes
 Parameter
 ~~~~~~~~~
 
-The parameter contains a list of operator updates. An operator update contains information whether to add or remove an operator and the address to add/remove as operator.
+The parameter contains a list of operator updates. An operator update includes information on whether to add or remove an operator and the address to add/remove as operator.
 It does not contain the address which is adding/removing the operator as this will be the sender of the message invoking this function.
 
 The parameter is serialized as: first 2 bytes (``n``) for the number of updates followed by this number of operator updates (``updates``).
 An operator update is serialized as: 1 byte (``update``) indicating whether to remove or add an operator, where if the byte value is 0 the sender is removing an operator, if the byte value is 1 the sender is adding an operator.
-The is followed by the operator address (``operator``) :ref:`CIS-2-Address` to add or remove as operator for the sender::
+The update is followed by the operator address (``operator``) :ref:`CIS-2-Address` to add or remove as operator for the sender::
 
   OperatorUpdate ::= (0: Byte) // Remove operator
                    | (1: Byte) // Add operator
@@ -277,7 +277,7 @@ Requirements
 ``balanceOf``
 ^^^^^^^^^^^^^
 
-Query balances of a list of addresses and token IDs, the result is then sent to a provided contract address.
+Query balances of a list of addresses and token IDs.
 
 Parameter
 ~~~~~~~~~
@@ -337,7 +337,7 @@ A query is serialized as :ref:`CIS-2-Address` (``owner``) followed by :ref:`CIS-
 
 .. note::
 
-  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the name of the receive function.
+  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries.
 
 Response
 ~~~~~~~~
@@ -381,7 +381,7 @@ It is serialized as: 2 bytes for the number of queries (``n``) and then this num
 
 .. note::
 
-  Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.
+  Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID.
 
 
 Response
@@ -411,10 +411,10 @@ The idea of the logged events for this specification is for off-chain applicatio
 For this reason it is important to log events in any functionality of the token contract which modifies balances or operators.
 
 - It MUST be possible to derive the balance of an address for a token type from the logged :ref:`CIS-2-event-transfer`, :ref:`CIS-2-event-mint` and :ref:`CIS-2-event-burn` events.
-- It MUST be safe to assume that with no events logged, every address have zero tokens and no operators enabled for any address.
+- It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.
 
 The events defined by this specification are serialized using one byte to the discriminate the different events.
-Any custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
+No custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
 
 .. _CIS-2-event-transfer:
 
@@ -433,7 +433,7 @@ The ``TransferEvent`` event is serialized as: first a byte with the value of 255
 ^^^^^^^^^^^^^
 
 A ``MintEvent`` event MUST be logged every time a new token is minted. This also applies when introducing new token types and the initial token types and amounts in a contract.
-Minting a token with a zero amount can be used to indicating the existence of a token type without minting any amount of tokens.
+Minting a token with a zero amount can be used to indicate the existence of a token type without minting any amount of tokens.
 
 The ``MintEvent`` event is serialized as: first a byte with the value of 254, followed by the token ID :ref:`CIS-2-TokenID` (``id``), an amount of tokens being minted :ref:`CIS-2-TokenAmount` (``amount``) and the owner address of the tokens :ref:`CIS-2-Address` (``to``)::
 
@@ -454,7 +454,7 @@ A ``BurnEvent`` event MUST be logged every time an amount of a token type is bur
 Summing all of the minted amounts from ``MintEvent`` events and subtracting all of the burned amounts from ``BurnEvent`` events for a token type MUST sum up to the total supply for the token type.
 The total supply of a token type MUST be in the inclusive range of [0, 2^64 - 1].
 
-The ``BurnEvent`` event is serialized as: first a byte with the value of 253, followed by the token ID :ref:`CIS-2-TokenID` (``id``), an amount of tokens being burned :ref:`CIS-2-TokenAmount` (``amount``) and the owner address of the tokens :ref:`CIS-2-Address` (``from``)::
+The ``BurnEvent`` event is serialized as: first a byte with the value of 253, followed by the token ID :ref:`CIS-2-TokenID` (``id``), an amount of tokens being burned :ref:`CIS-2-TokenAmount` (``amount``), and the owner address of the tokens :ref:`CIS-2-Address` (``from``)::
 
   BurnEvent ::= (253: Byte) (id: TokenID) (amount: TokenAmount) (from: Address)
 
@@ -465,7 +465,7 @@ The ``BurnEvent`` event is serialized as: first a byte with the value of 253, fo
 
 The event to log when updating an operator of some address.
 
-The ``UpdateOperatorEvent`` event is serialized as: first a byte with the value of 252, followed by a ``OperatorUpdate`` (``update``), then the owner address updating an operator :ref:`CIS-2-Address` (``owner``) and an operator address :ref:`CIS-2-Address` (``operator``) being added or removed::
+The ``UpdateOperatorEvent`` event is serialized as: first a byte with the value of 252, followed by a ``OperatorUpdate`` (``update``), then the owner address updating an operator :ref:`CIS-2-Address` (``owner``), and an operator address :ref:`CIS-2-Address` (``operator``) being added or removed::
 
   UpdateOperatorEvent ::= (252: Byte) (update: OperatorUpdate) (owner: Address) (operator: Address)
 
@@ -477,9 +477,9 @@ The ``UpdateOperatorEvent`` event is serialized as: first a byte with the value 
 The event to log when setting the metadata url for a token type.
 
 It consists of a token ID and a URL (:rfc:`3986`) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
-Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for certain token id should be used to get the token metadata.
+Logging the ``TokenMetadataEvent`` event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for a certain token id should be used to get the token metadata.
 
-The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-2-TokenID` (``id``) and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
+The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-2-TokenID` (``id``), and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
 
   TokenMetadataEvent ::= (251: Byte) (id: TokenID) (metadata: MetadataUrl)
 
@@ -521,7 +521,7 @@ The smart contract implementing this specification MAY introduce custom error co
 Token metadata JSON
 -------------------
 
-The token metadata is stored off chain and MUST be a JSON (:rfc:`8259`) file.
+The token metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) file.
 
 All of the fields in the JSON file are optional, and this specification reserves a number of field names, shown in the table below.
 
@@ -561,11 +561,11 @@ All of the fields in the JSON file are optional, and this specification reserves
     - Assign a number of attributes to the token type.
       Attributes can be used to include extra information about the token type.
   * - ``localization`` (optional)
-    - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON object to JSON files.
-    - URL's to JSON files with localized token metadata.
+    - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
+    - URLs to JSON files with localized token metadata.
 
 Optionally a SHA256 hash of the JSON file can be logged with the TokenMetadata event for checking integrity.
-Since the metadata json file could contain URLs, a SHA256 hash can optionally be associated with the URL.
+Since the metadata JSON file could contain URLs, a SHA256 hash can optionally be associated with the URL.
 To associate a hash with a URL the JSON value is an object:
 
 .. list-table:: URL JSON Object
@@ -674,7 +674,7 @@ The danish localization JSON file could be:
 
   {
     "name": "Bibi - Ryan katten",
-    "description": "Ryan katte er ensomme væsner, som rejser rundt i galaxen søgende efter deres forfædre og sande fortid"
+    "description": "Ryan katte er ensomme væsner, som rejser rundt i galaxen søgende efter deres forfædre og sande arv"
   }
 
 Smart contract limitations
@@ -697,7 +697,7 @@ Token ID bytes instead an integer
 
 Token standards such as ERC721 and ERC1155 both use a 256-bit unsigned integer (32 bytes) for the token ID, to support using something like a SHA256 hash for the token ID.
 But in the case where the token ID have no significance other than a simple identifier, smaller sized token IDs can reduce energy costs.
-This is why we chose to let the first byte indicate the size of the token ID, meaning a token ID can vary between 1 byte and 256 bytes, resulting in more than 10^614 possible token IDs.
+This is why we chose to let the first byte indicate the size of the token ID, meaning a token ID can vary between 1 byte and 256 bytes. The latter allows more than 10^614 possible token IDs.
 
 Only batched transfers
 ----------------------
@@ -708,13 +708,13 @@ The reason for not also including a single transfer function is to have smaller 
 
 .. note::
 
-   Notice that :ref:`CIS-2-functions-transfer` is a more general than both ``safeTransferFrom`` and ``safeBatchTransferFrom`` found in ERC721 and ERC1155 as these standards only take a single sender and receiver for a batch of transfers.
+   Notice that :ref:`CIS-2-functions-transfer` is more general than both ``safeTransferFrom`` and ``safeBatchTransferFrom`` found in ERC721 and ERC1155 as these standards only take a single sender and receiver for a batch of transfers.
 
 No explicit authorization
 -------------------------
 
 The specification does not mandate any authorization scheme and one might expect a requirement for the owner and operators being authorized to transfer tokens.
-This is very much intentional and the reasoning for this is to keep the specification focused on the interface for transferring token ownership with as few restrictions as possible.
+This is intentional and the reason for this is to keep the specification focused on the interface for transferring token ownership with as few restrictions as possible.
 
 Having a requirement that only owners and operators can transfer would prevent introducing any other authorization scheme on top of this specification.
 
@@ -759,8 +759,8 @@ This allows for a smart contract integrating with a token smart contract to have
 No sender hook function
 -----------------------
 
-The FA2 token standard found on Tezos, allows for a hook function to be called on a smart contract sending tokens, such that the contract could reject the transfer on some criteria.
-This seems to only make sense, if some operator is transferring tokens from a contract, in which case the sender smart contract might as well contain the logic to transfer the tokens and trigger this directly.
+The FA2 token standard found on Tezos allows for a hook function to be called on a smart contract sending tokens, such that the contract can reject the transfer on some criteria.
+This seems to only make sense if some operator is transferring tokens from a contract, in which case the sender smart contract might as well contain the logic to transfer the tokens and trigger this directly.
 
 Explicit events for mint and burn
 ---------------------------------
@@ -783,7 +783,7 @@ This checksum can be updated by logging a new event.
 Differences from CIS1
 ---------------------
 
-Only the query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf` and :ref:`CIS-2-functions-tokenMetadata` are different from CIS1.
+Only the query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf`, and :ref:`CIS-2-functions-tokenMetadata` differ from CIS1.
 The query functions in CIS1 use a callback pattern to output the result of a query, but starting from Concordium smart contract v1; a smart contract receive function can output bytes back to the invoker.
 CIS2 uses this output instead of a callback pattern to return the query result.
 Using output instead of callbacks requires less energy and will reduce the contract code needed for querying.
