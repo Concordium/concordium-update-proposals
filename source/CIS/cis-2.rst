@@ -441,7 +441,7 @@ The ``MintEvent`` event is serialized as: first a byte with the value of 254, fo
 
 .. note::
 
-  Be aware of the limit on the number of logs per smart contract function call which currently is 64.
+  Be aware of the :ref:`limit on the number of logs<CIS-2-smart-contract-limitations>`.
   A token smart contract function which needs to mint a large number of token types with token metadata might hit this limit.
 
 .. _CIS-2-event-burn:
@@ -485,10 +485,8 @@ The ``TokenMetadataEvent`` event is serialized as: first a byte with the value o
 
 .. note::
 
-  Be aware of the limit on the number of logs per smart contract function call, which currently is 64, and also the byte size limit on each logged event, which currently is 512 bytes.
+  Be aware of the :ref:`limit on the number of logs<CIS-2-smart-contract-limitations>`, and also the byte size limit on each logged event.
   This will limit the length of the metadata URL depending on the size of the token ID and whether a content hash is included.
-  With the largest possible token ID and a content hash included; the URL can be up to 220 bytes.
-
 
 .. _CIS-2-rejection-errors:
 
@@ -677,6 +675,8 @@ The danish localization JSON file could be:
     "description": "Ryan katte er ensomme væsner, som rejser rundt i galaxen søgende efter deres forfædre og sande arv"
   }
 
+.. _CIS-2-smart-contract-limitations:
+
 Smart contract limitations
 ==========================
 
@@ -684,7 +684,7 @@ A number of limitations are important to be aware of:
 
 - Smart contract function parameters are limited to 1 KiB.
 - Each logged event is limited to 0.5 KiB.
-- The number of logged events is limited to 64 per contract function invocation.
+- The number of logged events is limited to 64 in a contract function invocation. Invoking another contract function will allow another 64 events to be logged.
 - The total size of the smart contract module is limited to 512 KiB.
 
 Decisions and rationale
@@ -692,8 +692,8 @@ Decisions and rationale
 
 In this section we point out some of the differences from other popular token standards found on other blockchains, and provide reasons for deviating from them in CIS2.
 
-Token ID bytes instead an integer
----------------------------------
+Token ID bytes instead of integers
+----------------------------------
 
 Token standards such as ERC721 and ERC1155 both use a 256-bit unsigned integer (32 bytes) for the token ID, to support using something like a SHA256 hash for the token ID.
 But in the case where the token ID have no significance other than a simple identifier, smaller sized token IDs can reduce energy costs.
@@ -722,7 +722,7 @@ Adding a requirement for owners and operators being authorized to transfer token
 
 Instead, this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.
 
-Most contracts implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not in the scope of this standard.
+Most smart contracts implementing this specification will add authorization to prevent anyone from transfering tokens, but this is not in the scope of this standard.
 
 No token-level approval/allowance like in ERC20 and ERC721
 ----------------------------------------------------------
@@ -741,7 +741,7 @@ The main argument is simplicity and to save energy cost on common cases, but oth
 Receive hook function
 ---------------------
 
-The specification requires a token receive hook to be called on a smart contract receiving tokens, this will in some cases prevent mistakes such as sending tokens to smart contracts which do not define behavior for receiving tokens.
+The specification requires a token receive hook to be invoked on a smart contract receiving tokens, this will in some cases prevent mistakes such as sending tokens to smart contracts which do not define behavior for receiving tokens.
 These token could then be lost forever.
 
 The reason for this not being optional is to allow other smart contracts which integrate with a token smart contract to rely on this for functionality.
