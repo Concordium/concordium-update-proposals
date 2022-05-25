@@ -19,7 +19,7 @@ CIS-2: Concordium Token Standard 2
 
 .. warning::
 
-   This standard is still a draft and significant can still be made.
+   This standard is still a draft and significant changes might still be made.
 
 Abstract
 ========
@@ -342,7 +342,7 @@ A query is serialized as :ref:`CIS-2-Address` (``owner``) followed by :ref:`CIS-
 Response
 ~~~~~~~~
 
-The function output is a list of booleans, where a value of ``True`` is interpreted as the queried ``address`` is an operator of the ``owner`` address.
+The function output is a list of booleans, where a value is ``True`` if and only if the ``address`` is an operator of the ``owner`` address from the corresponding query.
 
 It is serialized as: 2 bytes for the number of results (``n``) and then this number of results (``results``).
 A boolean is serialized as a byte with value 0 for false and 1 for true (``isOperator``)::
@@ -368,7 +368,7 @@ Requirements
 ``tokenMetadata``
 ^^^^^^^^^^^^^^^^^
 
-Query the current token metadata URLs for a list of token IDs, and send the result to a provided contract address.
+Query the current token metadata URLs for a list of token IDs.
 
 Parameter
 ~~~~~~~~~
@@ -408,7 +408,7 @@ Logged events
 -------------
 
 The idea of the logged events for this specification is for off-chain applications to be able to track balances and operators without knowledge of the contract-specific implementation details.
-For this reason it is important to log events in any functionality of the token contract which modifies balances or operators.
+For this reason, it is important for the token contract to log the appropiate event, anytime a modification of balances or operators are made.
 
 - It MUST be possible to derive the balance of an address for a token type from the logged :ref:`CIS-2-event-transfer`, :ref:`CIS-2-event-mint` and :ref:`CIS-2-event-burn` events.
 - It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.
