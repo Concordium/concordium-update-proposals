@@ -10,7 +10,7 @@ CIS-2: Concordium Token Standard 2
    * - Created
      - May 16, 2021
    * - Draft version
-     - 2
+     - 3
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
@@ -62,11 +62,13 @@ A token ID is serialized as 1 byte for the size (``n``) of the identifier, follo
 ``TokenAmount``
 ^^^^^^^^^^^^^^^
 
-An amount of a token type is an unsigned 64 bit integer.
+An amount of a token type is an unsigned integer up to 2^256.
+It is serialized using the LEB128_ variable-length unsigned integer encoding, with the additional constraint of the total number of bytes of the encoding MUST not exceed 37 bytes::
 
-It is serialized using 8 bytes little endian::
+  TokenAmount ::= (x: Byte)                   =>  x                     if x < 2^7
+                | (x: Byte) (m: TokenAmount)  =>  (x - 2^7) + 2^7 * m   if x >= 2^7
 
-  TokenAmount ::= (amount: Byte⁸)
+.. _LEB128: https://en.wikipedia.org/wiki/LEB128
 
 .. _CIS-2-ReceiveHookName:
 
@@ -452,7 +454,7 @@ The ``MintEvent`` event is serialized as: first a byte with the value of 254, fo
 A ``BurnEvent`` event MUST be logged every time an amount of a token type is burned.
 
 Summing all of the minted amounts from ``MintEvent`` events and subtracting all of the burned amounts from ``BurnEvent`` events for a token type MUST sum up to the total supply for the token type.
-The total supply of a token type MUST be in the inclusive range of [0, 2^64 - 1].
+The total supply of a token type MUST be in the inclusive range of [0, 2^256 - 1].
 
 The ``BurnEvent`` event is serialized as: first a byte with the value of 253, followed by the token ID :ref:`CIS-2-TokenID` (``id``), an amount of tokens being burned :ref:`CIS-2-TokenAmount` (``amount``), and the owner address of the tokens :ref:`CIS-2-Address` (``from``)::
 
@@ -699,6 +701,14 @@ Token standards such as ERC721 and ERC1155 both use a 256-bit unsigned integer (
 But in the case where the token ID have no significance other than a simple identifier, smaller sized token IDs can reduce energy costs.
 This is why we chose to let the first byte indicate the size of the token ID, meaning a token ID can vary between 1 byte and 256 bytes. The latter allows more than 10^614 possible token IDs.
 
+Variable-length encoding of token amount
+----------------------------------------
+
+Similar to ERC721 and ERC1155 the token amount is limited to a 256-bit unsigned integer.
+However using 32 bytes for encoding the token amount will in some cases be wasteful token contract with a total supply fitting into fewer bytes. This is especially the case for non-fungible tokens.
+Additionally 256-bit integers are not natively supported by WebAssembly meaning arithmetics are expensive compared to a 32-bit or 64-bit integer.
+This specification uses a variable-length encoding of the token amount, allowing a token smart contract to restrict the token amount and internally represent the token amount using fewer bytes.
+
 Only batched transfers
 ----------------------
 
@@ -783,7 +793,7 @@ This checksum can be updated by logging a new event.
 Differences from CIS1
 ---------------------
 
-Only the query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf`, and :ref:`CIS-2-functions-tokenMetadata` differ from CIS1.
+The query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf`, and :ref:`CIS-2-functions-tokenMetadata` differ from CIS1.
 The query functions in CIS1 use a callback pattern to output the result of a query, but starting from Concordium smart contract v1; a smart contract receive function can output bytes back to the invoker.
 CIS2 uses this output instead of a callback pattern to return the query result.
 Using output instead of callbacks requires less energy and will reduce the contract code needed for querying.
@@ -795,3 +805,6 @@ In CIS2 smart contract functions are not required to fail with a specific error 
 
 Prior to smart contract version 1 invoking another smart contract required knowing the contract name as well as the contract address and endpoint.
 Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-functions-transfer-receive-hook-parameter` does not included the token contract name as seen in CIS1.
+
+In :ref:`CIS1 the token amount<CIS-1-TokenAmount>` is fixed to u64 which was deemed sufficient for most token smart contracts.
+However to improve the interoperability with decentralized applications with support for other blockchains using 256-bit integers, the variable-length encoding was introduced making :ref:`CIS2 token amount<CIS-2-TokenAmount>` more flexible.
