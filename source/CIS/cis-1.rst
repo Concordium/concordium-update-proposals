@@ -12,7 +12,8 @@ CIS-1: Concordium Token Standard
    * - Final
      - Nov 1, 2021
    * - Supported versions
-     - Smart contract version 0 or newer (Protocol version 1 or newer)
+     - | Smart contract version 0 or newer
+       | (Protocol version 1 or newer)
 
 .. warning::
 

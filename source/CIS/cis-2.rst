@@ -410,13 +410,13 @@ Logged events
 -------------
 
 The idea of the logged events for this specification is for off-chain applications to be able to track balances and operators without knowledge of the contract-specific implementation details.
-For this reason, it is important for the token contract to log the appropiate event, anytime a modification of balances or operators are made.
+For this reason, it is important for the token contract to log the appropriate event, anytime modifications of balances or operators are made.
 
 - It MUST be possible to derive the balance of an address for a token type from the logged :ref:`CIS-2-event-transfer`, :ref:`CIS-2-event-mint` and :ref:`CIS-2-event-burn` events.
 - It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.
 
 The events defined by this specification are serialized using one byte to the discriminate the different events.
-No custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
+A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
 
 .. _CIS-2-event-transfer:
 
@@ -686,7 +686,8 @@ A number of limitations are important to be aware of:
 
 - Smart contract function parameters are limited to 1 KiB.
 - Each logged event is limited to 0.5 KiB.
-- The number of logged events is limited to 64 in a contract function invocation. Invoking another contract function will allow another 64 events to be logged.
+- The number of logged events is limited to 64 in a contract function invocation.
+  However, invoking another contract function during a contract call, resets the count and allows another 64 events to be logged.
 - The total size of the smart contract module is limited to 512 KiB.
 
 Decisions and rationale
@@ -704,7 +705,7 @@ This is why we chose to let the first byte indicate the size of the token ID, me
 Variable-length encoding of token amount
 ----------------------------------------
 
-Similar to ERC721 and ERC1155 the token amount is limited to a 256-bit unsigned integer.
+Similar to ERC721 and ERC1155, the token amount is limited to a 256-bit unsigned integer.
 However using 32 bytes for encoding the token amount will in some cases be wasteful token contract with a total supply fitting into fewer bytes. This is especially the case for non-fungible tokens.
 Additionally 256-bit integers are not natively supported by WebAssembly meaning arithmetics are expensive compared to a 32-bit or 64-bit integer.
 This specification uses a variable-length encoding of the token amount, allowing a token smart contract to restrict the token amount and internally represent the token amount using fewer bytes.
@@ -712,7 +713,7 @@ This specification uses a variable-length encoding of the token amount, allowing
 Only batched transfers
 ----------------------
 
-The specification only has a :ref:`CIS-2-functions-transfer` smart contract function which takes list of transfer and no function for a single transfer.
+The specification only has a :ref:`CIS-2-functions-transfer` smart contract function that takes a list of transfers and no function for a single transfer.
 This will result in lower energy cost compared to multiple contract calls and only introduces a small overhead for single transfers.
 The reason for not also including a single transfer function is to have smaller smart contract modules, which in turn leads to saving cost on every function call.
 
@@ -732,7 +733,7 @@ Adding a requirement for owners and operators being authorized to transfer token
 
 Instead, this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.
 
-Most smart contracts implementing this specification will add authorization to prevent anyone from transfering tokens, but this is not in the scope of this standard.
+Most smart contracts implementing this specification will add an authorization scheme to restrict when tokens can be transferred. But, as stated, requirements for such a scheme are beyond the scope of this standard.
 
 No token-level approval/allowance like in ERC20 and ERC721
 ----------------------------------------------------------
@@ -794,7 +795,7 @@ Differences from CIS1
 ---------------------
 
 The query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf`, and :ref:`CIS-2-functions-tokenMetadata` differ from CIS1.
-The query functions in CIS1 use a callback pattern to output the result of a query, but starting from Concordium smart contract v1; a smart contract receive function can output bytes back to the invoker.
+The query functions in CIS1 use a callback pattern to output the result of a query. However, starting from Concordium smart contract v1, a smart contract receive function can output bytes back to the invoker.
 CIS2 uses this output instead of a callback pattern to return the query result.
 Using output instead of callbacks requires less energy and will reduce the contract code needed for querying.
 
@@ -807,4 +808,4 @@ Prior to smart contract version 1 invoking another smart contract required knowi
 Smart contract version 1 removes the need for the contract name, which is why :ref:`CIS-2-functions-transfer-receive-hook-parameter` does not included the token contract name as seen in CIS1.
 
 In :ref:`CIS1 the token amount<CIS-1-TokenAmount>` is fixed to u64 which was deemed sufficient for most token smart contracts.
-However to improve the interoperability with decentralized applications with support for other blockchains using 256-bit integers, the variable-length encoding was introduced making :ref:`CIS2 token amount<CIS-2-TokenAmount>` more flexible.
+However, to improve the interoperability with decentralized applications with support for other blockchains using 256-bit integers, the variable-length encoding was introduced making :ref:`CIS2 token amount<CIS-2-TokenAmount>` more flexible.
