@@ -62,7 +62,7 @@ A token ID is serialized as 1 byte for the size (``n``) of the identifier, follo
 ``TokenAmount``
 ^^^^^^^^^^^^^^^
 
-An amount of a token type is an unsigned integer up to 2^256.
+An amount of a token type is an unsigned integer up to 2^256 - 1.
 It is serialized using the LEB128_ variable-length unsigned integer encoding, with the additional constraint of the total number of bytes of the encoding MUST not exceed 37 bytes::
 
   TokenAmount ::= (x: Byte)                   =>  x                     if x < 2^7
@@ -410,7 +410,7 @@ Logged events
 -------------
 
 The idea of the logged events for this specification is for off-chain applications to be able to track balances and operators without knowledge of the contract-specific implementation details.
-For this reason, it is important for the token contract to log the appropriate event, anytime modifications of balances or operators are made.
+For this reason, it is important for the token contract to log the appropriate event, any time modifications of balances or operators are made.
 
 - It MUST be possible to derive the balance of an address for a token type from the logged :ref:`CIS-2-event-transfer`, :ref:`CIS-2-event-mint` and :ref:`CIS-2-event-burn` events.
 - It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.
@@ -686,8 +686,8 @@ A number of limitations are important to be aware of:
 
 - Smart contract function parameters are limited to 1 KiB.
 - Each logged event is limited to 0.5 KiB.
-- The number of logged events is limited to 64 in a contract function invocation.
-  However, invoking another contract function during a contract call, resets the count and allows another 64 events to be logged.
+- The number of logged events is limited to 64 without invoking another contract.
+  However invoking another contract function during a contract call resets the count and allows another 64 events to be logged.
 - The total size of the smart contract module is limited to 512 KiB.
 
 Decisions and rationale
@@ -795,7 +795,7 @@ Differences from CIS1
 ---------------------
 
 The query functions :ref:`CIS-2-functions-balanceOf`, :ref:`CIS-2-functions-operatorOf`, and :ref:`CIS-2-functions-tokenMetadata` differ from CIS1.
-The query functions in CIS1 use a callback pattern to output the result of a query. However, starting from Concordium smart contract v1, a smart contract receive function can output bytes back to the invoker.
+The query functions in CIS1 use a callback pattern to output the result of a query. However, starting from Concordium smart contract version 1, a smart contract receive function can return values back to the invoker.
 CIS2 uses this output instead of a callback pattern to return the query result.
 Using output instead of callbacks requires less energy and will reduce the contract code needed for querying.
 
