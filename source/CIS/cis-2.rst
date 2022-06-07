@@ -755,11 +755,11 @@ Receive hook function
 The specification requires a token receive hook to be invoked on a smart contract receiving tokens, this will in some cases prevent mistakes such as sending tokens to smart contracts which do not define behavior for receiving tokens.
 These token could then be lost forever.
 
-The reason for this not being optional is to allow other smart contracts which integrate with a token smart contract to rely on this for functionality.
+The reason for this not being optional is to allow other smart contracts, which integrate with a token smart contract, to rely on this for functionality.
 
 .. warning::
 
-  The smart contract receive hook function can be called by any smart contract and it is up to the integrating contract whether to trust the token contract.
+  The smart contract receive hook function can be called by any account or smart contract. It is up to the integrating contract whether it should trust the caller or not.
 
 Receive hook function callback argument
 ---------------------------------------
