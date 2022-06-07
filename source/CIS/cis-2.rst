@@ -706,7 +706,7 @@ Variable-length encoding of token amount
 ----------------------------------------
 
 Similar to ERC721 and ERC1155, the token amount is limited to a 256-bit unsigned integer.
-However using 32 bytes for encoding the token amount will in some cases be wasteful token contract with a total supply fitting into fewer bytes. This is especially the case for non-fungible tokens.
+However, using 32 bytes for encoding the token amount is wasteful for token contracts with a total supply fitting into fewer bytes. This is especially the case for non-fungible tokens.
 Additionally 256-bit integers are not natively supported by WebAssembly meaning arithmetics are expensive compared to a 32-bit or 64-bit integer.
 This specification uses a variable-length encoding of the token amount, allowing a token smart contract to restrict the token amount and internally represent the token amount using fewer bytes.
 
