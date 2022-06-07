@@ -15,3 +15,4 @@ Concordium Interoperability Specifications
    :caption: Standards
 
    CIS/cis-1
+   CIS/cis-2
