@@ -14,5 +14,6 @@ Concordium Interoperability Specifications
    :maxdepth: 1
    :caption: Standards
 
+   CIS/cis-0
    CIS/cis-1
    CIS/cis-2

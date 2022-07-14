@@ -14,6 +14,8 @@ CIS-1: Concordium Token Standard
    * - Supported versions
      - | Smart contract version 0 or newer
        | (Protocol version 1 or newer)
+   * - Standard identifier
+     - ``CIS-1``
 
 .. warning::
 

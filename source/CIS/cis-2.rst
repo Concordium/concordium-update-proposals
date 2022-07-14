@@ -14,6 +14,10 @@ CIS-2: Concordium Token Standard 2
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
+   * - Standard identifier
+     - ``CIS-2``
+   * - Requires
+     - :ref:`CIS-0<CIS-0>`
    * - Deprecates
      - :ref:`CIS-1<CIS-1>`
 
