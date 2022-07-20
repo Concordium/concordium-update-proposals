@@ -58,7 +58,12 @@ A smart contract implementing CIS-0 MUST export the following function: :ref:`CI
 ``supports``
 ^^^^^^^^^^^^
 
-Query supported standards using a list of standard identifers.
+Query supported standards using a list of standard identifers. The response contains a corresponding result for each standard identifier, where the result is either "Standard is not supported", "Standard is supported by this contract" or "Standard is supported by using some contract address".
+
+.. note::
+
+   The result of "Standard is supported by using some contract address" can be used to add support of smart contract standards in another smart contract.
+   This could be to split up logic or to later add support for a new standard.
 
 Parameter
 ~~~~~~~~~
@@ -75,7 +80,7 @@ Response
 The function output is a list of support results, where the order of the support results matches the order of standard identifers in the parameter.
 
 It is serialized as: 2 bytes for the number (little endian) of results (``n``) and then this number of support results (``results``).
-A support result is serialized as either: a byte with value ``0`` for "Standard is not supported", a byte with the value ``1`` for "Standard is support by this contract" or a byte with value ``2`` for "Standard is supported by using another contract address" followed by a single byte encoding the number of contract address then this number of contract addresses (``address``).
+A support result is serialized as either: a byte with value ``0`` for "Standard is not supported", a byte with the value ``1`` for "Standard is support by this contract" or a byte with value ``2`` for "Standard is supported by using another contract address" followed by a single byte encoding the number of contract addresses, then this number of contract addresses (``address``).
 A contract address is serialized as: first 8 bytes for the index (``index``) followed by 8 bytes for the subindex (``subindex``) both little endian::
 
   ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
