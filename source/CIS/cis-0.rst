@@ -46,8 +46,6 @@ The identifier is serialized as: first 1 byte for the length followed this many 
 
   StandardIdentifier ::= (n: Byte) (id: Byteⁿ)
 
-The table below contains the current standards and associated standard identifier.
-
 Contract function
 -----------------
 
@@ -62,7 +60,7 @@ Query supported standards using a list of standard identifers. The response cont
 
 .. note::
 
-   The result of "Standard is supported by using some contract address" can be used to add support of smart contract standards in another smart contract.
+   The result of "Standard is supported by using some contract address" can be used to add support for smart contract standards in another smart contract.
    This could be to split up logic or to later add support for a new standard.
 
 Parameter
@@ -94,7 +92,6 @@ A contract address is serialized as: first 8 bytes for the index (``index``) fol
 Requirements
 ~~~~~~~~~~~~
 
-- The number of results in the response MUST correspond to the number of the queries in the parameter.
-- The order of results in the response MUST correspond to the order of queries in the parameter.
-- The contract function MUST reject if any of the queries fail to produce a result.
+- The sequence of results in the response MUST correspond to the sequence of queries in the parameter.
+- The contract function MAY reject if any of the queries fail to produce a result.
 - The result for querying the support of ``CIS-0`` for a smart contract implementing this specification MUST NOT be "Standard is not supported".
