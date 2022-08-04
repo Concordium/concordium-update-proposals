@@ -9,8 +9,8 @@ CIS-2: Concordium Token Standard 2
 
    * - Created
      - May 16, 2021
-   * - Draft version
-     - 3
+   * - Final
+     - Aug 3, 2022
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
@@ -20,10 +20,6 @@ CIS-2: Concordium Token Standard 2
      - :ref:`CIS-0<CIS-0>`
    * - Deprecates
      - :ref:`CIS-1<CIS-1>`
-
-.. warning::
-
-   This standard is still a draft and significant changes might still be made.
 
 Abstract
 ========
