@@ -9,22 +9,18 @@ CIS-0: Standard Detection
 
    * - Created
      - Jul 14, 2022
-   * - Draft version
-     - 1
+   * - Final
+     - Aug 3, 2022
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
    * - Standard identifier
      - ``CIS-0``
 
-.. warning::
-
-   This standard is still a draft and significant changes might still be made.
-
 Abstract
 ========
 
-A standardized interface for how a smart contract indicate supported smart contract standards.
+A standardized interface for how a smart contract indicates supported smart contract standards.
 Additionally, this specification includes a list of identifiers for each standard used on the Concordium blockchain.
 
 The interface provides an entrypoint for querying the smart contract about whether it supports a given standard. The smart contract responds with either: not supported, supported or supported by some contract address.
