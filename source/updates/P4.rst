@@ -6,7 +6,7 @@ Protocol Update 4 - Sirius - Delegation and new contract state
    :stub-columns: 1
 
    * - Effective on Mainnet
-     - *planned Jun 23, 2022*
+     - Jun 23, 2022
    * - Effective on Testnet
      - Jun 13, 2022
    * - Specification hash
