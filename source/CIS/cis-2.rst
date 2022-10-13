@@ -537,6 +537,9 @@ All of the fields in the JSON file are optional, and this specification reserves
   * - ``symbol`` (optional)
     - string
     - Short text to display for the token type.
+  * - ``unique`` (optional)
+    - boolean
+    - Describes whether a token should be treated as unique. If unique, a wallet should treat the balance as a boolean. If this field is not present, the token should not be treated as unique.
   * - ``decimals`` (optional)
     - number [``integer``]
     - The number of decimals, when displaying an amount of this token type in a user interface.
@@ -640,6 +643,7 @@ An example of token metadata for a NFT could be:
 
   {
     "name": "Bibi - The Ryan Cat",
+    "unique": true,
     "description": "Ryan cats are lonely creatures travelling the galaxy in search of their ancestors and true inheritance",
     "thumbnail": { "url": "https://location.of/the/thumbnail.png" },
     "display": { "url": "https://location.of/the/display.png" },
@@ -809,3 +813,9 @@ Smart contract version 1 removes the need for the contract name, which is why :r
 
 In :ref:`CIS1 the token amount<CIS-1-TokenAmount>` is fixed to u64 which was deemed sufficient for most token smart contracts.
 However, to improve the interoperability with decentralized applications with support for other blockchains using 256-bit integers, the variable-length encoding was introduced making :ref:`CIS2 token amount<CIS-2-TokenAmount>` more flexible.
+
+
+Additions after finalization
+============================
+
+October 13, 2022: Added the optional ``unique`` field to the metadata specification. This field helps specify how wallets should display a token and its balance.
