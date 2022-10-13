@@ -816,6 +816,6 @@ However, to improve the interoperability with decentralized applications with su
 
 
 Additions after finalization
----------------------------------
+============================
 
 October 13, 2022: Added the optional ``unique`` field to the metadata specification. This field helps specify how wallets should display a token and its balance.
