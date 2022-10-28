@@ -1,0 +1,173 @@
+                           Protocol update
+
+Protocol Version: 5
+Builds on Protocol Version: 4
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 5
+compared to protocol version 4.
+
+The protocol change adds support upgradeable smart contracts and allows
+smart contracts to query additional data from the chain. The protocol
+update also allows smart contracts to use more resources and introduces
+a major reorganization of the account storage. The reorganization allows
+for more efficient account retrieval and updates.
+
+
+                              Background
+
+Protocol version 5 changes protocol version 4 in three areas, making
+smart contracts more usable, making account storage and operations more
+efficient, and simplifying the hashing of transaction outcomes.
+
+With regards to smart contracts, there are the following limitations in
+previous protocol versions.
+
+In previous protocol versions smart contract instances are immutable.
+Once instantiated, there is no way to change the code that is executed
+for each entrypoint. The instance can still change behaviour based on
+the state of course, however any bugs in the contract are permanent.
+Since the state of the contract instance may change, a workaround to
+this limitation is to introduce an indirection in terms of a proxy
+contract that dispatches calls to other implementation contracts. This
+works, but is complex and error-prone. In protocol version 5 smart
+contracts can invoke a special operation to upgrade themselves. Whether
+they make use of this or not is entirely up to the smart contract
+writer, and it is clear from the contract whether it will potentially
+make use of the upgrade or not. This makes writing and testing
+upgradeable contracts substantially simpler.
+
+Smart contracts also get very limited information about the chain. In
+particular they can manipulate their own state, invoke other contracts,
+and transfer CCD to other accounts. They cannot get balances of accounts
+or other contracts on the chain, nor values of any chain parameters.
+Protocol version 5 adds additional query capabilities to smart
+contracts.
+
+Finally, there are some hard limits enforced on smart contracts, and
+these limits are needlessly restrictive. These are the limit on
+parameter (or message) size, which limits how much data can be
+transferred to the smart contract invocation, the limit on the number of
+logs that a smart contract can produce, and the limit on how much data a
+contract can return. This latter limit restricts the usability of
+so-called view functions, since they can only return 16kB of data. These
+limits are lifted in protocol version 5.
+
+With regards to accounts the changes are internal to the node, and the
+only protocol visible effect is that the hash of the accounts, and
+therefore the hash of the entire state is computed differently. The node
+maintains the current state of each account. This state contains the
+public, encrypted, and locked balances, the credentials that currently
+belong to the account, information of whether the account is a baker or
+delegator, and any release schedule. All this data is hashed and the
+hash is part of the block hash and is in turn part of validity criteria
+for blocks. The current account storage has inefficiencies that make
+loading of accounts slower than it needs to be, and some common
+operations require loading more data than is required. Additionally,
+account hash has to be recomputed after each update. This currently
+involves loading most of the account data, which is inefficient.
+
+The rationale for making this change is to optimize the common account
+operations.
+
+With regards for transaction outcome hashing, the change there is to not
+assign protocol relevant meaning to all the outcome data. In protocol
+versions 1-4 the entire transaction outcome is hashed, even if the
+transaction was rejected because, for example, the receiver account did
+not exist. If a transaction was rejected then there is no effect on the
+chain other than payment. Having the exact rejection reason part of the
+protocol defined data means that the logic of transaction checking must
+keep all the checks in the exact same order.
+
+                               Changes
+
+The following behaviours are changed in protocol version 5.
+
+1. The transactions `InitContract` and `Update`
+   can take a parameter of size `65535B` in contrast to a parameter of
+   size `1024B` previously.
+2. When a V0 or V1 contract sends a message, or invokes a contract,
+   respectively, they may now send a parameter of size `65535B`, in
+   contrast to the previous limit of `1024B`.
+3. When a V1 contract returns a value as a result of either the init
+   function execution, or entrypoint execution, the return value is now
+   limited to `4294967295B`, up from the previous limit of `16384B`.
+4. V1 contracts may now use an additional host function `upgrade`. This
+   takes a pointer to a new smart contract module reference. From that
+   point onward new entrypoint executions will use the new code.
+
+   The new module has to exist on the chain at the time of the
+   execution, and it must be a V1 module. The upgrade function returns
+   whether the upgrade succeeded or not, and if not the reason why in
+   the form of a status code.
+5. The `invoke` host function for V1 contracts is extended with 3 new
+   operations for querying account balance, contract balance, and
+   EUR/NRG and CCD/EUR exchange rates. These operations have operation
+   tags `2`, `3`, and `4`, respectively.
+
+   - The account balance query takes an account address and returns either
+   an error if the account does not exist, or a tuple of 3 balances (as
+   64-bit integers)
+     - current total balance (accounting for changes in the current
+       transaction)
+     - staked balance (0 if account is not delegating or baking)
+     - balance locked in scheduled transfers
+
+   - The contract balance query takes a contract instance address and
+     returns the current CCD balance of the contract instance,
+     accounting for changes in the current transaction, if the contract
+     exists, and an error code otherwise.
+
+   - The exchange rate query always returns a pair of exchange rates in
+     the form of 4 64-bit integers. The first two represent the EUR/NRG
+     exchange rate (as numerator/denominator in reduced form) and the
+     last two represent CCD/EUR, in the same form.
+
+6. The hash for accounts is computed in a different way now, but this
+   has no other visible effects.
+
+7. For transactions that have been rejected, the hash no longer reflects
+   the exact reason why they were rejected. Instead only a tag `1u8` is
+   retained.
+
+                               Effects
+
+1. The account hash changes have no visible effects on the chain apart
+   from the computation of the block hash.
+
+2. Transaction outcome hashing changes also have no visible effect apart
+   from the computation of the block hash.
+
+3. The addition of upgradability changes the behaviour of `DeployModule`
+   transactions. Previously deploying a module which used the `upgrade`
+   host function would have failed with "module not well-formed" error.
+
+4. Behaviour of existing contract instances may be affected in the
+   following scenarios
+   - the contract previously tried to invoke another contract (for V1
+     contracts) or send a message (V0 contracts) with a parameter larger
+     than `1024B`. The contract invocation would have failed with a
+     runtime exception. Now it will succeed if the size is no more than
+     `65535B`.
+   - A V1 contract attempted to write to the return value starting
+     beyond `16384B`. This would have failed with a runtime error, and
+     will now succeed.
+   - A V1 contract attempted to write to the return value such that it
+     would extend it beyond `1024B`. Previously the response would the
+     be the number of bytes written, which would be less than the amount
+     that the contract attempted to write. Now the entire value will be
+     written, and correspondingly the return value will reflect that.
+   - A V1 contract attempted to invoke to invoke an operation with tags
+     2, 3, or 4. That would have led to a runtime error, but will now
+     succeed and return control to the smart contract.
+   - If a V0 or V1 smart contract attempted to log more than 64 items,
+     the call to the `log_event` host function would have return `0`
+     to indicate the fact that too many logs were produced. The event
+     would not be emitted. It will now return `1` and the event will
+     be recorded in the transaction outcome.
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of
+this file. The instruction needs no auxiliary data.
