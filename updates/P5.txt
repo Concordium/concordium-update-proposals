@@ -8,7 +8,7 @@ Builds on Protocol Version: 4
 This document describes the changes in Concordium protocol version 5
 compared to protocol version 4.
 
-The protocol change adds support upgradeable smart contracts and allows
+The protocol change adds support for upgradable smart contracts and allows
 smart contracts to query additional data from the chain. The protocol
 update also allows smart contracts to use more resources and introduces
 a major reorganization of the account storage. The reorganization allows
@@ -17,7 +17,7 @@ for more efficient account retrieval and updates.
 
                               Background
 
-Protocol version 5 changes protocol version 4 in three areas, making
+Protocol version 5 changes protocol version 4 in three areas: making
 smart contracts more usable, making account storage and operations more
 efficient, and simplifying the hashing of transaction outcomes.
 
@@ -36,7 +36,7 @@ contracts can invoke a special operation to upgrade themselves. Whether
 they make use of this or not is entirely up to the smart contract
 writer, and it is clear from the contract whether it will potentially
 make use of the upgrade or not. This makes writing and testing
-upgradeable contracts substantially simpler.
+upgradable contracts substantially simpler.
 
 Smart contracts also get very limited information about the chain. In
 particular they can manipulate their own state, invoke other contracts,
@@ -48,19 +48,19 @@ contracts.
 Finally, there are some hard limits enforced on smart contracts, and
 these limits are needlessly restrictive. These are the limit on
 parameter (or message) size, which limits how much data can be
-transferred to the smart contract invocation, the limit on the number of
-logs that a smart contract can produce, and the limit on how much data a
+transferred to the smart contract invocation; the limit on the number of
+logs that a smart contract can produce; and the limit on how much data a
 contract can return. This latter limit restricts the usability of
 so-called view functions, since they can only return 16kB of data. These
 limits are lifted in protocol version 5.
 
-With regards to accounts the changes are internal to the node, and the
+With regards to accounts, the changes are internal to the node, and the
 only protocol visible effect is that the hash of the accounts, and
 therefore the hash of the entire state is computed differently. The node
 maintains the current state of each account. This state contains the
-public, encrypted, and locked balances, the credentials that currently
-belong to the account, information of whether the account is a baker or
-delegator, and any release schedule. All this data is hashed and the
+public, encrypted, and locked balances; the credentials that currently
+belong to the account; information about whether the account is a baker or
+delegator; and any release schedule. All this data is hashed and the
 hash is part of the block hash and is in turn part of validity criteria
 for blocks. The current account storage has inefficiencies that make
 loading of accounts slower than it needs to be, and some common
@@ -71,12 +71,12 @@ involves loading most of the account data, which is inefficient.
 The rationale for making this change is to optimize the common account
 operations.
 
-With regards for transaction outcome hashing, the change there is to not
+With regards to transaction outcome hashing, the change there is to not
 assign protocol relevant meaning to all the outcome data. In protocol
 versions 1-4 the entire transaction outcome is hashed, even if the
 transaction was rejected because, for example, the receiver account did
 not exist. If a transaction was rejected then there is no effect on the
-chain other than payment. Having the exact rejection reason part of the
+chain other than payment. Having the exact rejection reason as part of the
 protocol defined data means that the logic of transaction checking must
 keep all the checks in the exact same order.
 
@@ -140,7 +140,7 @@ The following behaviours are changed in protocol version 5.
    from the computation of the block hash.
 
 3. The addition of upgradability changes the behaviour of `DeployModule`
-   transactions. Previously deploying a module which used the `upgrade`
+   transactions. Previously, deploying a module that used the `upgrade`
    host function would have failed with "module not well-formed" error.
 
 4. Behaviour of existing contract instances may be affected in the
@@ -162,7 +162,7 @@ The following behaviours are changed in protocol version 5.
      2, 3, or 4. That would have led to a runtime error, but will now
      succeed and return control to the smart contract.
    - If a V0 or V1 smart contract attempted to log more than 64 items,
-     the call to the `log_event` host function would have return `0`
+     the call to the `log_event` host function would have returned `0`
      to indicate the fact that too many logs were produced. The event
      would not be emitted. It will now return `1` and the event will
      be recorded in the transaction outcome.
