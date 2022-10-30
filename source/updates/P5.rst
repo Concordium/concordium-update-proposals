@@ -10,7 +10,7 @@ Protocol Update 5 - Smart contract upgradability, performance improvements
    * - Effective on Testnet
      - TBD
    * - Specification hash
-     - ``57f9c76189cd6955f72e39605e56003e1eaf7a8b3c33a7eb42b712dbfd76ec32``
+     - ``af5684e70c1438e442066d017e4410af6da2b53bfa651a07d81efa2aa668db20``
 
 Specification
 =============

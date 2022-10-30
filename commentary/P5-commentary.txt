@@ -1,0 +1,44 @@
+                      Protocol update commentary
+
+Protocol Version: 5
+Builds on Protocol Version: 4
+
+Protocol version 5 adds support for upgradable smart contracts and
+allows smart contracts to query additional data from the chain. The
+protocol update also allows smart contracts to use more resources and
+introduces a major reorganization of the account storage. The
+reorganization allows for more efficient account retrieval and updates.
+
+The key user-visible features are related to smart contracts.
+
+1. Smart contract writers can now make their smart contracts upgradable.
+   This is an opt-in ability and allows the writer of the contract to
+   update it to fix any bugs, or introduce additional functionality.
+   This feature does not increase the expressive power of smart
+   contracts; the same upgradability was already possible via a proxy
+   pattern. However it makes writing and testing upgradable smart
+   contracts much simpler.
+2. A number of resource limitations related to smart contracts have been
+   relaxed. The three key ones are:
+   - The limit on parameter size for init functions and smart contract
+     entrypoints. The limit is now `65535B`, compared to the previous
+     limit of `1024B`. A concrete instance where this can be useful is
+     in a CIS2 contract when minting, e.g., NFTs. With the increased
+     limit more NFTs can be minted in a single transaction.
+   - The return value from a V1 smart contract is now unbounded, apart
+     from limits imposed by NRG. This allows, for example, view
+     functions to return more data, which can be especially useful with
+     the node's invoke endpoint for off-chain integration.
+   - There is no more hard limit on the number of logs a smart contract
+     can emit. This can also be helpful in CIS2 contracts, where, for
+     example, each transfer must be logged. The previous limit of 64 log
+     items meant that if more than 64 transfers were attempted in the
+     same transaction some workarounds were needed.
+
+Other improvements in this protocol update are node internal aimed at
+improving node performance and maintainability.
+
+Existing successful contract executions will retain their behaviour.
+However if a contract has failed due to hitting one of the resource
+limitations in protocol version 4, it may succeed, or fail in a
+different way, in protocol version 5.
