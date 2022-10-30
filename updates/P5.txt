@@ -8,11 +8,11 @@ Builds on Protocol Version: 4
 This document describes the changes in Concordium protocol version 5
 compared to protocol version 4.
 
-The protocol change adds support for upgradable smart contracts and allows
-smart contracts to query additional data from the chain. The protocol
-update also allows smart contracts to use more resources and introduces
-a major reorganization of the account storage. The reorganization allows
-for more efficient account retrieval and updates.
+The protocol change adds support for upgradable smart contracts and
+allows smart contracts to query additional data from the chain. The
+protocol update also allows smart contracts to use more resources and
+introduces a major reorganization of the account storage. The
+reorganization allows for more efficient account retrieval and updates.
 
 
                               Background
@@ -59,8 +59,8 @@ only protocol visible effect is that the hash of the accounts, and
 therefore the hash of the entire state is computed differently. The node
 maintains the current state of each account. This state contains the
 public, encrypted, and locked balances; the credentials that currently
-belong to the account; information about whether the account is a baker or
-delegator; and any release schedule. All this data is hashed and the
+belong to the account; information about whether the account is a baker
+or delegator; and any release schedule. All this data is hashed and the
 hash is part of the block hash and is in turn part of validity criteria
 for blocks. The current account storage has inefficiencies that make
 loading of accounts slower than it needs to be, and some common
@@ -76,9 +76,9 @@ assign protocol relevant meaning to all the outcome data. In protocol
 versions 1-4 the entire transaction outcome is hashed, even if the
 transaction was rejected because, for example, the receiver account did
 not exist. If a transaction was rejected then there is no effect on the
-chain other than payment. Having the exact rejection reason as part of the
-protocol defined data means that the logic of transaction checking must
-keep all the checks in the exact same order.
+chain other than payment. Having the exact rejection reason as part of
+the protocol defined data means that the logic of transaction checking
+must keep all the checks in the exact same order.
 
                                Changes
 
@@ -106,9 +106,9 @@ The following behaviours are changed in protocol version 5.
    EUR/NRG and CCD/EUR exchange rates. These operations have operation
    tags `2`, `3`, and `4`, respectively.
 
-   - The account balance query takes an account address and returns either
-   an error if the account does not exist, or a tuple of 3 balances (as
-   64-bit integers)
+   - The account balance query takes an account address and returns
+   either an error if the account does not exist, or a tuple of 3
+   balances (as 64-bit integers)
      - current total balance (accounting for changes in the current
        transaction)
      - staked balance (0 if account is not delegating or baking)
@@ -169,5 +169,5 @@ The following behaviours are changed in protocol version 5.
 
                      Protocol update instruction
 
-The protocol update instruction is identified by the SHA256 hash of
-this file. The instruction needs no auxiliary data.
+The protocol update instruction is identified by the SHA256 hash of this
+file. The instruction needs no auxiliary data.
