@@ -139,7 +139,7 @@ The following behaviours are changed in protocol version 5.
 2. Transaction outcome hashing changes also have no visible effect apart
    from the computation of the block hash.
 
-3. The addition of upgradability changes the behaviour of `DeployModule`
+3. The addition of upgradeability changes the behaviour of `DeployModule`
    transactions. Previously, deploying a module that used the `upgrade`
    host function would have failed with "module not well-formed" error.
 
@@ -154,13 +154,13 @@ The following behaviours are changed in protocol version 5.
      beyond `16384B`. This would have failed with a runtime error, and
      will now succeed.
    - A V1 contract attempted to write to the return value such that it
-     would extend it beyond `1024B`. Previously the response would the
-     be the number of bytes written, which would be less than the amount
+     would extend it beyond `1024B`. Previously the response would be 
+     the number of bytes written, which would be less than the amount
      that the contract attempted to write. Now the entire value will be
      written, and correspondingly the return value will reflect that.
-   - A V1 contract attempted to invoke to invoke an operation with tags
-     2, 3, or 4. That would have led to a runtime error, but will now
-     succeed and return control to the smart contract.
+   - A V1 contract attempted to invoke operation with tags 2, 3, or 4. 
+     That would have led to a runtime error, but will now succeed and 
+     return control to the smart contract.
    - If a V0 or V1 smart contract attempted to log more than 64 items,
      the call to the `log_event` host function would have returned `0`
      to indicate the fact that too many logs were produced. The event
