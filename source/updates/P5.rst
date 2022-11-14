@@ -6,9 +6,9 @@ Protocol Update 5 - Smart contract upgradability, performance improvements
    :stub-columns: 1
 
    * - Effective on Mainnet
-     - TBD
+     - planned Dec 13, 2022
    * - Effective on Testnet
-     - TBD
+     - planned Nov 22, 2022
    * - Specification hash
      - ``af5684e70c1438e442066d017e4410af6da2b53bfa651a07d81efa2aa668db20``
 
