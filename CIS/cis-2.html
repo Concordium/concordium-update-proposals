@@ -164,6 +164,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../updates/P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../updates/P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../updates/P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul class="current">
@@ -685,37 +686,41 @@ This will limit the length of the metadata URL depending on the size of the toke
 <td><p>string</p></td>
 <td><p>Short text to display for the token type.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">decimals</span></code> (optional)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">unique</span></code> (optional)</p></td>
+<td><p>boolean</p></td>
+<td><p>Describes whether a token should be treated as unique. If unique, a wallet should treat the balance as a boolean. If this field is not present, the token should not be treated as unique.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">decimals</span></code> (optional)</p></td>
 <td><p>number [<code class="docutils literal notranslate"><span class="pre">integer</span></code>]</p></td>
 <td><p>The number of decimals, when displaying an amount of this token type in a user interface.
 If the decimal is set to <code class="docutils literal notranslate"><span class="pre">d</span></code> then a token amount <code class="docutils literal notranslate"><span class="pre">a</span></code> should be displayed as <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">*</span> <span class="pre">10^(-d)</span></code></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
 <td><p>string</p></td>
 <td><p>A description for this token type.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">thumbnail</span></code> (optional)</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">thumbnail</span></code> (optional)</p></td>
 <td><p>URL JSON object</p></td>
 <td><p>An image URL to a small image for displaying the asset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">display</span></code> (optional)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">display</span></code> (optional)</p></td>
 <td><p>URL JSON object</p></td>
 <td><p>An image URL to a large image for displaying the asset.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">artifact</span></code> (optional)</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">artifact</span></code> (optional)</p></td>
 <td><p>URL JSON object</p></td>
 <td><p>A URL to the token asset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">assets</span></code> (optional)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">assets</span></code> (optional)</p></td>
 <td><p>JSON array of Token metadata JSON objects</p></td>
 <td><p>Collection of assets.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">attributes</span></code> (optional)</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">attributes</span></code> (optional)</p></td>
 <td><p>JSON array of Attribute JSON objects</p></td>
 <td><p>Assign a number of attributes to the token type.
 Attributes can be used to include extra information about the token type.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">localization</span></code> (optional)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">localization</span></code> (optional)</p></td>
 <td><p>JSON object with locales as field names (<span class="target" id="index-3"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc5646.html"><strong>RFC 5646</strong></a>) and field values are URL JSON objects linking to JSON files.</p></td>
 <td><p>URLs to JSON files with localized token metadata.</p></td>
 </tr>
@@ -809,6 +814,7 @@ To associate a hash with a URL the JSON value is an object:</p>
 <p>An example of token metadata for a NFT could be:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
   <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Bibi - The Ryan Cat"</span><span class="p">,</span>
+  <span class="nt">"unique"</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
   <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"Ryan cats are lonely creatures travelling the galaxy in search of their ancestors and true inheritance"</span><span class="p">,</span>
   <span class="nt">"thumbnail"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://location.of/the/thumbnail.png"</span> <span class="p">},</span>
   <span class="nt">"display"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"url"</span><span class="p">:</span> <span class="s2">"https://location.of/the/display.png"</span> <span class="p">},</span>
@@ -852,10 +858,8 @@ To associate a hash with a URL the JSON value is an object:</p>
 <span id="cis-2-smart-contract-limitations"></span><h2>Smart contract limitations<a class="headerlink" href="#smart-contract-limitations" title="Permalink to this headline">¶</a></h2>
 <p>A number of limitations are important to be aware of:</p>
 <ul class="simple">
-<li><p>Smart contract function parameters are limited to 1 KiB.</p></li>
+<li><p>The byte size of smart contract function parameters are limited to at most 65535 B.</p></li>
 <li><p>Each logged event is limited to 0.5 KiB.</p></li>
-<li><p>The number of logged events is limited to 64 without invoking another contract.
-However invoking another contract function during a contract call resets the count and allows another 64 events to be logged.</p></li>
 <li><p>The total size of the smart contract module is limited to 512 KiB.</p></li>
 </ul>
 </section>
@@ -957,6 +961,10 @@ Smart contract version 1 removes the need for the contract name, which is why <a
 <p>In <a class="reference internal" href="cis-1.html#cis-1-tokenamount"><span class="std std-ref">CIS1 the token amount</span></a> is fixed to u64 which was deemed sufficient for most token smart contracts.
 However, to improve the interoperability with decentralized applications with support for other blockchains using 256-bit integers, the variable-length encoding was introduced making <a class="reference internal" href="#cis-2-tokenamount"><span class="std std-ref">CIS2 token amount</span></a> more flexible.</p>
 </section>
+</section>
+<section id="additions-after-finalization">
+<h2>Additions after finalization<a class="headerlink" href="#additions-after-finalization" title="Permalink to this headline">¶</a></h2>
+<p>October 13, 2022: Added the optional <code class="docutils literal notranslate"><span class="pre">unique</span></code> field to the metadata specification. This field helps specify how wallets should display a token and its balance.</p>
 </section>
 </section>
 
@@ -1084,6 +1092,7 @@ However, to improve the interoperability with decentralized applications with su
 <li><a class="reference internal" href="#differences-from-cis1">Differences from CIS1</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#additions-after-finalization">Additions after finalization</a></li>
 </ul>
 </li>
 </ul>
