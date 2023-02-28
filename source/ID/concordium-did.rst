@@ -79,7 +79,7 @@ A smart contract instance on the default network (``mainnet``):
 
 ``did:ccd:sci:12:0``
 
-A public key on ``mainnet``:
+A public key related to ``mainnet``:
 
 ``did:ccd:mainnet:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
     
