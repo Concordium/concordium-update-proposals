@@ -13,7 +13,7 @@ For more information about DIDs and DID method specifications, please see the `D
 Abstract
 =========
 
-Concordium is a layer-1 blockchain with identity built into the core protocol. 
+Concordium is a layer-1 blockchain with identity built into the core protocol.
 We distinguish the following types of DIDs:
 
 - **Account DID** refer to accounts on the Concordium blockchain.
@@ -23,14 +23,14 @@ We distinguish the following types of DIDs:
 Status of This Document
 =======================
 
-This is a draft document and may be updated. 
+This is a draft document and may be updated.
 
 [Add more legal text here?]
 
 1. Concordium DID Identifier
 =============================
 
-Method Name	
+Method Name
 -----------
 
 The Concordium DID method name is ``ccd``.
@@ -52,11 +52,11 @@ Concordium DID identifiers are defined by the following ABNF_:
   scitype = "sci:" index *1(“:” subindex)
   index = 1*DIGIT
   subindex = 1*DIGIT
-  base58char = "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" / 
-               "A" / "B" / "C" / "D" / "E" / "F" / "G" / "H" / "J" / 
-               "K" / "L" / "M" / "N" / "P" / "Q" / "R" / "S" / "T" / 
-               "U" / "V" / "W" / "X" / "Y" / "Z" / "a" / "b" / "c" / 
-               "d" / "e" / "f" / "g" / "h" / "i" / "j" / "k" / "m" / 
+  base58char = "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" /
+               "A" / "B" / "C" / "D" / "E" / "F" / "G" / "H" / "J" /
+               "K" / "L" / "M" / "N" / "P" / "Q" / "R" / "S" / "T" /
+               "U" / "V" / "W" / "X" / "Y" / "Z" / "a" / "b" / "c" /
+               "d" / "e" / "f" / "g" / "h" / "i" / "j" / "k" / "m" /
                "n" / "o" / "p" / "q" / "r" / "s" / "t" / "u" / "v" /
                "w" / "x" / "y" / "z"
 
@@ -82,7 +82,7 @@ A smart contract instance on the default network (``mainnet``):
 A public key related to ``mainnet``:
 
 ``did:ccd:mainnet:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
-    
+
 2. Concordium DID Documents
 ===========================
 
@@ -115,7 +115,7 @@ Account DID
      }
    ],
    "accountThreshold": "KK",
-   "authentication": [ 
+   "authentication": [
         "TODO"
     ],
     "verificationMethod" : "TODO"
@@ -138,7 +138,7 @@ Smart Contract Instance DID
   }
 
 Where ``IND`` and ``SUBIND`` are the contract index and subindex.
-``NET`` and ``ADDR`` correspond to the network and to the owner's account address.  
+``NET`` and ``ADDR`` correspond to the network and to the owner's account address.
 
 - Authentication?
 
@@ -170,7 +170,7 @@ Public Key Cryptography DID
 3. Concordium DID Operations
 =============================
 
-Concordium DIDs are managed on the Concordium blockchain. 
+Concordium DIDs are managed on the Concordium blockchain.
 
 Create
 ------
@@ -178,7 +178,7 @@ Create
 Account DID
 ^^^^^^^^^^^
 
-An account DID can be created by opening an account on the ``network`` blockchain. 
+An account DID can be created by opening an account on the ``network`` blockchain.
 The resulting DID is ``did:ccd:network:acc:<accountaddr>`` where ``<accountaddr>`` is the base58 encoded account address.
 
 Smart Contract Instance DID
@@ -197,7 +197,7 @@ Read
 Account DID
 ^^^^^^^^^^^
 
-The DID document information for a DID of the form 
+The DID document information for a DID of the form
 
 ``did:ccd:network:acc:accaddr``
 
@@ -218,7 +218,7 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The DID document information for a DID of the form 
+The DID document information for a DID of the form
 
 ``did:ccd:network:sci:index:subindex``
 
