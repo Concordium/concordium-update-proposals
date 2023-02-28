@@ -91,14 +91,56 @@ A public key related to ``mainnet``:
 Account DID
 -----------
 
-- ID is account address
+.. code-block:: json
+
+  {
+   "@context": [
+     "https://www.w3.org/ns/did/v1",
+     "Concordium DID URI"
+   ],
+   "id": "did:ccd:NET:acc:ADDR",
+   "accountCredentials": [
+     {
+       "credId": "ZZZZ",
+       "credentialPublicKeys": {
+         "keys": [
+           {
+             "id": "did:ccd:pkc:XX#key-0",
+             "type": "Ed25519VerificationKey2020",
+             "publicKeyMultibase": "XX"
+           }
+         ],
+         "threshold": "NN"
+       }
+     }
+   ],
+   "accountThreshold": "KK",
+   "authentication": [ 
+        "TODO"
+    ],
+    "verificationMethod" : "TODO"
+  }
+
 - Authentication via account credentials (this probably needs the definition of new verification method)
 
 Smart Contract Instance DID
 ---------------------------
 
-- ID is the index
-- Authentication via account credentials of owner
+.. code-block:: json
+
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "Concordium DID URI"
+    ],
+    "id": "did:ccd:sci:IND:SUBIND",
+    "owner": "did:ccd:NET:acc:ADDR"
+  }
+
+Where ``IND`` and ``SUBIND`` are the contract index and subindex.
+``NET`` and ``ADDR`` correspond to the network and to the owner's account address.  
+
+- Authentication?
 
 Public Key Cryptography DID
 ---------------------------
@@ -106,18 +148,21 @@ Public Key Cryptography DID
 .. code-block:: json
 
   {
-    "@context": ["https://www.w3.org/ns/did/v1", "Concordium DID URI"]
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "Concordium DID URI"
+    ],
     "id": "did:ccd:pkc:XX",
     "publicKey": [
       {
-        "id": "did:ccd:pkc:XX#key-1",
-        "type":"Ed25519VerificationKey2020"  
-        "publicKeyMultibase":"XX"
+        "id": "did:ccd:pkc:XX#key-0",
+        "type": "Ed25519VerificationKey2020",
+        "publicKeyMultibase": "XX"
       }
     ],
     "authentication": [
       {
-        "publicKey": "did:ccd:pkc:XXkey-1"
+        "publicKey": "did:ccd:pkc:XX#key-0"
       }
     ]
   }
