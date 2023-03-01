@@ -184,7 +184,7 @@ The resulting DID is ``did:ccd:network:acc:<accountaddr>`` where ``<accountaddr>
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A smart contract instance DID can be created by deploying a smart contract module on the ``network`` blockchain.
+A smart contract instance DID can be created by `deploying a smart contract module <https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html>`_ and `initializing a smart contract instance <https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html>`_ on the ``network`` blockchain.
 The resulting DID is ``did:ccd:network:sci:<index>:<subindex>`` where ``<index>``, ``<subindex>`` are the index and the subindex of the instance.
 
 Public Key Cryptography DID
