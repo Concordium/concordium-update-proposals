@@ -184,12 +184,14 @@ The resulting DID is ``did:ccd:network:acc:<accountaddr>`` where ``<accountaddr>
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A smart contract instance DID can be created by deploying a smart contract module on the ``network`` blockchain. The resulting DID is ``did:ccd:network:sci:<index>:<subindex>`` where ``<index>``, ``<subindex>`` are the index and the subindex of the instance.
+A smart contract instance DID can be created by deploying a smart contract module on the ``network`` blockchain.
+The resulting DID is ``did:ccd:network:sci:<index>:<subindex>`` where ``<index>``, ``<subindex>`` are the index and the subindex of the instance.
 
 Public Key Cryptography DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A public key cryptography DID can be created by generating a fresh Ed25519 key pair. The resulting DID is ``did:ccd:network:pkc:<pk>`` where ``<pk>`` is the base58 encoded public key. These DIDs are not registered on the blockchain.
+A public key cryptography DID can be created by generating a fresh Ed25519 key pair.
+The resulting DID is ``did:ccd:network:pkc:<pk>`` where ``<pk>`` is the base58 encoded public key. These DIDs are not registered on the blockchain.
 
 Read
 ----
@@ -210,7 +212,7 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 
 .. code-block:: console
 
-    $concordium-client raw GetAccountInfo <account-address>
+    $concordium-client raw GetAccountInfo <accaddr>
 
 .. TODO add more details?
 
@@ -233,7 +235,7 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 
 .. code-block:: console
 
-    $concordium-client contract show <contract-index>
+    $concordium-client contract show <index>
 
 .. TODO add more details?
 
