@@ -178,13 +178,13 @@ Create
 Account DID
 ^^^^^^^^^^^
 
-An account DID can be created by opening an account on the ``network`` blockchain.
+An account DID can be created by `opening an account <concordium-accounts_>`_ on the ``network`` blockchain.
 The resulting DID is ``did:ccd:network:acc:<accountaddr>`` where ``<accountaddr>`` is the base58 encoded account address.
 
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A smart contract instance DID can be created by `deploying a smart contract module <https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html>`_ and `initializing a smart contract instance <https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html>`_ on the ``network`` blockchain.
+A smart contract instance DID can be created by `deploying a smart contract module <deploy-module_>`_ and `initializing a smart contract instance <initialize-contract-instance_>`_ on the ``network`` blockchain.
 The resulting DID is ``did:ccd:network:sci:<index>:<subindex>`` where ``<index>``, ``<subindex>`` are the index and the subindex of the instance.
 
 Public Key Cryptography DID
@@ -205,8 +205,9 @@ The DID document information for a DID of the form
 
 can be resolved by looking up the account with address  ``accaddr`` on blockchain ``network``.
 
-Data required to construct the DID document can be acquired by using the gRPC interface command ``GetAccountInfo``
-See the details in the `gRPC v2 documentation <https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto>`_.
+Data required to construct the DID document can be acquired by using the gRPC interface command ``GetAccountInfo``.
+
+See the details in the `gRPC v2 documentation`_.
 
 From the command line, ``concordium-client`` allows to retrieve the data in the following way:
 
@@ -227,9 +228,9 @@ The DID document information for a DID of the form
 can be resolved by looking up the smart contract instance with indices ``index``, ``subindex`` on blockchain ``network``.
 This includes a lookup of the owner's account.
 
-Data required to construct the DID document can be acquired by using the gRPC interface command ``GetInstanceInfo``
+Data required to construct the DID document can be acquired by using the gRPC interface command ``GetInstanceInfo``.
 
-See the details in the `gRPC v2 documentation <https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto>`_.
+See the details in the `gRPC v2 documentation`_.
 
 From the command line, ``concordium-client`` allows to retrieve the data in the following way:
 
@@ -263,7 +264,11 @@ Deactivate
 At this time Concordium does not support deactivation of DID documents.
 
 
-.. _`w3c-did-core-v1.0`: https://www.w3.org/TR/did-core/
+.. _w3c-did-core-v1.0: https://www.w3.org/TR/did-core/
 .. _DID Primer : https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-fall2017/blob/master/topics-and-advance-readings/did-primer.md
 .. _DID Spec: https://w3c-ccg.github.io/did-spec/
 .. _ABNF: https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form
+.. _concordium-accounts: https://developer.concordium.software/en/mainnet/net/references/manage-accounts.html
+.. _gRPC v2 documentation: https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto
+.. _deploy-module: https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html
+.. _initialize-contract-instance: https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html
