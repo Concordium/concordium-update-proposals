@@ -121,7 +121,7 @@ Account DID
     "verificationMethod" : "TODO"
   }
 
-- Authentication via account credentials (this probably needs the definition of new verification method)
+- Authentication via account credentials (see the details in :ref:`concordium-did-verification-method`)
 
 Smart Contract Instance DID
 ---------------------------

@@ -20,3 +20,8 @@ Concordium Interoperability Specifications
    CIS/cis-2
 
    ID/concordium-did.rst
+
+.. toctree::
+   :hidden:
+
+   ID/extensions-did.rst
