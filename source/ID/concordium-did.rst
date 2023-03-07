@@ -127,14 +127,14 @@ The document MAY include any other public data of a Concordium account.
               {
                 "id": "did:ccd:pkc:XX#key-1-1",
                 "type": "Ed25519VerificationKey2020",
-                "controller": ""did:ccd:NET:acc:ADDR#credential-1",
+                "controller": "did:ccd:NET:acc:ADDR#credential-1",
                 "publicKeyMultibase": "XX"
               },
               "...",
               {
                 "id": "did:ccd:pkc:XX#key-N_1-1",
                 "type": "Ed25519VerificationKey2020",
-                "controller": ""did:ccd:NET:acc:ADDR#credential-1",
+                "controller": "did:ccd:NET:acc:ADDR#credential-1",
                 "publicKeyMultibase": "YY"
               }
             ]
@@ -153,14 +153,14 @@ The document MAY include any other public data of a Concordium account.
               {
                 "id": "did:ccd:pkc:XX#key-1-M",
                 "type": "Ed25519VerificationKey2020",
-                "controller": ""did:ccd:NET:acc:ADDR#credential-M",
+                "controller": "did:ccd:NET:acc:ADDR#credential-M",
                 "publicKeyMultibase": "VV"
               },
               "...",
               {
                 "id": "did:ccd:pkc:XX#key-N_M-M",
                 "type": "Ed25519VerificationKey2020",
-                "controller": ""did:ccd:NET:acc:ADDR#credential-M",
+                "controller": "did:ccd:NET:acc:ADDR#credential-M",
                 "publicKeyMultibase": "ZZ"
               }
             ]
