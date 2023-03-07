@@ -27,6 +27,11 @@ This is a draft document and may be updated.
 
 [Add more legal text here?]
 
+Specification
+=============
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in :rfc:`2119`.
+
 1. Concordium DID Identifier
 =============================
 
@@ -91,37 +96,93 @@ A public key related to ``mainnet``:
 Account DID
 -----------
 
+The account DID Document MUST contain the following data:
+
+- ``id``
+- ``accountCredentials`` - a list of account holders represented by their account credentials ``credential-i`` for ``i = 1..M``, where ``M`` is the number of credentials.
+  The credentials contain several (at least one) signature verification keys ``key-i-j`` for ``j = 1..N_i``, where ``N_i`` is the number of keys, which can be different for each credential.
+  For each credential:
+  - ``verificationMethod`` - uses a threshold verification scheme that specifies public keys ``key-i-j`` and a signature threshold ``R_j``.
+- ``verificationMethod`` - account's verification method; it is again a threshold scheme requiring at least ``T`` credentials to sign.
+
+The document MAY include any other public data of a Concordium account.
+
 .. code-block:: json
 
   {
-   "@context": [
-     "https://www.w3.org/ns/did/v1",
-     "Concordium DID URI"
-   ],
-   "id": "did:ccd:NET:acc:ADDR",
-   "accountCredentials": [
-     {
-       "credId": "ZZZZ",
-       "credentialPublicKeys": {
-         "keys": [
-           {
-             "id": "did:ccd:pkc:XX#key-0",
-             "type": "Ed25519VerificationKey2020",
-             "publicKeyMultibase": "XX"
-           }
-         ],
-         "threshold": "NN"
-       }
-     }
-   ],
-   "accountThreshold": "KK",
-   "authentication": [
-        "TODO"
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "Concordium DID URI"
     ],
-    "verificationMethod" : "TODO"
+    "id": "did:ccd:NET:acc:ADDR",
+    "accountCredentials": [
+      {
+        "verificationMethod": [
+          {
+            "id": "did:ccd:NET:acc:ADDR#credential-1",
+            "controller": "did:ccd:NET:acc:ADDR",
+            "type": "VerifiableCondition2021",
+            "threshold": "R_i",
+            "conditionThreshold": [
+              {
+                "id": "did:ccd:pkc:XX#key-1-1",
+                "type": "Ed25519VerificationKey2020",
+                "publicKeyMultibase": "XX"
+              },
+              "...",
+              {
+                "id": "did:ccd:pkc:XX#key-N_1-1",
+                "type": "Ed25519VerificationKey2020",
+                "publicKeyMultibase": "YY"
+              }
+            ]
+          }
+        ]
+      },
+      "...",
+      {
+        "verificationMethod": [
+          {
+            "id": "did:ccd:NET:acc:ADDR#credential-M",
+            "controller": "did:ccd:NET:acc:ADDR",
+            "type": "VerifiableCondition2021",
+            "threshold": "N",
+            "conditionThreshold": [
+              {
+                "id": "did:ccd:pkc:XX#key-1-M",
+                "type": "Ed25519VerificationKey2020",
+                "publicKeyMultibase": "VV"
+              },
+              "...",
+              {
+                "id": "did:ccd:pkc:XX#key-N_M-M",
+                "type": "Ed25519VerificationKey2020",
+                "publicKeyMultibase": "ZZ"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "verificationMethod": [
+      {
+        "id": "did:ccd:NET:acc:ADDR#acc-1",
+        "controller": "did:ccd:NET:acc:ADDR",
+        "type": "VerifiableCondition2021",
+        "threshold": "T",
+        "conditionThreshold": [
+          "#credential-1",
+          "...",
+          "#credential-M"
+        ]
+      }
+    ],
+    "authentication": [
+      "#acc-1"
+    ]
   }
 
-- Authentication via account credentials (see the details in :ref:`concordium-did-verification-method`)
+See the details about the verification method extension in :ref:`concordium-did-verification-method`.
 
 Smart Contract Instance DID
 ---------------------------
