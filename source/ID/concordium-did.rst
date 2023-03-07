@@ -352,12 +352,12 @@ Dereferencing a DID reference of the form
 
 can be done by using the gRPC interface command ``InvokeInstance``.
 The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
-The result of the invocation is the return value in produced by the contract, or an error, if the invocation failed.
+The result of the invocation is the return value produced by the contract or an error, if the invocation failed.
 The return value is in the JSON format corresponding to the embedded smart contract schema.
 
 .. TODO should the binary return values be allowed? What if the contract doesn't have an embedded schema?
 
-From the command line, ``concordium-client`` allows for retrieving the data in the following way:
+From the command line, ``concordium-client`` allows for invoking a smart contract instance in the following way:
 
 .. code-block::
 
@@ -382,7 +382,27 @@ The DID document corresponding to a DID of the form
 
 can be constructed directly from the DID without any lookup necessary.
 
-.. TODO Add construction here?
+.. code-block:: json
+
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "Concordium DID URI"
+    ],
+    "id": "did:ccd:NET:pkc:PK",
+    "publicKey": [
+      {
+        "id": "did:ccd:pkc:PK#key-0",
+        "type": "Ed25519VerificationKey2020",
+        "publicKeyMultibase": "PK"
+      }
+    ],
+    "authentication": [
+      {
+        "publicKey": "did:ccd:NET:pkc:PK#key-0"
+      }
+    ]
+  }
 
 Update
 ------
