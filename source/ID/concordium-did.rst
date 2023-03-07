@@ -32,8 +32,8 @@ Specification
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in :rfc:`2119`.
 
-1. Concordium DID Identifier
-=============================
+Concordium DID Identifier
+=========================
 
 Method Name
 -----------
@@ -73,6 +73,24 @@ Concordium DID identifiers are defined by the following ABNF_:
     The ``subindex`` part of the smart contract instance ``sci`` is optional.
     *If omitted the subindex is assumed to be `0` by default.*
 
+Smart Contract Instance Reference Syntax
+----------------------------------------
+
+A DID reference is a DID with additional data, such as query parameters.
+Concordium smart contract entrypoints can be addressed using DID references.
+
+.. code-block:: ABNF
+
+  ccd-sc-ref = "/" entrypoint *1("?" param-name "=" 1*(base58char))
+  param-name = "parameter_json" / "parameter_binary"
+  entrypoint = 1*(ALPHA / DIGIT / punctuation)
+  punctuation = "!" / DQUOTE / "#" / "$" / "%" / "&" / "'" / "(" /
+                ")" / "*" / "+" / "," / "-" / "." / "/" / ";" /
+                "<" / "=" / ">" / "?" / "@" / "[" / "\" / "]" /
+                "^" / "_" / "`" / "{" / "|" / "}" / "~"
+
+See the details about *dereferencing* a smart contract instance reference in :ref:`sci-reference`.
+
 Examples
 --------
 
@@ -88,17 +106,27 @@ A public key related to ``mainnet``:
 
 ``did:ccd:mainnet:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
 
-2. Concordium DID Documents
-===========================
+A smart contract instance with the ``getKeys`` entrypoint that does not take any parameters
+
+``did:ccd:sci:321/getKeys``
+
+A smart contract instance with the ``getCredentials`` entrypoint taking a parameter
+
+``did:ccd:sci:123/getCredentials?parameter=QWWfHFtjPSLJdrz1beyVPzFmgS2ECbJVe1k2LXPwUGMZRjjpL``
+
+
+Concordium DID Documents
+========================
 
 .. TODO add formal DID documents
 
 Account DID
 -----------
 
-The account DID Document MUST contain the following data:
+The Account DID Document MUST contain the following data:
 
-- ``id``
+- ``@context``
+- ``id`` - the DID of the account.
 - ``accountCredentials`` - a list of account holders represented by their account credentials ``credential-i`` for ``i = 1..M``, where ``M`` is the number of credentials.
   The credentials contain several (at least one) signature verification keys ``key-i-j`` for ``j = 1..N_i``, where ``N_i`` is the number of keys, which can be different for each credential.
   For each credential:
@@ -191,6 +219,14 @@ See the details about the verification method extension in :ref:`concordium-did-
 Smart Contract Instance DID
 ---------------------------
 
+The Smart Contract Instance DID Document MUST contain the following data:
+
+- ``@context``
+- ``id`` - the DID of the smart contract instance.
+- ``owner`` - a DID of an account that initialized the contract instance.
+
+The document MAY include any other public data of a smart contract instance.
+
 .. code-block:: json
 
   {
@@ -204,8 +240,6 @@ Smart Contract Instance DID
 
 Where ``IND`` and ``SUBIND`` are the contract index and subindex.
 ``NET`` and ``ADDR`` correspond to the network and to the owner's account address.
-
-- Authentication?
 
 Public Key Cryptography DID
 ---------------------------
@@ -232,8 +266,8 @@ Public Key Cryptography DID
     ]
   }
 
-3. Concordium DID Operations
-=============================
+Concordium DID Operations
+=========================
 
 Concordium DIDs are managed on the Concordium blockchain.
 
@@ -243,20 +277,21 @@ Create
 Account DID
 ^^^^^^^^^^^
 
-An account DID can be created by `opening an account <concordium-accounts_>`_ on the ``network`` blockchain.
-The resulting DID is ``did:ccd:network:acc:<accountaddr>`` where ``<accountaddr>`` is the base58 encoded account address.
+An account DID can be created by `opening an account <concordium-accounts_>`_ on the ``NET`` blockchain.
+The resulting DID is ``did:ccd:NET:acc:ADDR`` where ``ADDR`` is the base58 encoded account address.
 
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A smart contract instance DID can be created by `deploying a smart contract module <deploy-module_>`_ and `initializing a smart contract instance <initialize-contract-instance_>`_ on the ``network`` blockchain.
-The resulting DID is ``did:ccd:network:sci:<index>:<subindex>`` where ``<index>``, ``<subindex>`` are the index and the subindex of the instance.
+A smart contract instance DID can be created by `deploying a smart contract module <deploy-module_>`_ and `initializing a smart contract instance <initialize-contract-instance_>`_ on the ``NET`` blockchain.
+The resulting DID is ``did:ccd:NET:sci:IND:SUBIND`` where ``IND``, ``SUBIND`` are the index and the subindex of the instance.
 
 Public Key Cryptography DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A public key cryptography DID can be created by generating a fresh Ed25519 key pair.
-The resulting DID is ``did:ccd:network:pkc:<pk>`` where ``<pk>`` is the base58 encoded public key. These DIDs are not registered on the blockchain.
+The resulting DID is ``did:ccd:NET:pkc:PK`` where ``PK`` is the base58 encoded public key.
+These DIDs are not registered on the blockchain.
 
 Read
 ----
@@ -266,9 +301,9 @@ Account DID
 
 The DID document information for a DID of the form
 
-``did:ccd:network:acc:accaddr``
+``did:ccd:NET:acc:ADDR``
 
-can be resolved by looking up the account with address  ``accaddr`` on blockchain ``network``.
+can be resolved by looking up the account with address ``ADDR`` on blockchain ``NET``.
 
 Data required to construct the DID document can be acquired by using the gRPC interface command ``GetAccountInfo``.
 
@@ -278,7 +313,7 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 
 .. code-block:: console
 
-    $concordium-client raw GetAccountInfo <accaddr>
+    $concordium-client raw GetAccountInfo ADDR
 
 .. TODO add more details?
 
@@ -288,29 +323,62 @@ Smart Contract Instance DID
 
 The DID document information for a DID of the form
 
-``did:ccd:network:sci:index:subindex``
+``did:ccd:NET:sci:IND:SUBIND``
 
-can be resolved by looking up the smart contract instance with indices ``index``, ``subindex`` on blockchain ``network``.
+can be resolved by looking up the smart contract instance with indices ``IND``, ``SUBIND`` on blockchain ``NET``.
 This includes a lookup of the owner's account.
 
 Data required to construct the DID document can be acquired by using the gRPC interface command ``GetInstanceInfo``.
 
 See the details in the `gRPC v2 documentation`_.
 
-From the command line, ``concordium-client`` allows to retrieve the data in the following way:
+From the command line, ``concordium-client`` allows for retrieving the data in the following way:
 
 .. code-block:: console
 
-    $concordium-client contract show <index>
+  $concordium-client contract show IND
 
-.. TODO add more details?
+
+.. _sci-reference:
+
+Smart Contract Instance Reference
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+*Dereferencing* the smart contract DID reference invokes the specified entrypoint.
+
+Dereferencing a DID reference of the form
+
+``did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR``
+
+can be done by using the gRPC interface command ``InvokeInstance``.
+The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
+The result of the invocation is the return value in produced by the contract, or an error, if the invocation failed.
+The return value is in the JSON format corresponding to the embedded smart contract schema.
+
+.. TODO should the binary return values be allowed? What if the contract doesn't have an embedded schema?
+
+From the command line, ``concordium-client`` allows for retrieving the data in the following way:
+
+.. code-block::
+
+  $concordium-client contract invoke IND --entrypoint EP --energy 3000000 --parameter-json param.json
+
+The base58 encoding of the ``param.json`` file corresponds to ``PAR``.
+
+See the details in the `gRPC v2 documentation`_.
+
+.. seealso::
+
+  `Dereferencing a DID URL`_ in the W3C Credentials Community Group draft report.
+
+.. TODO: write about binary vs JSON data
 
 Public Key Cryptography DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The DID document corresponding to a DID of the form
 
-``did:ccd:network:pkc:pk``
+``did:ccd:NET:pkc:PK``
 
 can be constructed directly from the DID without any lookup necessary.
 
@@ -337,3 +405,4 @@ At this time Concordium does not support deactivation of DID documents.
 .. _gRPC v2 documentation: https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto
 .. _deploy-module: https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html
 .. _initialize-contract-instance: https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html
+.. _Dereferencing a DID URL: https://w3c-ccg.github.io/did-resolution/#dereferencing
