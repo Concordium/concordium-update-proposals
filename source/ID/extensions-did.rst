@@ -28,16 +28,19 @@ The document that uses the ``2-out-of-3`` method is valid if it has at least two
       {
         "id": "did:example:123#key-1",
         "type": "Ed25519VerificationKey2020",
+        "controller": "...",
         "publicKeyMultibase": "..."
       },
       {
         "id": "did:example:123#key-2",
         "type": "Ed25519VerificationKey2020",
+        "controller": "...",
         "publicKeyMultibase": "..."
       },
       {
         "id": "did:example:123#key-3",
         "type": "Ed25519VerificationKey2020",
+        "controller": "...",
         "publicKeyMultibase": "..."
       }
     ]
