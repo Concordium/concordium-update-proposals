@@ -252,16 +252,17 @@ Public Key Cryptography DID
       "Concordium DID URI"
     ],
     "id": "did:ccd:pkc:XX",
-    "publicKey": [
+    "verificationMethod": [
       {
         "id": "did:ccd:pkc:XX#key-0",
         "type": "Ed25519VerificationKey2020",
+        "controller": "did:ccd:NET:pkc:PK",
         "publicKeyMultibase": "XX"
       }
     ],
     "authentication": [
       {
-        "publicKey": "did:ccd:pkc:XX#key-0"
+        "did:ccd:pkc:XX#key-0"
       }
     ]
   }
@@ -390,16 +391,17 @@ can be constructed directly from the DID without any lookup necessary.
       "Concordium DID URI"
     ],
     "id": "did:ccd:NET:pkc:PK",
-    "publicKey": [
+    "verificationMethod": [
       {
         "id": "did:ccd:pkc:PK#key-0",
         "type": "Ed25519VerificationKey2020",
+        "controller": "did:ccd:NET:pkc:PK",
         "publicKeyMultibase": "PK"
       }
     ],
     "authentication": [
       {
-        "publicKey": "did:ccd:NET:pkc:PK#key-0"
+        "did:ccd:NET:pkc:PK#key-0"
       }
     ]
   }
