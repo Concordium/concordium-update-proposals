@@ -102,9 +102,9 @@ A smart contract instance on the default network (``mainnet``):
 
 ``did:ccd:sci:12:0``
 
-A public key related to ``mainnet``:
+A public key:
 
-``did:ccd:mainnet:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
+``did:ccd:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
 
 A smart contract instance with the ``getKeys`` entrypoint that does not take any parameters
 
@@ -112,7 +112,7 @@ A smart contract instance with the ``getKeys`` entrypoint that does not take any
 
 A smart contract instance with the ``getCredentials`` entrypoint taking a parameter
 
-``did:ccd:sci:123/getCredentials?parameter=QWWfHFtjPSLJdrz1beyVPzFmgS2ECbJVe1k2LXPwUGMZRjjpL``
+``did:ccd:sci:123/getCredentials?parameter_json=QWWfHFtjPSLJdrz1beyVPzFmgS2ECbJVe1k2LXPwUGMZRjjpL``
 
 
 Concordium DID Documents
@@ -123,17 +123,29 @@ Concordium DID Documents
 Account DID
 -----------
 
+The goal of the Account DID Document is to provide information about the account authentication data, including a possibility to reference particular pieces of data, such as public keys.
+In order to do that, it specifies a `DID verification method <did-vefication-method_>`_ that reflects the account authentication data: public keys grouped into credentials.
+
 The Account DID Document MUST contain the following data:
 
 - ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the account.
-- ``accountCredentials`` - a list of account holders represented by their account credentials ``credential-i`` for ``i = 1..M``, where ``M`` is the number of credentials.
-  The credentials contain several (at least one) signature verification keys ``key-i-j`` for ``j = 1..N_i``, where ``N_i`` is the number of keys, which can be different for each credential.
-  For each credential:
-  - ``verificationMethod`` - uses a threshold verification scheme that specifies public keys ``key-i-j`` and a signature threshold ``R_j``.
-- ``verificationMethod`` - account's verification method; it is again a threshold scheme requiring at least ``T`` credentials to sign.
+- ``verificationMethod`` - the account's verification method.
+  It is a nested :ref:`threshold scheme <concordium-did-verification-method>` requiring at ``T`` out of ``M`` credentials to sign; each credential uses its own threshold scheme requiring ``R_i`` out of ``N_i`` keys to sign, where ``i = 1..M``.and ``j = 1..N_i``.
+  The credentials are identified by a `DID fragment`_ ``#credential-i``, and the keys in each credentials by ``#key-j-i`` where ``i = 1..M`` and ``j = 1..N_i``.
+- ``authentication`` - authentication method for the account.
 
 The document MAY include any other public data of a Concordium account.
+
+.. note::
+
+  A `DID fragment`_ allows for referencing a particular credential, or a key in the Account DID Document.
+  The fragment is used to locate the (unique) JSON object by matching the DID URL with the object's ``id`` property.
+
+.. seealso::
+
+  `Dereferencing a DID URL`_ in the W3C Credentials Community Group draft report.
+
 
 .. code-block:: json
 
@@ -143,69 +155,65 @@ The document MAY include any other public data of a Concordium account.
       "Concordium DID URI"
     ],
     "id": "did:ccd:NET:acc:ADDR",
-    "accountCredentials": [
-      {
-        "verificationMethod": [
-          {
-            "id": "did:ccd:NET:acc:ADDR#credential-1",
-            "controller": "did:ccd:NET:acc:ADDR",
-            "type": "VerifiableCondition2021",
-            "threshold": "R_i",
-            "conditionThreshold": [
-              {
-                "id": "did:ccd:pkc:XX#key-1-1",
-                "type": "Ed25519VerificationKey2020",
-                "controller": "did:ccd:NET:acc:ADDR#credential-1",
-                "publicKeyMultibase": "XX"
-              },
-              "...",
-              {
-                "id": "did:ccd:pkc:XX#key-N_1-1",
-                "type": "Ed25519VerificationKey2020",
-                "controller": "did:ccd:NET:acc:ADDR#credential-1",
-                "publicKeyMultibase": "YY"
-              }
-            ]
-          }
-        ]
-      },
-      "...",
-      {
-        "verificationMethod": [
-          {
-            "id": "did:ccd:NET:acc:ADDR#credential-M",
-            "controller": "did:ccd:NET:acc:ADDR",
-            "type": "VerifiableCondition2021",
-            "threshold": "N",
-            "conditionThreshold": [
-              {
-                "id": "did:ccd:pkc:XX#key-1-M",
-                "type": "Ed25519VerificationKey2020",
-                "controller": "did:ccd:NET:acc:ADDR#credential-M",
-                "publicKeyMultibase": "VV"
-              },
-              "...",
-              {
-                "id": "did:ccd:pkc:XX#key-N_M-M",
-                "type": "Ed25519VerificationKey2020",
-                "controller": "did:ccd:NET:acc:ADDR#credential-M",
-                "publicKeyMultibase": "ZZ"
-              }
-            ]
-          }
-        ]
-      }
-    ],
     "verificationMethod": [
       {
         "id": "did:ccd:NET:acc:ADDR#acc-1",
         "controller": "did:ccd:NET:acc:ADDR",
         "type": "VerifiableCondition2021",
+        "blockchainAccountId": "ADDR",
         "threshold": "T",
         "conditionThreshold": [
-          "#credential-1",
+          {
+            "verificationMethod": [
+              {
+                "id": "did:ccd:NET:acc:ADDR#credential-1",
+                "controller": "did:ccd:NET:acc:ADDR",
+                "type": "VerifiableCondition2021",
+                "threshold": "R_1",
+                "conditionThreshold": [
+                  {
+                    "id": "did:ccd:NET:acc:ADDR#key-1-1",
+                    "type": "Ed25519VerificationKey2020",
+                    "controller": "did:ccd:NET:acc:ADDR#credential-1",
+                    "publicKeyMultibase": "XX"
+                  },
+                  "...",
+                  {
+                    "id": "did:ccd:NET:acc:ADDR#key-N_1-1",
+                    "type": "Ed25519VerificationKey2020",
+                    "controller": "did:ccd:NET:acc:ADDR#credential-1",
+                    "publicKeyMultibase": "YY"
+                  }
+                ]
+              }
+            ]
+          },
           "...",
-          "#credential-M"
+          {
+            "verificationMethod": [
+              {
+                "id": "did:ccd:NET:acc:ADDR#credential-M",
+                "controller": "did:ccd:NET:acc:ADDR",
+                "type": "VerifiableCondition2021",
+                "threshold": "N",
+                "conditionThreshold": [
+                  {
+                    "id": "did:ccd:NET:acc:ADDR#key-1-M",
+                    "type": "Ed25519VerificationKey2020",
+                    "controller": "did:ccd:NET:acc:ADDR#credential-M",
+                    "publicKeyMultibase": "VV"
+                  },
+                  "...",
+                  {
+                    "id": "did:ccd:NET:acc:ADDR#key-N_M-M",
+                    "type": "Ed25519VerificationKey2020",
+                    "controller": "did:ccd:NET:acc:ADDR#credential-M",
+                    "publicKeyMultibase": "ZZ"
+                  }
+                ]
+              }
+            ]
+          }
         ]
       }
     ],
@@ -214,16 +222,18 @@ The document MAY include any other public data of a Concordium account.
     ]
   }
 
-See the details about the verification method extension in :ref:`concordium-did-verification-method`.
 
 Smart Contract Instance DID
 ---------------------------
 
+The goal of the Smart Contract Instance DID is to provide meta-data about the contract instance.
+At the moment, the main piece of meta-data is the Concordium account that send the initialization transaction.
+
 The Smart Contract Instance DID Document MUST contain the following data:
 
-- ``@context``
+- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the smart contract instance.
-- ``owner`` - a DID of an account that initialized the contract instance.
+- ``owner`` - a DID of an account that initialized the contract instance represented as a JSON object containing fields ``id`` and ``account``.
 
 The document MAY include any other public data of a smart contract instance.
 
@@ -235,14 +245,29 @@ The document MAY include any other public data of a smart contract instance.
       "Concordium DID URI"
     ],
     "id": "did:ccd:sci:IND:SUBIND",
-    "owner": "did:ccd:NET:acc:ADDR"
+    "owner": {
+      "id": "did:ccd:sci:IND:SUBIND#owner",
+      "account": "did:ccd:NET:acc:ADDR"
+    }
   }
 
 Where ``IND`` and ``SUBIND`` are the contract index and subindex.
 ``NET`` and ``ADDR`` correspond to the network and to the owner's account address.
 
+
+.. _concordium-did-pkc:
+
 Public Key Cryptography DID
 ---------------------------
+
+The goal of the Public Key Cryptography DID is to represent a public key and the corresponding signature verification method.
+
+The Public Key Cryptography DID Document MUST contain the following data:
+
+- ``@context`` - the attribute that expresses context information.
+- ``id`` - the DID of the public key.
+- ``verificationMethod`` - specifies a `DID verification method <did-vefication-method_>`_ for verifying the signature corresponding to the public key.
+- ``authentication`` - authentication method for the key.
 
 .. code-block:: json
 
@@ -383,28 +408,10 @@ The DID document corresponding to a DID of the form
 
 can be constructed directly from the DID without any lookup necessary.
 
-.. code-block:: json
+.. note::
 
-  {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "Concordium DID URI"
-    ],
-    "id": "did:ccd:NET:pkc:PK",
-    "verificationMethod": [
-      {
-        "id": "did:ccd:pkc:PK#key-0",
-        "type": "Ed25519VerificationKey2020",
-        "controller": "did:ccd:NET:pkc:PK",
-        "publicKeyMultibase": "PK"
-      }
-    ],
-    "authentication": [
-      {
-        "did:ccd:NET:pkc:PK#key-0"
-      }
-    ]
-  }
+  The ``NET`` part is optional and currently there is no difference how the documents are generated for different networks.
+  In the future, however, the ``vefiricationMethod`` as it specified in :ref:`concordium-did-pkc` might depend on the network.
 
 Update
 ------
@@ -471,6 +478,8 @@ The document that uses the ``2-out-of-3`` method is valid if it has at least two
 .. _w3c-did-core-v1.0: https://www.w3.org/TR/did-core/
 .. _DID Primer : https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-fall2017/blob/master/topics-and-advance-readings/did-primer.md
 .. _DID Spec: https://w3c-ccg.github.io/did-spec/
+.. _DID fragment: https://w3c.github.io/did-core/#dfn-did-fragments
+.. _did-vefication-method: https://w3c.github.io/did-core/#verification-methods
 .. _ABNF: https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form
 .. _concordium-accounts: https://developer.concordium.software/en/mainnet/net/references/manage-accounts.html
 .. _gRPC v2 documentation: https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto
