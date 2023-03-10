@@ -125,7 +125,7 @@ Account DID
 
 The Account DID Document MUST contain the following data:
 
-- ``@context``
+- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the account.
 - ``accountCredentials`` - a list of account holders represented by their account credentials ``credential-i`` for ``i = 1..M``, where ``M`` is the number of credentials.
   The credentials contain several (at least one) signature verification keys ``key-i-j`` for ``j = 1..N_i``, where ``N_i`` is the number of keys, which can be different for each credential.
@@ -428,13 +428,13 @@ Appendices
 Threshold Verification Method
 -----------------------------
 
-The threshold verification method usen in Concordium DID Documents is based on a `ConditionalProof verification method <https://w3c-ccg.github.io/verifiable-conditions/>`_.
+The threshold verification method used in Concordium DID Documents is based on a `ConditionalProof verification method <https://w3c-ccg.github.io/verifiable-conditions/>`_.
 This is a new type of verification method under development.
 ``ConditionalProof`` features several extensions such as logical operations (``and``, ``or``), threshold and weighted threshold.
 Note that the method is not yet a W3C standard and currently has a *draft* status.
 
-The example below shows the ``2-out-of-3`` signature verifcation method.
-It uses the ``ConditionalProof2022`` verifcation method.
+The example below shows the ``2-out-of-3`` signature verification method.
+It uses the ``ConditionalProof2022`` verification method.
 It specifies ``conditionThreshold`` with three keys ``key-1``, ``key-2`` and ``key-3``; each signature can be verified using ``Ed25519VerificationKey2020``.
 The document that uses the ``2-out-of-3`` method is valid if it has at least two valid signatures.
 
