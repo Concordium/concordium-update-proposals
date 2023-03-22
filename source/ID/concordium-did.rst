@@ -341,7 +341,7 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 
     $concordium-client raw GetAccountInfo ADDR
 
-.. TODO add more details?
+.. TODO update, once we have a DID resolver
 
 
 Smart Contract Instance DID
@@ -364,6 +364,8 @@ From the command line, ``concordium-client`` allows for retrieving the data in t
 
   $concordium-client contract show IND
 
+.. TODO update, once we have a DID resolver
+
 
 .. _sci-reference:
 
@@ -374,14 +376,69 @@ Smart Contract Instance Reference
 
 Dereferencing a DID reference of the form
 
-``did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR``
+``did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR[&format=FMT]``
 
 can be done by using the gRPC interface command ``InvokeInstance``.
 The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
+The parameter ``PAR`` is passed to the entrypoint.
+
 The result of the invocation is the return value produced by the contract or an error, if the invocation failed.
-The return value is in the JSON format corresponding to the embedded smart contract schema.
+The optional query parameter ``format=FMT`` specifies the formatting of the return value.
+If not specified, the return value is in the JSON format corresponding to the embedded smart contract schema.
+If specified, the ``FMT`` value can be the following:
+
+- ``ed25519-pk`` - the entrypoint return value is expected to be a string, e.g. ``"XX"``.
+  The output is a DID document with a verification method based on a public key ``XX``:
+
+  .. code-block:: json
+
+    {
+      "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "Concordium DID URI"
+      ],
+      "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk",
+      "verificationMethod": [
+        {
+          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk#key-0",
+          "type": "Ed25519VerificationKey2020",
+          "publicKeyMultibase": "XX"
+        }
+      ]
+    }
+
+- ``ed25519-pk-list`` - the entrypoint return value is expected to be a list of strings, e.g. ``["XX", "YY", "ZZ"]``.
+  The output is a DID document with a list of verification methods based on public keys ``XX``, ``YY`` and ``ZZ``:
+
+  .. code-block:: json
+
+    {
+      "@context": [
+        "https://www.w3.org/ns/did/v1",
+        "Concordium DID URI"
+      ],
+      "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list",
+      "verificationMethod": [
+        {
+          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list#key-0",
+          "type": "Ed25519VerificationKey2020",
+          "publicKeyMultibase": "XX"
+        },
+        {
+          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list#key-1",
+          "type": "Ed25519VerificationKey2020",
+          "publicKeyMultibase": "YY"
+        },
+        {
+          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list#key-2",
+          "type": "Ed25519VerificationKey2020",
+          "publicKeyMultibase": "ZZ"
+        }
+      ]
+    }
 
 .. TODO should the binary return values be allowed? What if the contract doesn't have an embedded schema?
+.. TODO formatting keys and lists of keys is ad hoc, maybe we can do better in the future.
 
 From the command line, ``concordium-client`` allows for invoking a smart contract instance in the following way:
 
@@ -389,7 +446,7 @@ From the command line, ``concordium-client`` allows for invoking a smart contrac
 
   $concordium-client contract invoke IND --entrypoint EP --energy 3000000 --parameter-json param.json
 
-The base58 encoding of the ``param.json`` file corresponds to ``PAR``.
+The base64 encoding of the ``param.json`` file corresponds to ``PAR``.
 
 See the details in the `gRPC v2 documentation`_.
 
@@ -398,6 +455,7 @@ See the details in the `gRPC v2 documentation`_.
   `Dereferencing a DID URL`_ in the W3C Credentials Community Group draft report.
 
 .. TODO: write about binary vs JSON data
+.. TODO update, once we have a DID resolver
 
 Public Key Cryptography DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
