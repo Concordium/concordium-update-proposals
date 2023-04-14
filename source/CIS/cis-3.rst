@@ -111,13 +111,14 @@ It is serialized as 64 bytes::
 ``TwoLevelSignatureMap``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Two-level map based on B-Trees. A BTreeMap stores key-value pairs, where the keys are unsigned 8 bit integers in both maps.
+It consists of two maps. Each map stores key-value pairs, where the keys are unsigned 8 bit integers in both maps.
 The value in the other map is the inner map and the value in the inner map is of type ``SignatureEd25519``.
 
 It is serialized as: For each map, the first 4 bytes encode the size (``n`` for the other map and ``m`` for the inner map)
 of the map, followed by this many key-value pairs::
 
-  TwoLevelSignatureMap ::= (n: Byte⁴) (key: Byte, value: (m: Byte⁴) (key: Byte, value: SignatureEd25519)ᵐ)ⁿ
+  InnerMap ::= (m: Byte⁴) ((key: Byte) (value: SignatureEd25519))ᵐ
+  TwoLevelSignatureMap ::= (n: Byte⁴) (key: Byte, value: InnerMap)ⁿ
 
 Logged events
 -------------
