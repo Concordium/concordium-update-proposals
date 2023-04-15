@@ -114,11 +114,11 @@ It is serialized as 64 bytes::
 It consists of two maps. Each map stores key-value pairs, where the keys are unsigned 8 bit integers in both maps.
 The value in the other map is the inner map and the value in the inner map is of type ``SignatureEd25519``.
 
-It is serialized as: For each map, the first 4 bytes encode the size (``n`` for the other map and ``m`` for the inner map)
+It is serialized as: For each map, the first byte encodes the size (``n`` for the other map and ``m`` for the inner map)
 of the map, followed by this many key-value pairs::
 
-  InnerMap ::= (m: Byte⁴) ((key: Byte) (value: SignatureEd25519))ᵐ
-  TwoLevelSignatureMap ::= (n: Byte⁴) (key: Byte, value: InnerMap)ⁿ
+  InnerMap ::= (m: Byte) ((key: Byte) (value: SignatureEd25519))ᵐ
+  TwoLevelSignatureMap ::= (n: Byte) (key: Byte, value: InnerMap)ⁿ
 
 Logged events
 -------------
@@ -137,7 +137,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 
 A ``NonceEvent`` SHALL be logged for every `permit` function invoke.
 
-The ``NonceEvent`` is serialized as: first a byte with the value of 250, followed by the :ref:`CIS-3-Nonce` (``nonce``) that was used in the PermitMessage, and an :ref:`CIS-3-AccountAddress` (``sponsoree``)::
+The ``NonceEvent`` is serialized as: First a byte with the value of 250, followed by the :ref:`CIS-3-Nonce` (``nonce``) that was used in the PermitMessage, and an :ref:`CIS-3-AccountAddress` (``sponsoree``)::
 
   NonceEvent ::= (250: Byte) (nonce: u64) (sponsoree: AccountAddress)
 
@@ -219,7 +219,7 @@ Response
 The function output is a list of support results, where the order of the support results matches the order of ``OwnedEntrypointNames`` in the parameter.
 
 It is serialized as: 2 bytes for the number (little endian) of results (``n``) and then this number of support results (``results``).
-A support result is serialized as either: a byte with value ``0`` for "Entrypoint is not supported", a byte with the value ``1`` for "Entrypoint is supported by this contract"::
+A support result is serialized as either: A byte with value ``0`` for "Entrypoint is not supported" or a byte with the value ``1`` for "Entrypoint is supported by this contract"::
 
   SupportResult ::= (0 : Byte)  // Entrypoint is not supported by the `permit` function
                   | (1 : Byte)  // Entrypoint is supported by the `permit` function
