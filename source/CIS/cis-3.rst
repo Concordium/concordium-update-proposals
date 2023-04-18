@@ -98,7 +98,7 @@ It is serialized as 8 bytes in little endian::
 .. _CIS-3-SignatureEd25519:
 
 ``SignatureEd25519``
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^
 
 Signature for an Ed25519 message.
 
@@ -112,12 +112,12 @@ It is serialized as 64 bytes::
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 It consists of two maps. Each map stores key-value pairs, where the keys are unsigned 8 bit integers in both maps.
-The value in the other map is the inner map and the value in the inner map is of type ``SignatureEd25519``.
+The value in the outer map is the inner map and the value in the inner map is of type ``SignatureEd25519``.
 
-It is serialized as: For each map, the first byte encodes the size (``n`` for the other map and ``m`` for the inner map)
+It is serialized as: For each map, the first byte encodes the size (``n`` for the outer map and ``m`` for the inner map)
 of the map, followed by this many key-value pairs::
 
-  InnerMap ::= (m: Byte) ((key: Byte) (value: SignatureEd25519))ᵐ
+  InnerMap ::= (m: Byte) (key: Byte, value: SignatureEd25519)ᵐ
   TwoLevelSignatureMap ::= (n: Byte) (key: Byte, value: InnerMap)ⁿ
 
 Logged events
@@ -139,7 +139,7 @@ A ``NonceEvent`` SHALL be logged for every `permit` function invoke.
 
 The ``NonceEvent`` is serialized as: First a byte with the value of 250, followed by the :ref:`CIS-3-Nonce` (``nonce``) that was used in the PermitMessage, and an :ref:`CIS-3-AccountAddress` (``sponsoree``)::
 
-  NonceEvent ::= (250: Byte) (nonce: u64) (sponsoree: AccountAddress)
+  NonceEvent ::= (250: Byte) (nonce: Nonce) (sponsoree: AccountAddress)
 
 Contract function
 -----------------
@@ -166,24 +166,16 @@ together with the message that was signed.
 
     The CIS3 standard supports multi-sig accounts which is the purpose of the two-level signature map. A basic account (no multi-sig account) SHOULD have its signature at the key 0 in both maps.
 
-The message (``PermitMessage``) contains a contract_address (``ContractAddress``), entry_point (``OwnedEntrypointName``), nonce (``u64``), timestamp (``Timestamp``), and the payload (``PermitPayload``).
+The message (``PermitMessage``) contains a contract_address (``ContractAddress``), entry_point (``OwnedEntrypointName``), nonce (``Nonce``), timestamp (``Timestamp``), and the payload (``PermitPayload``).
 This message structure enables the sponsoree the authorize the sponsor to act on its behalf in the given scope.
 
-The payload (``PermitPayload``) is serialized as: The first byte to distinguish the entrypoint followed by the parameter intended for that entrypoint::
+The payload (``PermitPayload``) is serialized as: First 2 bytes encode the length (``n``) of the payload, followed by this many bytes for the payload (``entrypoint_parameter``)::
 
-  PermitPayload  ::= (0: Byte) (Entrypoint_1_Parameter) // First entrypoint supported
-                   | (1: Byte) (Entrypoint_2_Parameter) // Second entrypoint supported
-                   | (2: Byte) (Entrypoint_3_Parameter) // Third entrypoint supported
-                   ...
+  PermitPayload ::= (n: Byte²) (entrypoint_parameter: Byteⁿ)
 
-  PermitMessage ::= (contract_address: ContractAddress) (entry_point: OwnedEntrypointName) (nonce: u64) (timestamp: Timestamp) (payload: PermitPayload)
+  PermitMessage ::= (contract_address: ContractAddress) (nonce: Nonce) (timestamp: Timestamp) (entry_point: OwnedEntrypointName) (payload: PermitPayload)
 
   PermitParam ::= (signature: TwoLevelSignatureMap) (signer: AccountAddress) (message: PermitMessage)
-
-.. note::
-
-    The PermitPayload is an enum and the CIS-3 standard specifies that the first byte is used to distinguish between the different entrypoints.
-    This definition enables the serialization of 255 different entrypoints which should be sufficient in practice.
 
 Requirements
 ~~~~~~~~~~~~
