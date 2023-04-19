@@ -14,7 +14,7 @@ jobs:
         shell: bash
         run: |
           apt-get update
-          apt-get install -y rsync
+          apt-get install -y git rsync
           pip3 install -r requirements.txt
 
       - name: Build 🛠
