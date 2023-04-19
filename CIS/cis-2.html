@@ -3,7 +3,7 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="CIS-1: Concordium Token Standard" href="cis-1.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-3: Sponsored Transaction Standard" href="cis-3.html" /><link rel="prev" title="CIS-1: Concordium Token Standard" href="cis-1.html" />
 
     <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
         <title>CIS-2: Concordium Token Standard 2 - Interoperability Specifications</title>
@@ -171,6 +171,7 @@
 <li class="toctree-l1"><a class="reference internal" href="cis-0.html">CIS-0: Standard Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-1.html">CIS-1: Concordium Token Standard</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-2: Concordium Token Standard 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
 </ul>
 
 </div>
@@ -569,7 +570,7 @@ For this reason, it is important for the token contract to log the appropriate e
 <li><p>It MUST be possible to derive the balance of an address for a token type from the logged <a class="reference internal" href="#cis-2-event-transfer"><span class="std std-ref">TransferEvent</span></a>, <a class="reference internal" href="#cis-2-event-mint"><span class="std std-ref">MintEvent</span></a> and <a class="reference internal" href="#cis-2-event-burn"><span class="std std-ref">BurnEvent</span></a> events.</p></li>
 <li><p>It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.</p></li>
 </ul>
-<p>The events defined by this specification are serialized using one byte to the discriminate the different events.
+<p>The events defined by this specification are serialized using one byte to discriminate the different events.
 A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.</p>
 <section id="transferevent">
 <span id="cis-2-event-transfer"></span><h4><code class="docutils literal notranslate"><span class="pre">TransferEvent</span></code><a class="headerlink" href="#transferevent" title="Permalink to this headline">¶</a></h4>
@@ -973,7 +974,15 @@ However, to improve the interoperability with decentralized applications with su
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="cis-3.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">CIS-3: Sponsored Transaction Standard</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
           <a class="prev-page" href="cis-1.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">

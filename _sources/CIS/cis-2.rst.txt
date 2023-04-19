@@ -90,7 +90,7 @@ The entrypoint name MUST be 100 bytes or less::
 .. _CIS-2-AccountAddress:
 
 ``AccountAddress``
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 An address of an account.
 
@@ -415,7 +415,7 @@ For this reason, it is important for the token contract to log the appropriate e
 - It MUST be possible to derive the balance of an address for a token type from the logged :ref:`CIS-2-event-transfer`, :ref:`CIS-2-event-mint` and :ref:`CIS-2-event-burn` events.
 - It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.
 
-The events defined by this specification are serialized using one byte to the discriminate the different events.
+The events defined by this specification are serialized using one byte to discriminate the different events.
 A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
 
 .. _CIS-2-event-transfer:
