@@ -7,19 +7,23 @@ jobs:
     runs-on: ubuntu-latest
     container: sphinxdoc/sphinx
     steps:
-      - name: Install git 🔧
+      - name: Install 🔧
         shell: bash
         run: |
           apt-get update
-          apt-get install -y git
+          apt-get install -y git rsync
+          # The next line seems to be needed to work around a bug in either
+          # checkout action or deploy action. It seems to have something to do
+          # with running this inside a container. See
+          # https://github.com/actions/checkout/issues/363#issuecomment-1174987633
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Checkout 🛎️
-        uses: actions/checkout@v2.3.1
+        uses: actions/checkout@v3
 
       - name: Install 🔧
         shell: bash
         run: |
-          apt-get install -y rsync
           pip3 install -r requirements.txt
 
       - name: Build 🛠
@@ -27,9 +31,8 @@ jobs:
         run: sphinx-build source build
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: build
-          CLEAN: true
+          branch: gh-pages
+          folder: build
+          clean: true
