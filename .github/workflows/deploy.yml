@@ -13,6 +13,7 @@ jobs:
       - name: Install 🔧
         shell: bash
         run: |
+          apt-get update
           apt-get install -y rsync
           pip3 install -r requirements.txt
 
