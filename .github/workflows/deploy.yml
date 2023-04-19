@@ -12,6 +12,10 @@ jobs:
         run: |
           apt-get update
           apt-get install -y git rsync
+          # The next line seems to be needed to work around a bug in either
+          # checkout action or deploy action. It seems to have something to do
+          # with running this inside a container. See
+          # https://github.com/actions/checkout/issues/363#issuecomment-1174987633
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Checkout 🛎️
