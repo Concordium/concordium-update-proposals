@@ -10,7 +10,7 @@ CIS-3: Sponsored Transaction Standard
    * - Created
      - Apr 04, 2023
    * - Final
-     - Apr 15, 2023
+     - Apr 19, 2023
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
@@ -61,16 +61,16 @@ It is serialized as 32 bytes::
 
   AccountAddress ::= (address: Byte³²)
 
-.. _CIS-3-OwnedEntrypointName:
+.. _CIS-3-EntrypointName:
 
-``OwnedEntrypointName``
-^^^^^^^^^^^^^^^^^^^^^^^
+``EntrypointName``
+^^^^^^^^^^^^^^^^^^
 
-A name for a smart contract function entrypoint (owned version).
+A name for a smart contract function entrypoint.
 
 It is serialized as: First 2 bytes encode the length (``n``) of the entrypoint name, followed by this many bytes for the entrypoint name (``entrypoint``)::
 
-  OwnedEntrypointName ::= (n: Byte²) (entrypoint: Byteⁿ)
+  EntrypointName ::= (n: Byte²) (entrypoint: Byteⁿ)
 
 .. _CIS-3-Timestamp:
 
@@ -154,7 +154,7 @@ A smart contract implementing CIS-3 MUST export the functions: :ref:`CIS-3-funct
 Verifies an ed25519 signature from a sponsoree and authorizes the sponsor to execute the logic of
 specific entrypoints on behalf of the sponsoree. The sponsored transaction mechanism replaces the
 authorization checks conducted on the `sender/invoker` variable with signature verification.
-I.e., the sponsoree needs to sign its intended action and the signature is verified in the smart contract.
+That is, the sponsoree needs to sign its intended action and the signature is verified in the smart contract.
 
 Parameter
 ~~~~~~~~~
@@ -166,14 +166,14 @@ together with the message that was signed.
 
     The CIS3 standard supports multi-sig accounts which is the purpose of the two-level signature map. A basic account (no multi-sig account) SHOULD have its signature at the key 0 in both maps.
 
-The message (``PermitMessage``) contains a contract_address (``ContractAddress``), entry_point (``OwnedEntrypointName``), nonce (``Nonce``), timestamp (``Timestamp``), and the payload (``PermitPayload``).
+The message (``PermitMessage``) contains a contract_address (``ContractAddress``), entry_point (``EntrypointName``), nonce (``Nonce``), timestamp (``Timestamp``), and the payload (``PermitPayload``).
 This message structure enables the sponsoree the authorize the sponsor to act on its behalf in the given scope.
 
 The payload (``PermitPayload``) is serialized as: First 2 bytes encode the length (``n``) of the payload, followed by this many bytes for the payload (``entrypoint_parameter``)::
 
   PermitPayload ::= (n: Byte²) (entrypoint_parameter: Byteⁿ)
 
-  PermitMessage ::= (contract_address: ContractAddress) (nonce: Nonce) (timestamp: Timestamp) (entry_point: OwnedEntrypointName) (payload: PermitPayload)
+  PermitMessage ::= (contract_address: ContractAddress) (nonce: Nonce) (timestamp: Timestamp) (entry_point: EntrypointName) (payload: PermitPayload)
 
   PermitParam ::= (signature: TwoLevelSignatureMap) (signer: AccountAddress) (message: PermitMessage)
 
@@ -201,14 +201,14 @@ Parameter
 
 The parameter consists of a list of entrypoints.
 
-It is serialized as: 2 bytes for the number (little endian) of the entrypoints and then this number of ``OwnedEntrypointNames``::
+It is serialized as: 2 bytes for the number (little endian) of the entrypoints and then this number of ``EntrypointNames``::
 
-  SupportsPermitQueryParams ::= (n : Byte²) (names: OwnedEntrypointNameⁿ)
+  SupportsPermitQueryParams ::= (n : Byte²) (names: EntrypointNameⁿ)
 
 Response
 ~~~~~~~~
 
-The function output is a list of support results, where the order of the support results matches the order of ``OwnedEntrypointNames`` in the parameter.
+The function output is a list of support results, where the order of the support results matches the order of ``EntrypointNames`` in the parameter.
 
 It is serialized as: 2 bytes for the number (little endian) of results (``n``) and then this number of support results (``results``).
 A support result is serialized as either: A byte with value ``0`` for "Entrypoint is not supported" or a byte with the value ``1`` for "Entrypoint is supported by this contract"::
