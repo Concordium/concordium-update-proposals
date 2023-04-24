@@ -43,7 +43,7 @@ General types and serialization
 ``TokenID``
 ^^^^^^^^^^^
 
-Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the globally unique identifier of a token type.
+Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the :ref:`globally unique identifier of a token type<CIS-2-Token-Address>`.
 
 - A token ID for a token type SHALL NOT change after a token type has been minted.
 - A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.
@@ -681,6 +681,16 @@ The danish localization JSON file could be:
     "description": "Ryan katte er ensomme væsner, som rejser rundt i galaxen søgende efter deres forfædre og sande arv"
   }
 
+.. _CIS-2-Token-Address:
+
+Token address
+=============
+
+A token address is the globally unique identifier for a CIS-2 token type on the Concordium blockchain.
+It consists of a :ref:`contract address<CIS-2-ContractAddress>` paired with a :ref:`CIS-2 Token ID<CIS-2-TokenId>`.
+
+The textual representation is defined as follows: the index and subindex of the contract address are byte-encoded using unsigned LEB128 followed by the bytes of the token ID, this bytestring is then encoded using Base58Check with version byte `2`.
+
 .. _CIS-2-smart-contract-limitations:
 
 Smart contract limitations
@@ -817,3 +827,5 @@ Additions after finalization
 ============================
 
 October 13, 2022: Added the optional ``unique`` field to the metadata specification. This field helps specify how wallets should display a token and its balance.
+
+April 24, 2023: Added description of a Token Address and how to construct its textual representation.
