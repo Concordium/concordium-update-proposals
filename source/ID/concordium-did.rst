@@ -53,17 +53,18 @@ Concordium DID identifiers are defined by the following ABNF_:
   prefix  = %s"did:ccd"
   network = "testnet" / "mainnet"
   acctype = "acc:" 50(base58char)
-  pkctype = "pkc:" 64(base58char)
+  pkctype = "pkc:" 64(base16char)
   scitype = "sci:" index *1(“:” subindex)
   index = 1*DIGIT
   subindex = 1*DIGIT
+  base16char = HEXDIG
   base58char = "1" / "2" / "3" / "4" / "5" / "6" / "7" / "8" / "9" /
                "A" / "B" / "C" / "D" / "E" / "F" / "G" / "H" / "J" /
                "K" / "L" / "M" / "N" / "P" / "Q" / "R" / "S" / "T" /
-               "U" / "V" / "W" / "X" / "Y" / "Z" / "a" / "b" / "c" /
-               "d" / "e" / "f" / "g" / "h" / "i" / "j" / "k" / "m" /
-               "n" / "o" / "p" / "q" / "r" / "s" / "t" / "u" / "v" /
-               "w" / "x" / "y" / "z"
+               "U" / "V" / "W" / "X" / "Y" / "Z"
+
+.. note::
+    In the ABNF_ grammar, string literals are case-insensitive, unless explicitly specified using the ``%s`` prefix.
 
 .. note::
     The network part of a CCD DID is optional.
@@ -81,9 +82,9 @@ Concordium smart contract entrypoints can be addressed using DID references.
 
 .. code-block:: ABNF
 
-  ccd-sc-ref = "/" entrypoint *1("?" param-name "=" 1*(base58char))
-  param-name = "parameter_json" / "parameter_binary"
+  ccd-sc-ref = "/" entrypoint *1("?" "parameter" "=" 1*(base16char)) *1("&" "standard" "=" standard)
   entrypoint = 1*(ALPHA / DIGIT / punctuation)
+  standard = "CIS" "-" 1*(DIGIT)
   punctuation = "!" / DQUOTE / "#" / "$" / "%" / "&" / "'" / "(" /
                 ")" / "*" / "+" / "," / "-" / "." / "/" / ";" /
                 "<" / "=" / ">" / "?" / "@" / "[" / "\" / "]" /
@@ -106,13 +107,13 @@ A public key:
 
 ``did:ccd:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
 
-A smart contract instance with the ``getKeys`` entrypoint that does not take any parameters
+A smart contract instance with the ``viewIssuerKeys`` entrypoint that does not take any parameters
 
-``did:ccd:sci:321/getKeys``
+``did:ccd:sci:321/viewIssuerKeys``
 
-A smart contract instance with the ``getCredentials`` entrypoint taking a parameter
+A smart contract instance with the ``viewCredentialData`` entrypoint taking a parameter
 
-``did:ccd:sci:123/getCredentials?parameter_json=QWWfHFtjPSLJdrz1beyVPzFmgS2ECbJVe1k2LXPwUGMZRjjpL``
+``did:ccd:sci:123/viewCredentialData?parameter=ee763364dc1a47d6aa4cc6bdb005e2b2``
 
 
 Concordium DID Documents
@@ -175,14 +176,14 @@ The document MAY include any other public data of a Concordium account.
                     "id": "did:ccd:NET:acc:ADDR#key-1-1",
                     "type": "Ed25519VerificationKey2020",
                     "controller": "did:ccd:NET:acc:ADDR#credential-1",
-                    "publicKeyMultibase": "XX"
+                    "publicKeyMultibase": "fXX"
                   },
                   "...",
                   {
                     "id": "did:ccd:NET:acc:ADDR#key-N_1-1",
                     "type": "Ed25519VerificationKey2020",
                     "controller": "did:ccd:NET:acc:ADDR#credential-1",
-                    "publicKeyMultibase": "YY"
+                    "publicKeyMultibase": "fYY"
                   }
                 ]
               }
@@ -201,14 +202,14 @@ The document MAY include any other public data of a Concordium account.
                     "id": "did:ccd:NET:acc:ADDR#key-1-M",
                     "type": "Ed25519VerificationKey2020",
                     "controller": "did:ccd:NET:acc:ADDR#credential-M",
-                    "publicKeyMultibase": "VV"
+                    "publicKeyMultibase": "fVV"
                   },
                   "...",
                   {
                     "id": "did:ccd:NET:acc:ADDR#key-N_M-M",
                     "type": "Ed25519VerificationKey2020",
                     "controller": "did:ccd:NET:acc:ADDR#credential-M",
-                    "publicKeyMultibase": "ZZ"
+                    "publicKeyMultibase": "fZZ"
                   }
                 ]
               }
@@ -221,6 +222,10 @@ The document MAY include any other public data of a Concordium account.
       "#acc-1"
     ]
   }
+
+.. note::
+  The ``publicKeyMultibase`` field contains a public key prefixed with ``f`` that denotes the base16 encoding.
+  See `The Multibase Encoding Scheme`_.
 
 
 Smart Contract Instance DID
@@ -282,7 +287,7 @@ The Public Key Cryptography DID Document MUST contain the following data:
         "id": "did:ccd:pkc:XX#key-0",
         "type": "Ed25519VerificationKey2020",
         "controller": "did:ccd:NET:pkc:PK",
-        "publicKeyMultibase": "XX"
+        "publicKeyMultibase": "fXX"
       }
     ],
     "authentication": [
@@ -316,7 +321,7 @@ Public Key Cryptography DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A public key cryptography DID can be created by generating a fresh Ed25519 key pair.
-The resulting DID is ``did:ccd:NET:pkc:PK`` where ``PK`` is the base58 encoded public key.
+The resulting DID is ``did:ccd:NET:pkc:PK`` where ``PK`` is the base16 encoded public key.
 These DIDs are not registered on the blockchain.
 
 Read
@@ -376,19 +381,32 @@ Smart Contract Instance Reference
 
 Dereferencing a DID reference of the form
 
-``did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR[&format=FMT]``
+``did:ccd:NET:sci:IND:SUBIND/EP?parameter=PAR[&standard=STD]``
 
 can be done by using the gRPC interface command ``InvokeInstance``.
 The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
 The parameter ``PAR`` is passed to the entrypoint.
 
 The result of the invocation is the return value produced by the contract or an error, if the invocation failed.
-The optional query parameter ``format=FMT`` specifies the formatting of the return value.
+The optional query parameter ``standard=STD`` specifies the formatting of the return value.
 If not specified, the return value is in the JSON format corresponding to the embedded smart contract schema.
-If specified, the ``FMT`` value can be the following:
+If a contract does not have an embedded schema, the following JSON is returned:
 
-- ``ed25519-pk`` - the entrypoint return value is expected to be a string, e.g. ``"XX"``.
-  The output is a DID document with a verification method based on a public key ``XX``:
+.. code-block:: json
+
+  {
+    "contractBinaryResponse" : "BASE16DATA"
+  }
+
+``BASE16DATA`` is a base16-encoded return value.
+
+As an example, consider CIS-4 Concordium smart contract standard that specifies a verifiable credential registry.
+The special formatting rules apply to the following entrypoints:
+
+- ``viewRevocationKey`` - the entrypoint return value is expected to be a pair of an array of bytes for a public key ``XX`` and a ``u64`` value (nonce) ``N``.
+  The output is a DID document with a verification method based on the public key ``XX``.
+  The bytes of ``XX`` are represented in the base16 encoding in the document.
+  The key index ``K`` corresponds to the input parameter to the ``viewRevocationKey`` entrypoint.
 
   .. code-block:: json
 
@@ -397,18 +415,22 @@ If specified, the ``FMT`` value can be the following:
         "https://www.w3.org/ns/did/v1",
         "Concordium DID URI"
       ],
-      "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk",
+      "id": "did:ccd:NET:sci:IND:SUBIND/viewRevocationKey?parameter=PAR&standard=CIS-4",
+      "nonce": "N",
       "verificationMethod": [
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk#key-0",
+          "id": "did:ccd:NET:sci:IND:SUBIND/viewRevocationKey?parameter=PAR&standard=CIS-4#key-K",
           "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "XX"
+          "publicKeyMultibase": "fXX"
         }
       ]
     }
 
-- ``ed25519-pk-list`` - the entrypoint return value is expected to be a list of strings, e.g. ``["XX", "YY", "ZZ"]``.
-  The output is a DID document with a list of verification methods based on public keys ``XX``, ``YY`` and ``ZZ``:
+- ``viewIssuerKeys`` - the entrypoint return value is expected to be a list of pairs: key index, key bytes.
+  For example, ``[(0, XX); (1, YY); (2, ZZ)]``.
+  The output is a DID document with a list of verification methods based on public keys ``XX``, ``YY`` and ``ZZ``.
+  The bytes of the keys are represented in the base16 encoding in the document.
+  The key indices correspond to the first components of the each pair in the list.
 
   .. code-block:: json
 
@@ -417,22 +439,22 @@ If specified, the ``FMT`` value can be the following:
         "https://www.w3.org/ns/did/v1",
         "Concordium DID URI"
       ],
-      "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list",
+      "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4",
       "verificationMethod": [
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list#key-0",
+          "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4#key-0",
           "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "XX"
+          "publicKeyMultibase": "fXX"
         },
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list#key-1",
+          "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4#key-1",
           "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "YY"
+          "publicKeyMultibase": "fYY"
         },
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/EP?parameter_json=PAR&format=ed25519-pk-list#key-2",
+          "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4#key-2",
           "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "ZZ"
+          "publicKeyMultibase": "fZZ"
         }
       ]
     }
@@ -544,3 +566,4 @@ The document that uses the ``2-out-of-3`` method is valid if it has at least two
 .. _deploy-module: https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html
 .. _initialize-contract-instance: https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html
 .. _Dereferencing a DID URL: https://w3c-ccg.github.io/did-resolution/#dereferencing
+.. _The Multibase Encoding Scheme: https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03
