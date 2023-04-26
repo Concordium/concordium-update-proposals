@@ -689,7 +689,7 @@ Token address
 A token address is the globally unique identifier for a CIS-2 token type on the Concordium blockchain.
 It consists of a :ref:`contract address<CIS-2-ContractAddress>` paired with a :ref:`CIS-2 Token ID<CIS-2-TokenId>`.
 
-The textual representation is defined as follows: the index and subindex of the contract address are byte-encoded using unsigned LEB128 followed by the bytes of the token ID, this bytestring is then encoded using Base58Check with version byte `2`.
+The textual representation is defined as follows: the index and subindex of the contract address are byte-encoded using unsigned LEB128 followed by the bytes of the token ID, this bytestring is then encoded using `Base58Check <https://en.bitcoin.it/wiki/Base58Check_encoding>`__ with version byte `2` and the Bitcoin symbol chart.
 
 .. _CIS-2-smart-contract-limitations:
 
