@@ -244,7 +244,7 @@ It allows for off-chain applications to track token balances and the location of
 <h3>General types and serialization<a class="headerlink" href="#general-types-and-serialization" title="Permalink to this headline">¶</a></h3>
 <section id="tokenid">
 <span id="cis-2-tokenid"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenID</span></code><a class="headerlink" href="#tokenid" title="Permalink to this headline">¶</a></h4>
-<p>Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the globally unique identifier of a token type.</p>
+<p>Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the <a class="reference internal" href="#cis-2-token-address"><span class="std std-ref">globally unique identifier of a token type</span></a>.</p>
 <ul class="simple">
 <li><p>A token ID for a token type SHALL NOT change after a token type has been minted.</p></li>
 <li><p>A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.</p></li>
@@ -855,6 +855,12 @@ To associate a hash with a URL the JSON value is an object:</p>
 </section>
 </section>
 </section>
+<section id="token-address">
+<span id="cis-2-token-address"></span><h2>Token address<a class="headerlink" href="#token-address" title="Permalink to this headline">¶</a></h2>
+<p>A token address is the globally unique identifier for a CIS-2 token type on the Concordium blockchain.
+It consists of a <a class="reference internal" href="#cis-2-contractaddress"><span class="std std-ref">contract address</span></a> paired with a <a class="reference internal" href="#cis-2-tokenid"><span class="std std-ref">CIS-2 Token ID</span></a>.</p>
+<p>The textual representation is defined as follows: the index and subindex of the contract address are byte-encoded using unsigned LEB128 followed by the bytes of the token ID, this bytestring is then encoded using <a class="reference external" href="https://en.bitcoin.it/wiki/Base58Check_encoding">Base58Check</a> with version byte <cite>2</cite> and the Bitcoin symbol chart.</p>
+</section>
 <section id="smart-contract-limitations">
 <span id="cis-2-smart-contract-limitations"></span><h2>Smart contract limitations<a class="headerlink" href="#smart-contract-limitations" title="Permalink to this headline">¶</a></h2>
 <p>A number of limitations are important to be aware of:</p>
@@ -966,6 +972,7 @@ However, to improve the interoperability with decentralized applications with su
 <section id="additions-after-finalization">
 <h2>Additions after finalization<a class="headerlink" href="#additions-after-finalization" title="Permalink to this headline">¶</a></h2>
 <p>October 13, 2022: Added the optional <code class="docutils literal notranslate"><span class="pre">unique</span></code> field to the metadata specification. This field helps specify how wallets should display a token and its balance.</p>
+<p>April 24, 2023: Added description of a Token Address and how to construct its textual representation.</p>
 </section>
 </section>
 
@@ -1085,6 +1092,7 @@ However, to improve the interoperability with decentralized applications with su
 </li>
 </ul>
 </li>
+<li><a class="reference internal" href="#token-address">Token address</a></li>
 <li><a class="reference internal" href="#smart-contract-limitations">Smart contract limitations</a></li>
 <li><a class="reference internal" href="#decisions-and-rationale">Decisions and rationale</a><ul>
 <li><a class="reference internal" href="#token-id-bytes-instead-of-integers">Token ID bytes instead of integers</a></li>
