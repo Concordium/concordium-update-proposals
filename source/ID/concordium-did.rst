@@ -49,12 +49,13 @@ Concordium DID identifiers are defined by the following ABNF_:
 
 .. code-block:: ABNF
 
-  ccd-did = prefix ":" *1(network ":") (acctype / pkctype / scitype)
+  ccd-did = prefix ":" *1(network ":") (acctype / pkctype / scitype / idptype)
   prefix  = %s"did:ccd"
   network = "testnet" / "mainnet"
   acctype = "acc:" 50(base58char)
   pkctype = "pkc:" 64(base16char)
   scitype = "sci:" index *1(“:” subindex)
+  idptype = "idp:" index
   index = 1*DIGIT
   subindex = 1*DIGIT
   base16char = HEXDIG
@@ -271,7 +272,7 @@ The Public Key Cryptography DID Document MUST contain the following data:
 
 - ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the public key.
-- ``verificationMethod`` - specifies a `DID verification method <did-vefication-method_>`_ for verifying the signature corresponding to the public key.
+- ``verificationMethod`` - specifies a `DID verification method <did-vefication-method_>`_ for verifying a signature corresponding to the public key.
 - ``authentication`` - authentication method for the key.
 
 .. code-block:: json
@@ -296,6 +297,44 @@ The Public Key Cryptography DID Document MUST contain the following data:
       }
     ]
   }
+
+Identity Provider DID
+---------------------
+
+The goal of the Identity Provider DID is identify a Concodrium identity provider (IDP).
+An identity provider is an organization, approved by Concordium, that performs off-chain identification of users.
+IDPs are used in the account creation process to issue an identity.
+IDP DIDs can represent an issuer of a verifiable credential.
+
+The Identity Provider DID Document MUST contain the following data:
+- ``@context`` - the attribute that expresses context information.
+- ``id`` - the DID of the IDP.
+- ``name`` - the IDP name.
+- ``url`` - A link to more information about the IDP.
+- ``description`` - A free form description the IDP.
+- ``verificationMethod`` - specifies a `DID verification method <did-vefication-method_>`_ for verifying a signature corresponding to the public key.
+
+.. code-block:: json
+
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "Concordium DID URI"
+    ],
+    "id": "did:ccd:testnet:idp:3",
+    "name": "Digital Trust Solutions TestNet",
+    "url": "https://www.digitaltrustsolutions.nl",
+    "description": "Identity verified by Digital Trust Solutions on behalf of Concordium",
+    "verificationMethod": [
+      {
+        "id": "did:ccd:testnet:idp:3#cdi-key",
+        "type": "Ed25519VerificationKey2020",
+        "controller": "did:ccd:NET:pkc:PK",
+        "publicKeyMultibase": "fXX"
+      }
+    ]
+  }
+
 
 Concordium DID Operations
 =========================
