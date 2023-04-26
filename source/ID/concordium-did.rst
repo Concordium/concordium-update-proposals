@@ -506,16 +506,13 @@ The special formatting rules apply to the following entrypoints:
       ]
     }
 
-.. TODO should the binary return values be allowed? What if the contract doesn't have an embedded schema?
-.. TODO formatting keys and lists of keys is ad hoc, maybe we can do better in the future.
-
 From the command line, ``concordium-client`` allows for invoking a smart contract instance in the following way:
 
 .. code-block::
 
-  $concordium-client contract invoke IND --entrypoint EP --energy 3000000 --parameter-json param.json
+  $concordium-client contract invoke IND --entrypoint EP --parameter-binary param.bin
 
-The base64 encoding of the ``param.json`` file corresponds to ``PAR``.
+The base16 encoding of the ``param.bin`` file corresponds to ``PAR``.
 
 See the details in the `gRPC v2 documentation`_.
 
