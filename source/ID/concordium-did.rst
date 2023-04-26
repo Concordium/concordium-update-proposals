@@ -239,7 +239,8 @@ The Smart Contract Instance DID Document MUST contain the following data:
 
 - ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the smart contract instance.
-- ``owner`` - a DID of an account that initialized the contract instance represented as a JSON object containing fields ``id`` and ``account``.
+- ``creator`` - a DID of an account that initialized the contract instance represented as a JSON object containing fields ``id`` and ``account``.
+- ``entrypoints`` - a list on the contract's entrypoints.
 
 The document MAY include any other public data of a smart contract instance.
 
@@ -252,9 +253,16 @@ The document MAY include any other public data of a smart contract instance.
     ],
     "id": "did:ccd:sci:IND:SUBIND",
     "owner": {
-      "id": "did:ccd:sci:IND:SUBIND#owner",
+      "id": "did:ccd:sci:IND:SUBIND#creator",
       "account": "did:ccd:NET:acc:ADDR"
     }
+    "entrypoints": [
+      { "id": ""did:ccd:sci:IND:SUBIND#entrypoint-viewIssuerKeys",
+        "name": "viewIssuerKeys"
+      },
+      { "id": ""did:ccd:sci:IND:SUBIND#entrypoint-viewRevocationKey",
+        "name": "viewRevocationKey"
+      },
   }
 
 Where ``IND`` and ``SUBIND`` are the contract index and subindex.
