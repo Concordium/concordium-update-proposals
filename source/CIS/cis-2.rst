@@ -43,7 +43,7 @@ General types and serialization
 ``TokenID``
 ^^^^^^^^^^^
 
-Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the globally unique identifier of a token type.
+Token Identifier, which combined with the address of the smart contract instance implementing CIS2, forms the :ref:`globally unique identifier of a token type<CIS-2-Token-Address>`.
 
 - A token ID for a token type SHALL NOT change after a token type has been minted.
 - A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.
@@ -90,7 +90,7 @@ The entrypoint name MUST be 100 bytes or less::
 .. _CIS-2-AccountAddress:
 
 ``AccountAddress``
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 An address of an account.
 
@@ -415,7 +415,7 @@ For this reason, it is important for the token contract to log the appropriate e
 - It MUST be possible to derive the balance of an address for a token type from the logged :ref:`CIS-2-event-transfer`, :ref:`CIS-2-event-mint` and :ref:`CIS-2-event-burn` events.
 - It MUST be safe to assume that with no events logged, every address has zero tokens and no operators enabled.
 
-The events defined by this specification are serialized using one byte to the discriminate the different events.
+The events defined by this specification are serialized using one byte to discriminate the different events.
 A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
 
 .. _CIS-2-event-transfer:
@@ -681,6 +681,16 @@ The danish localization JSON file could be:
     "description": "Ryan katte er ensomme væsner, som rejser rundt i galaxen søgende efter deres forfædre og sande arv"
   }
 
+.. _CIS-2-Token-Address:
+
+Token address
+=============
+
+A token address is the globally unique identifier for a CIS-2 token type on the Concordium blockchain.
+It consists of a :ref:`contract address<CIS-2-ContractAddress>` paired with a :ref:`CIS-2 Token ID<CIS-2-TokenId>`.
+
+The textual representation is defined as follows: the index and subindex of the contract address are byte-encoded using unsigned LEB128 followed by the bytes of the token ID, this bytestring is then encoded using `Base58Check <https://en.bitcoin.it/wiki/Base58Check_encoding>`__ with version byte `2` and the Bitcoin symbol chart.
+
 .. _CIS-2-smart-contract-limitations:
 
 Smart contract limitations
@@ -817,3 +827,5 @@ Additions after finalization
 ============================
 
 October 13, 2022: Added the optional ``unique`` field to the metadata specification. This field helps specify how wallets should display a token and its balance.
+
+April 24, 2023: Added description of a Token Address and how to construct its textual representation.
