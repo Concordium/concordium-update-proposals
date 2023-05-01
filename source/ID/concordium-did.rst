@@ -257,12 +257,13 @@ The document MAY include any other public data of a smart contract instance.
       "account": "did:ccd:NET:acc:ADDR"
     }
     "entrypoints": [
-      { "id": ""did:ccd:sci:IND:SUBIND#entrypoint-viewIssuerKeys",
+      { "id": "did:ccd:sci:IND:SUBIND#entrypoint-viewIssuerKeys",
         "name": "viewIssuerKeys"
       },
-      { "id": ""did:ccd:sci:IND:SUBIND#entrypoint-viewRevocationKey",
+      { "id": "did:ccd:sci:IND:SUBIND#entrypoint-viewRevocationKey",
         "name": "viewRevocationKey"
-      },
+      }
+    ]
   }
 
 Where ``IND`` and ``SUBIND`` are the contract index and subindex.
