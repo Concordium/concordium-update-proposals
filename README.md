@@ -62,7 +62,7 @@ from the root of this repository.
 
 To watch the doc files and automate the build run:
 
-#### macOS and Linux
+#### macOS, Linux and Windows
 ```
 sphinx-autobuild source build
 ```
