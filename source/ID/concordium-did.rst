@@ -19,6 +19,7 @@ We distinguish the following types of DIDs:
 - **Account DID** refer to accounts on the Concordium blockchain.
 - **Smart Contract DID** refer to smart contracts instances on the Concordium blockchain.
 - **Public Key DID** refers to a subject that knows the corresponding secret key.
+- **Identity Provider DID** refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.
 
 Status of This Document
 =======================
@@ -78,12 +79,13 @@ Concordium DID identifiers are defined by the following ABNF_:
 Smart Contract Instance Reference Syntax
 ----------------------------------------
 
-A DID reference is a DID with additional data, such as query parameters.
+A DID reference is a DID with additional data, such as a path and query parameters.
 Concordium smart contract entrypoints can be addressed using DID references.
 
 .. code-block:: ABNF
 
-  ccd-sc-ref = "/" entrypoint *1("?" "parameter" "=" 1*(base16char)) *1("&" "standard" "=" standard)
+  ccd-sc-ref = "/" entrypoint *1("/" parameter) *1("?" "standard" "=" standard)
+  parameter = base16char
   entrypoint = 1*(ALPHA / DIGIT / punctuation)
   standard = "CIS" "-" 1*(DIGIT)
   punctuation = "!" / DQUOTE / "#" / "$" / "%" / "&" / "'" / "(" /
@@ -108,13 +110,13 @@ A public key:
 
 ``did:ccd:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3``
 
-A smart contract instance with the ``viewIssuerKeys`` entrypoint that does not take any parameters
+A smart contract instance with the ``issuerKeys`` entrypoint that does not take any parameters
 
-``did:ccd:sci:321/viewIssuerKeys``
+``did:ccd:sci:321/issuerKeys``
 
-A smart contract instance with the ``viewCredentialData`` entrypoint taking a parameter
+A smart contract instance with the ``credentialEntry`` entrypoint taking a parameter
 
-``did:ccd:sci:123/viewCredentialData?parameter=ee763364dc1a47d6aa4cc6bdb005e2b2``
+``did:ccd:sci:123/credentialEntry/ee763364dc1a47d6aa4cc6bdb005e2b2``
 
 
 Concordium DID Documents
@@ -257,11 +259,11 @@ The document MAY include any other public data of a smart contract instance.
       "account": "did:ccd:NET:acc:ADDR"
     }
     "entrypoints": [
-      { "id": "did:ccd:sci:IND:SUBIND#entrypoint-viewIssuerKeys",
-        "name": "viewIssuerKeys"
+      { "id": "did:ccd:sci:IND:SUBIND#entrypoint-issuerKeys",
+        "name": "issuerKeys"
       },
-      { "id": "did:ccd:sci:IND:SUBIND#entrypoint-viewRevocationKey",
-        "name": "viewRevocationKey"
+      { "id": "did:ccd:sci:IND:SUBIND#entrypoint-revocationKey",
+        "name": "revocationKey"
       }
     ]
   }
@@ -429,7 +431,7 @@ Smart Contract Instance Reference
 
 Dereferencing a DID reference of the form
 
-``did:ccd:NET:sci:IND:SUBIND/EP?parameter=PAR[&standard=STD]``
+``did:ccd:NET:sci:IND:SUBIND/EP[/PAR][?standard=STD]``
 
 can be done by using the gRPC interface command ``InvokeInstance``.
 The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
@@ -451,10 +453,10 @@ If a contract does not have an embedded schema, the following JSON is returned:
 As an example, consider CIS-4 Concordium smart contract standard that specifies a verifiable credential registry.
 The special formatting rules apply to the following entrypoints:
 
-- ``viewRevocationKey`` - the entrypoint return value is expected to be a pair of an array of bytes for a public key ``XX`` and a ``u64`` value (nonce) ``N``.
+- ``revocationKey`` - the entrypoint return value is expected to be a pair of an array of bytes for a public key ``XX`` and a ``u64`` value (nonce) ``N``.
   The output is a DID document with a verification method based on the public key ``XX``.
   The bytes of ``XX`` are represented in the base16 encoding in the document.
-  The key index ``K`` corresponds to the input parameter to the ``viewRevocationKey`` entrypoint.
+  The key index ``K`` corresponds to the input parameter to the ``revocationKey`` entrypoint.
 
   .. code-block:: json
 
@@ -463,18 +465,18 @@ The special formatting rules apply to the following entrypoints:
         "https://www.w3.org/ns/did/v1",
         "Concordium DID URI"
       ],
-      "id": "did:ccd:NET:sci:IND:SUBIND/viewRevocationKey?parameter=PAR&standard=CIS-4",
+      "id": "did:ccd:NET:sci:IND:SUBIND/revocationKey/PAR?standard=CIS-4",
       "nonce": "N",
       "verificationMethod": [
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/viewRevocationKey?parameter=PAR&standard=CIS-4#key-K",
+          "id": "did:ccd:NET:sci:IND:SUBIND/revocationKey/PAR?standard=CIS-4#key-K",
           "type": "Ed25519VerificationKey2020",
           "publicKeyMultibase": "fXX"
         }
       ]
     }
 
-- ``viewIssuerKeys`` - the entrypoint return value is expected to be a list of pairs: key index, key bytes.
+- ``issuerKeys`` - the entrypoint return value is expected to be a list of pairs: key index, key bytes.
   For example, ``[(0, XX); (1, YY); (2, ZZ)]``.
   The output is a DID document with a list of verification methods based on public keys ``XX``, ``YY`` and ``ZZ``.
   The bytes of the keys are represented in the base16 encoding in the document.
@@ -487,20 +489,20 @@ The special formatting rules apply to the following entrypoints:
         "https://www.w3.org/ns/did/v1",
         "Concordium DID URI"
       ],
-      "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4",
+      "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4",
       "verificationMethod": [
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4#key-0",
+          "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4#key-0",
           "type": "Ed25519VerificationKey2020",
           "publicKeyMultibase": "fXX"
         },
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4#key-1",
+          "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4#key-1",
           "type": "Ed25519VerificationKey2020",
           "publicKeyMultibase": "fYY"
         },
         {
-          "id": "did:ccd:NET:sci:IND:SUBIND/viewIssuerKeys?format=CIS-4#key-2",
+          "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4#key-2",
           "type": "Ed25519VerificationKey2020",
           "publicKeyMultibase": "fZZ"
         }
