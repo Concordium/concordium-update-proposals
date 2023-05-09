@@ -16,8 +16,9 @@ Abstract
 Concordium is a layer-1 blockchain with identity built into the core protocol.
 We distinguish the following types of DIDs:
 
-- **Account DID** refer to accounts on the Concordium blockchain.
-- **Smart Contract DID** refer to smart contracts instances on the Concordium blockchain.
+- **Account DID** refers to accounts on the Concordium blockchain.
+- **Concordium Credential DID** refers to a Concordium credential object.
+- **Smart Contract DID** refers to smart contracts instances on the Concordium blockchain.
 - **Public Key DID** refers to a subject that knows the corresponding secret key.
 - **Identity Provider DID** refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.
 
@@ -50,13 +51,14 @@ Concordium DID identifiers are defined by the following ABNF_:
 
 .. code-block:: ABNF
 
-  ccd-did = prefix ":" *1(network ":") (acctype / pkctype / scitype / idptype)
+  ccd-did = prefix ":" *1(network ":") (acctype / pkctype / scitype / idptype / credtype)
   prefix  = %s"did:ccd"
   network = "testnet" / "mainnet"
   acctype = "acc:" 50(base58char)
   pkctype = "pkc:" 64(base16char)
   scitype = "sci:" index *1(“:” subindex)
   idptype = "idp:" index
+  credtype = "cred:" 96(base16char)
   index = 1*DIGIT
   subindex = 1*DIGIT
   base16char = HEXDIG
@@ -101,6 +103,11 @@ Examples
 An account on testnet:
 
 ``did:ccd:testnet:acc:3ZFGxLtnUUSJGW2WqjMh1DDjxyq5rnytCwkSqxFTpsWSFdQnNn``
+
+
+A Concordium credential on mainnet
+
+``did:ccd:mainnet:cred:9aa3641a212da36a9ffae6e6085b9cf486ca9b44fa059aa74565b0a1c0f7052d8e71168beccf299d767f3961b33aaae2``
 
 A smart contract instance on the default network (``mainnet``):
 
@@ -229,6 +236,59 @@ The document MAY include any other public data of a Concordium account.
 .. note::
   The ``publicKeyMultibase`` field contains a public key prefixed with ``f`` that denotes the base16 encoding.
   See `The Multibase Encoding Scheme`_.
+
+
+Concordium Credential DID
+-------------------------
+
+The goal of the Account DID Document is to provide information about Concordium credentials, including a possibility to reference particular pieces of data, such as public keys.
+In order to do that, it specifies a `DID verification method <did-vefication-method_>`_ that reflects the credential authentication data.
+
+The Concordium Credential DID Document MUST contain the following data:
+
+- ``@context`` - the attribute that expresses context information.
+- ``id`` - the DID of the credential.
+- ``verificationMethod`` - the credential's verification method.
+- ``authentication`` - authentication method for the credential.
+
+The document MAY include any other public data of a Concordium credential.
+
+The following document defines a Concordium credential with ID ``CRED``.
+The credential has ``N`` keys and uses a threshold signature scheme requiring ``T`` signatures.
+
+.. code-block:: json
+
+  {
+    "@context": [
+      "https://www.w3.org/ns/did/v1",
+      "Concordium DID URI"
+    ],
+    "id": "did:ccd:NET:cred:CRED#credential-1",
+    "verificationMethod": [
+      {
+        "type": "VerifiableCondition2021",
+        "threshold": "T",
+        "conditionThreshold": [
+          {
+            "id": "did:ccd:NET:cred:CRED#key-1",
+            "type": "Ed25519VerificationKey2020",
+            "controller": "did:ccd:NET:cred:CRED",
+            "publicKeyMultibase": "fXX"
+          },
+          "...",
+          {
+            "id": "did:ccd:NET:cred:CRED#key-N",
+            "type": "Ed25519VerificationKey2020",
+            "controller": "did:ccd:NET:cred:CRED",
+            "publicKeyMultibase": "fYY"
+          }
+        ]
+      }
+    ],
+    "authentication": [
+      "#credential-1"
+    ]
+  }
 
 
 Smart Contract Instance DID
@@ -361,6 +421,11 @@ Account DID
 An account DID can be created by `opening an account <concordium-accounts_>`_ on the ``NET`` blockchain.
 The resulting DID is ``did:ccd:NET:acc:ADDR`` where ``ADDR`` is the base58 encoded account address.
 
+Concordium Credential DID
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A Concordium Credential DID is created as part of the account opening process.
+
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -373,6 +438,11 @@ Public Key Cryptography DID
 A public key cryptography DID can be created by generating a fresh Ed25519 key pair.
 The resulting DID is ``did:ccd:NET:pkc:PK`` where ``PK`` is the base16 encoded public key.
 These DIDs are not registered on the blockchain.
+
+Identity Provider DID
+^^^^^^^^^^^^^^^^^^^^^
+
+TBD
 
 Read
 ----
@@ -395,6 +465,14 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 .. code-block:: console
 
     $concordium-client raw GetAccountInfo ADDR
+
+.. TODO update, once we have a DID resolver
+
+
+Concordium Credential DID
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+TBD
 
 .. TODO update, once we have a DID resolver
 
@@ -523,7 +601,6 @@ See the details in the `gRPC v2 documentation`_.
 
   `Dereferencing a DID URL`_ in the W3C Credentials Community Group draft report.
 
-.. TODO: write about binary vs JSON data
 .. TODO update, once we have a DID resolver
 
 Public Key Cryptography DID
@@ -539,6 +616,26 @@ can be constructed directly from the DID without any lookup necessary.
 
   The ``NET`` part is optional and currently there is no difference how the documents are generated for different networks.
   In the future, however, the ``vefiricationMethod`` as it specified in :ref:`concordium-did-pkc` might depend on the network.
+
+Identity Provider DID
+^^^^^^^^^^^^^^^^^^^^^
+
+The DID document information for a DID of the form
+
+``did:ccd:NET:idp:INDEX``
+
+can be resolved by looking up an identity provider ``INDEX`` on blockchain ``NET``.
+
+Data required to construct the DID document can be acquired by using the gRPC interface command ``GetIdentityProviders``.
+
+See the details in the `gRPC v2 documentation`_.
+
+From the command line, ``concordium-client`` allows to retrieve the data in the following way:
+
+.. code-block:: console
+
+    $concordium-client raw GetIdentityProviders
+
 
 Update
 ------
