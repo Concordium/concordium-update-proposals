@@ -42,7 +42,7 @@ A boolean is serialized as a byte with value 0 for false and 1 for true::
 ``CredentialID``
 ^^^^^^^^^^^^^^^^
 
-A UUID v4 identifier represented as a `u128` unsigned integer number.
+A UUID v4 identifier represented as a ``u128`` unsigned integer number.
 
 It is serialized as 16 bytes little endian::
 
@@ -138,6 +138,7 @@ It is serialized as 64 bytes::
 
   SignatureEd25519 ::= (signature: Byte⁶⁴)
 
+.. _CIS-4-SigningData:
 
 ``SigningData``
 ^^^^^^^^^^^^^^^
@@ -265,10 +266,12 @@ Requirements
 
 - The query MUST fail if the credential ID is unknown.
 
+.. _CIS-4-functions-issuer:
+
 ``issuer``
 ^^^^^^^^^^
 
-Query the issuer's account address
+Query the issuer's account address.
 
 Response
 ~~~~~~~~
@@ -276,6 +279,7 @@ Response
 The function output is the issuer's account address.
 It is serialized as :ref:`CIS-4-AccountAddress`.
 
+.. _CIS-4-functions-issuerMetadata:
 
 ``issuerMetadata``
 ^^^^^^^^^^^^^^^^^^
@@ -310,10 +314,13 @@ Requirements
 
 - The credential registration request MUST fail if the credential ID is already present in the registry.
 
+.. _CIS-4-functions-revokeCredentialIssuer:
+
 ``revokeCredentialIssuer``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Revoke a credential by the issuer's request.
+The issuer is authorized to revoke the credential if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
 
 Parameter
 ~~~~~~~~~
@@ -322,9 +329,9 @@ The parameter is the credential ID :ref:`CIS-4-CredentialID` and optional string
 
 It is serialized as :ref:`CIS-4-CredentialID` followed by 1 byte to indicate whether a reason is included, if its value is 0, then no reason string present, if the value is 1 then the bytes corresponding to the reason string follow::
 
-  OptionTimestamp ::= (0: Byte)
-                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
-  RevokeCredentialIssuerParam ::= (credential_id: CredentialID) (reason: OptionTimestamp)
+  OptionReason ::= (0: Byte)
+                 | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
+  RevokeCredentialIssuerParam ::= (credential_id: CredentialID) (reason: OptionReason)
 
 .. TODO: what kind of characters are allowed? ASCII, Unicode?
 
@@ -335,21 +342,30 @@ Requirements
 - The registration MUST fail if the credential ID is not present in the registry.
 - The registration MUST fail if the credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
 
+.. _CIS-4-functions-revokeCredentialHolder:
 
 ``revokeCredentialHolder``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Revoke a credential by the holders's request.
 
-Holder is authenticated by verifying the signature on the parameter data with the holder's public key.
+The holder is authorized to revoke the credential by verifying the signature the holder's public key.
 The public key is part of :ref:`CIS-4-CredentialInfo`.
 
 Parameter
 ~~~~~~~~~
 
+It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), and optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+
+  RevokeCredentialHolderParam ::= (credential_id: CredentialID) (signing_data: SigningData) (signature: SignatureEd25519) (reason: OptionReason)
+
 
 Requirements
 ~~~~~~~~~~~~
+
+- If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The registration MUST fail if the credential ID is not present in the registry.
+- The registration MUST fail if the credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
 
 
 Logged events
