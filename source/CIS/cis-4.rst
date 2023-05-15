@@ -58,6 +58,18 @@ A URL and optional checksum for metadata stored outside of this contract.
 
 Serialized in the same way as :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
 
+.. _CIS-4-ContractAddress:
+
+``ContractAddress``
+^^^^^^^^^^^^^^^^^^^
+
+An address of a contract instance.
+It consists of an index and a subindex both unsigned 64 bit integers.
+
+It is serialized as: First 8 bytes for the index (``index``) followed by 8 bytes for the subindex (``subindex``) both little endian::
+
+  ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
+
 
 .. _CIS-4-AccountAddress:
 
@@ -69,6 +81,17 @@ An address of an account.
 It is serialized as 32 bytes::
 
   AccountAddress ::= (address: Byte³²)
+
+.. _CIS-4-EntrypointName:
+
+``EntrypointName``
+^^^^^^^^^^^^^^^^^^
+
+A name for a smart contract function entrypoint.
+
+It is serialized as: First 2 bytes encode the length (``n``) of the entrypoint name, followed by this many bytes for the entrypoint name (``entrypoint``)::
+
+  EntrypointName ::= (n: Byte²) (entrypoint: Byteⁿ)
 
 .. _CIS-4-Timestamp:
 
@@ -114,6 +137,16 @@ Signature for an Ed25519 message.
 It is serialized as 64 bytes::
 
   SignatureEd25519 ::= (signature: Byte⁶⁴)
+
+
+``SigningData``
+^^^^^^^^^^^^^^^
+
+Signing data contains a metadata for the signature that is used to check whether the signed message is designated for the right contract and entrypoint, and it is not expired.
+
+It is serialized as :ref:`CIS-4-ContractAddress` (``contract_address``), :ref:`CIS-4-EntrypointName` (``entry_point``), :ref:`CIS-4-Nonce` (``nonce``), and :ref:`CIS-4-Timestamp` (``timestamp``)::
+
+  SigningData ::= (contract_address: ContractAddress) (entry_point: EntrypointName) (nonce: Nonce) (timestamp: Timestamp)
 
 .. _CIS-4-SchemaRef:
 
@@ -199,8 +232,7 @@ It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``) followed b
 Requirements
 ~~~~~~~~~~~~
 
-- The contract function MUST reject if any of the queries fail:
-    - A query MUST fail if the credential ID is unknown.
+- The query MUST fail if the credential ID is unknown.
 
 .. _CIS-4-functions-credentialStatus:
 
@@ -231,8 +263,7 @@ It is serialized as::
 Requirements
 ~~~~~~~~~~~~
 
-- The contract function MUST reject if any of the queries fail:
-    - A query MUST fail if the credential ID is unknown.
+- The query MUST fail if the credential ID is unknown.
 
 ``issuer``
 ^^^^^^^^^^
@@ -261,7 +292,7 @@ It is serialized as :ref:`CIS-2-MetadataUrl`.
 .. _CIS-4-functions-registerCredential:
 
 ``registerCredential``
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^
 
 Register a credential with the given ID.
 
@@ -274,13 +305,52 @@ It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``) followed by :r
 
   RegisterCredentialParameter ::= (credential_id: CredentialID) (credential_info: CredentialInfo)
 
-See the serialization rules in :ref:`CIS-4-CredentialID`.
+Requirements
+~~~~~~~~~~~~
+
+- The credential registration request MUST fail if the credential ID is already present in the registry.
+
+``revokeCredentialIssuer``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Revoke a credential by the issuer's request.
+
+Parameter
+~~~~~~~~~
+
+The parameter is the credential ID :ref:`CIS-4-CredentialID` and optional string indicating the revocation reason.
+
+It is serialized as :ref:`CIS-4-CredentialID` followed by 1 byte to indicate whether a reason is included, if its value is 0, then no reason string present, if the value is 1 then the bytes corresponding to the reason string follow::
+
+  OptionTimestamp ::= (0: Byte)
+                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
+  RevokeCredentialIssuerParam ::= (credential_id: CredentialID) (reason: OptionTimestamp)
+
+.. TODO: what kind of characters are allowed? ASCII, Unicode?
 
 Requirements
 ~~~~~~~~~~~~
 
-- The contract function MUST reject if any of the queries fail:
-    - A query MUST fail if the credential ID already present in the registry.
+- If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The registration MUST fail if the credential ID is not present in the registry.
+- The registration MUST fail if the credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
+
+
+``revokeCredentialHolder``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Revoke a credential by the holders's request.
+
+Holder is authenticated by verifying the signature on the parameter data with the holder's public key.
+The public key is part of :ref:`CIS-4-CredentialInfo`.
+
+Parameter
+~~~~~~~~~
+
+
+Requirements
+~~~~~~~~~~~~
+
 
 Logged events
 -------------
