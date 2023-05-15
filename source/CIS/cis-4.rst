@@ -162,7 +162,7 @@ It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519`
   CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: OptionTimestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType)
 
 .. note::
-  The timestamps ``valid_from`` and ``valid_until`` are optional. If ``valid_from`` is not included (indicated by the 0 value), then the credential is considered active immediately. 
+  The timestamps ``valid_from`` and ``valid_until`` are optional. If ``valid_from`` is not included (indicated by the 0 value), then the credential is considered active immediately.
   If ``valid_until`` is not included, then the credential never expires.
 
 .. _CIS-4-functions:
