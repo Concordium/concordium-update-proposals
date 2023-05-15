@@ -26,7 +26,7 @@ General types and serialization
 -------------------------------
 
 
-.. _CIS-4-Timestamp:
+.. _CIS-4-Bool:
 
 ``Bool``
 ^^^^^^^^
@@ -56,7 +56,7 @@ It is serialized as 16 bytes little endian::
 
 A URL and optional checksum for metadata stored outside of this contract.
 
-Serialized in the same way as CIS-2 :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
+Serialized in the same way as :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
 
 
 .. _CIS-4-AccountAddress:
@@ -70,7 +70,7 @@ It is serialized as 32 bytes::
 
   AccountAddress ::= (address: Byte³²)
 
-.. _CIS-4-Timestamp`:
+.. _CIS-4-Timestamp:
 
 ``Timestamp``
 ^^^^^^^^^^^^^
@@ -122,7 +122,7 @@ It is serialized as 64 bytes::
 
 A URL of the credential schema.
 
-Serialized in the same way as CIS-2 :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
+Serialized in the same way as :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
 
 
 .. _CIS-4-CredentialType:
@@ -130,7 +130,7 @@ Serialized in the same way as CIS-2 :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
 ``CredentialType``
 ^^^^^^^^^^^^^^^^^^
 
-Is an short ASCII string describing the credential type that is used to identify which schema the credential is based on.
+Is an short ASCII string (up to 256 characters) describing the credential type that is used to identify which schema the credential is based on.
 It corresponds to a value of the ``name`` attribute of the credential schema.
 
 It is serialized as: First byte encodes the length (``n``) of the credential type, followed by this many bytes for the credential type string::
@@ -153,13 +153,17 @@ It is serialized as: First 2 bytes encode the length (``n``) of the commitment, 
 ``CredentialInfo``
 ^^^^^^^^^^^^^^^^^^
 
-Basic data for the verifiable credential.
+Basic data for a verifiable credential.
 
-It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-PublicKeyEd25519` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), optional timestamps :ref:`CIS-4-Timestamp` from and until the credential is valid (``valid_from`` and ``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``)::
+It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), optional timestamps :ref:`CIS-4-Timestamp` from and until the credential is valid (``valid_from`` and ``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``). Optional timestamps are serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
 
   OptionTimestamp ::= (0: Byte)
                     | (1: Byte) (timestamp: Timestamp)
   CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: OptionTimestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType)
+
+.. note::
+  The timestamps ``valid_from`` and ``valid_until`` are optional. If ``valid_from`` is not included (indicated by the 0 value), then the credential is considered active immediately. 
+  If ``valid_until`` is not included, then the credential never expires.
 
 .. _CIS-4-functions:
 
@@ -195,6 +199,9 @@ It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``) followed b
 Requirements
 ~~~~~~~~~~~~
 
+- The contract function MUST reject if any of the queries fail:
+    - A query MUST fail if the credential ID is unknown.
+
 .. _CIS-4-functions-credentialStatus:
 
 ``credentialStatus``
@@ -223,6 +230,9 @@ It is serialized as::
 
 Requirements
 ~~~~~~~~~~~~
+
+- The contract function MUST reject if any of the queries fail:
+    - A query MUST fail if the credential ID is unknown.
 
 ``issuer``
 ^^^^^^^^^^
@@ -268,6 +278,9 @@ See the serialization rules in :ref:`CIS-4-CredentialID`.
 
 Requirements
 ~~~~~~~~~~~~
+
+- The contract function MUST reject if any of the queries fail:
+    - A query MUST fail if the credential ID already present in the registry.
 
 Logged events
 -------------
