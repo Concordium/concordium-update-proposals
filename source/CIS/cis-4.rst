@@ -25,6 +25,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 General types and serialization
 -------------------------------
 
+
+.. _CIS-4-Timestamp:
+
 ``Bool``
 ^^^^^^^^
 
@@ -41,7 +44,7 @@ A boolean is serialized as a byte with value 0 for false and 1 for true::
 
 A UUID v4 identifier represented as a `u128` unsigned integer number.
 
-It is serialized as little endian 16 bytes::
+It is serialized as 16 bytes little endian::
 
   CredentialID ::= (id: Byte¹⁶)
 
@@ -51,9 +54,23 @@ It is serialized as little endian 16 bytes::
 ``MetadataUrl``
 ^^^^^^^^^^^^^^^
 
-A URL or DID and optional checksum for metadata stored outside of this contract.
+A URL and optional checksum for metadata stored outside of this contract.
 
 Serialized in the same way as CIS-2 :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
+
+
+.. _CIS-4-AccountAddress:
+
+``AccountAddress``
+^^^^^^^^^^^^^^^^^^
+
+An address of an account.
+
+It is serialized as 32 bytes::
+
+  AccountAddress ::= (address: Byte³²)
+
+.. _CIS-4-Timestamp`:
 
 ``Timestamp``
 ^^^^^^^^^^^^^
@@ -76,6 +93,17 @@ It is serialized as 8 bytes in little endian::
 
   Nonce ::= (nonce: Byte⁸)
 
+.. _CIS-4-PublicKeyEd25519:
+
+``PublicKeyEd25519``
+^^^^^^^^^^^^^^^^^^^^
+
+A public key represented as an 32-byte array.
+
+It is serialized as 32 bytes::
+
+  PublicKeyEd25519 ::= (key: Byte³²)
+
 .. _CIS-4-SignatureEd25519:
 
 ``SignatureEd25519``
@@ -87,6 +115,51 @@ It is serialized as 64 bytes::
 
   SignatureEd25519 ::= (signature: Byte⁶⁴)
 
+.. _CIS-4-SchemaRef:
+
+``SchemaRef``
+^^^^^^^^^^^^^
+
+A URL of the credential schema.
+
+Serialized in the same way as CIS-2 :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
+
+
+.. _CIS-4-CredentialType:
+
+``CredentialType``
+^^^^^^^^^^^^^^^^^^
+
+Is an short ASCII string describing the credential type that is used to identify which schema the credential is based on.
+It corresponds to a value of the ``name`` attribute of the credential schema.
+
+It is serialized as: First byte encodes the length (``n``) of the credential type, followed by this many bytes for the credential type string::
+
+  CredentialType ::= (n: Byte) (credential_type: Byteⁿ)
+
+.. _CIS-4-Commitment:
+
+``Commitment``
+^^^^^^^^^^^^^^
+
+A vector Pedersen commitment to the credential attributes.
+
+It is serialized as: First 2 bytes encode the length (``n``) of the commitment, followed by this many bytes for the commitment data::
+
+  Commitment ::= (n: Byte²) (commitment: Byteⁿ)
+
+.. _CIS-4-CredentialInfo:
+
+``CredentialInfo``
+^^^^^^^^^^^^^^^^^^
+
+Basic data for the verifiable credential.
+
+It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-PublicKeyEd25519` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), optional timestamps :ref:`CIS-4-Timestamp` from and until the credential is valid (``valid_from`` and ``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``)::
+
+  OptionTimestamp ::= (0: Byte)
+                    | (1: Byte) (timestamp: Timestamp)
+  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: OptionTimestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType)
 
 .. _CIS-4-functions:
 
@@ -95,9 +168,9 @@ Contract functions
 
 TBD
 
-.. _CIS-4-functions-viewCredentialEntry:
+.. _CIS-4-functions-credentialEntry:
 
-``viewCredentialEntry``
+``credentialEntry``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 Query a credential entry from the registry by ID.
@@ -109,36 +182,25 @@ The parameter is the credential ID.
 
 See the serialization rules in :ref:`CIS-4-CredentialID`.
 
-
 Response
 ~~~~~~~~
 
 The function returns a registry entry corresponding to the credential ID parameter.
 
-It is serialized as::
+It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``) followed by a credential schema reference :ref:`CIS-4-SchemaRef` (``schema_ref``), and a credential entry revocation nonce :ref:`CIS-4-Nonce` (``revocation_nonce``)::
 
-  Commitment ::= (n: Byte²) (commitment_bytes: Byteⁿ)
-  OptionTimestamp ::= (0: Byte)
-                    | (1: Byte) (timestamp: Timestamp)
-  CredentialEntryResponse ::= (holder_id: CredentialID) (holder_revocable: Bool) (commitment: Commitment) (schema_ref: MetadataUrl) (valid_from: OptionTimestamp)  (valid_from: OptionTimestamp) (revocation_nonce: Nonce)
+  CredentialQueryResponse ::= (credential_info: CredentialInfo) (schema_ref: SchemaRef) (revocation_nonce: Nonce)
 
 
 Requirements
 ~~~~~~~~~~~~
 
-.. _CIS-4-functions-viewCredentialStatus:
+.. _CIS-4-functions-credentialStatus:
 
-``viewCredentialStatus``
+``credentialStatus``
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Query the status of a credential from the credential registry by ID.
-
-It is serialized as::
-
-  CredentialStatus ::= (0: Byte) // Active
-                     | (1: Byte) // Revoked
-                     | (2: Byte) // Expired
-                     | (3: Byte) // NotActivated
 
 Parameter
 ~~~~~~~~~
@@ -150,19 +212,34 @@ See the serialization rules in :ref:`CIS-4-CredentialID`.
 Response
 ~~~~~~~~
 
+The function returns the status of a credential.
 
+It is serialized as::
+
+  CredentialStatus ::= (0: Byte) // Active
+                     | (1: Byte) // Revoked
+                     | (2: Byte) // Expired
+                     | (3: Byte) // NotActivated
 
 Requirements
 ~~~~~~~~~~~~
 
-``viewIssuerMetadata``
-^^^^^^^^^^^^^^^^^^^^^^
+``issuer``
+^^^^^^^^^^
+
+Query the issuer's account address
+
+Response
+~~~~~~~~
+
+The function output is the issuer's account address.
+It is serialized as :ref:`CIS-4-AccountAddress`.
+
+
+``issuerMetadata``
+^^^^^^^^^^^^^^^^^^
 
 Query the current token metadata URLs for a list of token IDs.
-
-Parameter
-~~~~~~~~~
-
 
 Response
 ~~~~~~~~
@@ -170,6 +247,27 @@ Response
 The function output is the issuer's metadata URL.
 
 It is serialized as :ref:`CIS-2-MetadataUrl`.
+
+.. _CIS-4-functions-registerCredential:
+
+``registerCredential``
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Register a credential with the given ID.
+
+Parameter
+~~~~~~~~~
+
+The parameter is the credential ID and credential information that is used to create an entry in the registry.
+
+It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``) followed by :ref:`CIS-4-CredentialInfo` (``credential_info``)::
+
+  RegisterCredentialParameter ::= (credential_id: CredentialID) (credential_info: CredentialInfo)
+
+See the serialization rules in :ref:`CIS-4-CredentialID`.
+
+Requirements
+~~~~~~~~~~~~
 
 Logged events
 -------------
