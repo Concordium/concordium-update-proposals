@@ -189,15 +189,14 @@ It is serialized as: First 2 bytes encode the length (``n``) of the commitment, 
 
 Basic data for a verifiable credential.
 
-It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), optional timestamps :ref:`CIS-4-Timestamp` from and until the credential is valid (``valid_from`` and ``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``). Optional timestamps are serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
+It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), a :ref:`CIS-4-Timestamp` from which the credenail is valid (``valid_from``), an optional :ref:`CIS-4-Timestamp` until which the credential is valid (``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``). The optional timestamp is serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
 
   OptionTimestamp ::= (0: Byte)
                     | (1: Byte) (timestamp: Timestamp)
-  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: OptionTimestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType)
+  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: Timestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType)
 
 .. note::
-  The timestamps ``valid_from`` and ``valid_until`` are optional. If ``valid_from`` is not included (indicated by the 0 value), then the credential is considered active immediately.
-  If ``valid_until`` is not included, then the credential never expires.
+  The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 value), then the credential never expires.
 
 .. _CIS-4-functions:
 
@@ -352,13 +351,13 @@ Requirements
 Revoke a credential by the holders's request.
 
 The holder is authorized to revoke a credential by verifying the signature with the holder's public key.
-It replaces the authorization checks conducted on the `sender/invoker` variable with signature verification.
+It replaces the authorization checks conducted on the ``sender/invoker`` variable with signature verification.
 The public key is part of :ref:`CIS-4-CredentialInfo` that is used when registering a credential with the :ref:`CIS-4-functions-registerCredential` entrypoint.
 
 Parameter
 ~~~~~~~~~
 
-It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), and optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
 
   RevokeCredentialHolderParam ::= (credential_id: CredentialID) (signing_data: SigningData) (signature: SignatureEd25519) (reason: OptionReason)
 
@@ -389,14 +388,14 @@ A revocation authority is any entity that holds a private key corresponding to t
 A revocation authority is authorized to revoke a credential by verifying the signature with the public key this the given identifier.
 
 This entrypoint gives a general way of adding revocation rights to external entities.
-It replaces the authorization checks conducted on the `sender/invoker` variable with signature verification.
+It replaces the authorization checks conducted on the ``sender/invoker`` variable with signature verification.
 In particular, it enables the issuer to provide a service for selected entities to revoke credentials without paying for revocation transactions.
 
 
 Parameter
 ~~~~~~~~~
 
-It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), two bytes little endian of the revocation key index encoding an integer number, and optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), two bytes little endian of the revocation key index encoding an integer number, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
 
   RevokeCredentialOtherParam ::= (credential_id: CredentialID) (signing_data: SigningData) (signature: SignatureEd25519) (revocation_key_index: Byte²) (reason: OptionReason)
 
@@ -406,7 +405,7 @@ Requirements
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
 - The ``RevokeCredentialOtherParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
-  The holders's nonce is sequentially increased every time a revocation request is successfully executed.
+  The revocation authority's nonce is sequentially increased every time a revocation request is successfully executed.
   The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
 - The revocation MUST fail if:
     - The credential ID is not present in the registry.
@@ -421,6 +420,7 @@ Requirements
 Logged events
 -------------
 
+The events defined by this specification are serialized using one byte to discriminate the different events. 
 A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
 
 .. _CIS-4-register-credential-transfer:
@@ -428,12 +428,24 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 ``RegisterCredentialEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``RegisterCredentialEvent`` event MUST be logged when a new credential is issued.
+A ``RegisterCredentialEvent`` event MUST be logged when a new credential is registered with :ref:`CIS-4-functions-registerCredential`.
 
-The ``RegisterCredentialEvent`` event is serialized as: TBD::
+The ``RegisterCredentialEvent`` event is serialized as: a first a byte with the value of 255, followed by :ref:`CIS-4-CredentialID` (``crednetial_id``), a public key of the holder :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
 
-  RegisterCredentialEvent ::= ...
+  CredentialEventData ::= (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (schema_ref: SchemaRef) (credential_type: CredentialType)
+  RegisterCredentialEvent ::= (255: Byte) (data: CredentialEventData)
 
+``RevokeCredentialEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``RevokeCredentialEvent`` event MUST be logged when a new credential is revoked by the issuer :ref:`CIS-4-functions-revokeCredentialIssuer`, the holder :ref:`CIS-4-functions-revokeCredentialHolder`, or a revocation authority :ref:`CIS-4-functions-revokeCredentialOther`.
+
+The ``RevokeCredentialEvent`` event is serialized as: a first a byte with the value of 254, followed by :ref:`CIS-4-CredentialID` (``crednetial_id``), a public key of the holder :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a ``revoker``, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`; ``revoker`` is serialized as 1 byte to indicate who sent the revocation request ( 0 - issuer, 1 - holder, 2 -revocation authority); if the first byte is 2, then it is followed by a public key :ref:`CIS-4-PublicKeyEd25519` of the revoker::
+
+  Revoker ::= (0: Byte)                         // Issuer
+            | (1: Byte)                         // Holder
+            | (2: Byte) (key: PublicKeyEd25519) // Other
+  RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (revoker: Revoker) (reason: OptionReason)
 
 Rejection errors
 ----------------
