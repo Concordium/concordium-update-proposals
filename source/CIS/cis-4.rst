@@ -320,7 +320,7 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Revoke a credential by the issuer's request.
-The issuer is authorized to revoke the credential if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
+The issuer is authorized to revoke a credential if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
 
 Parameter
 ~~~~~~~~~
@@ -339,8 +339,10 @@ Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The registration MUST fail if the credential ID is not present in the registry.
-- The registration MUST fail if the credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The revocation MUST fail if:
+    - The the transaction ``sender`` is not the issuer.
+    - The credential ID is not present in the registry.
+    - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
 
 .. _CIS-4-functions-revokeCredentialHolder:
 
@@ -349,8 +351,9 @@ Requirements
 
 Revoke a credential by the holders's request.
 
-The holder is authorized to revoke the credential by verifying the signature the holder's public key.
-The public key is part of :ref:`CIS-4-CredentialInfo`.
+The holder is authorized to revoke a credential by verifying the signature with the holder's public key.
+It replaces the authorization checks conducted on the `sender/invoker` variable with signature verification.
+The public key is part of :ref:`CIS-4-CredentialInfo` that is used when registering a credential with the :ref:`CIS-4-functions-registerCredential` entrypoint.
 
 Parameter
 ~~~~~~~~~
@@ -364,9 +367,56 @@ Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The registration MUST fail if the credential ID is not present in the registry.
-- The registration MUST fail if the credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The ``RevokeCredentialHolderParam``'s '``signing_data`` MUST include a nonce to protect against replay attacks.
+  The holders's nonce is sequentially increased every time a revocation request is successfully executed.
+  The function MUST only accept a ``RevokeCredentialHolderParam`q` if it has the next nonce following the sequential order.
+- The revocation MUST fail if:
+    - The credential ID is not present in the registry.
+    - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
+    - The signature was intended for a different contract.
+    - The signature was intended for a different entrypoint.
+    - The signature is expired.
+    - The signature can not be validated.
+      The smart contract logic SHOULD practice its best efforts to ensure that only the holder can generate and authorize a revocation request with a valid signature.
 
+.. _CIS-4-functions-revokeCredentialOther:
+
+``revokeCredentialOther``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Revoke a credential by a revocation authority request.
+A revocation authority is any entity that holds a private key corresponding to the public key registered by the issuer.
+A revocation authority is authorized to revoke a credential by verifying the signature with the public key this the given identifier.
+
+This entrypoint gives a general way of adding revocation rights to external entities.
+It replaces the authorization checks conducted on the `sender/invoker` variable with signature verification.
+In particular, it enables the issuer to provide a service for selected entities to revoke credentials without paying for revocation transactions.
+
+
+Parameter
+~~~~~~~~~
+
+It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), two bytes little endian of the revocation key index encoding an integer number, and optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+
+  RevokeCredentialOtherParam ::= (credential_id: CredentialID) (signing_data: SigningData) (signature: SignatureEd25519) (revocation_key_index: Byte²) (reason: OptionReason)
+
+
+Requirements
+~~~~~~~~~~~~
+
+- If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The ``RevokeCredentialOtherParam``'s '``signing_data`` MUST include a nonce to protect against replay attacks.
+  The holders's nonce is sequentially increased every time a revocation request is successfully executed.
+  The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
+- The revocation MUST fail if:
+    - The credential ID is not present in the registry.
+    - The revocation key index in unknown.
+    - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
+    - The signature was intended for a different contract.
+    - The signature was intended for a different entrypoint.
+    - The signature is expired.
+    - The signature can not be validated.
+      The smart contract logic SHOULD practice its best efforts to ensure that only the revocation authority can generate and authorize a revocation request with a valid signature.
 
 Logged events
 -------------
