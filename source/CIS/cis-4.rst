@@ -420,7 +420,7 @@ Requirements
 Logged events
 -------------
 
-The events defined by this specification are serialized using one byte to discriminate the different events. 
+The events defined by this specification are serialized using one byte to discriminate the different events.
 A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
 
 .. _CIS-4-register-credential-transfer:
