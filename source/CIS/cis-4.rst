@@ -367,9 +367,9 @@ Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The ``RevokeCredentialHolderParam``'s '``signing_data`` MUST include a nonce to protect against replay attacks.
+- The ``RevokeCredentialHolderParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
   The holders's nonce is sequentially increased every time a revocation request is successfully executed.
-  The function MUST only accept a ``RevokeCredentialHolderParam`q` if it has the next nonce following the sequential order.
+  The function MUST only accept a ``RevokeCredentialHolderParam`` if it has the next nonce following the sequential order.
 - The revocation MUST fail if:
     - The credential ID is not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
@@ -405,7 +405,7 @@ Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The ``RevokeCredentialOtherParam``'s '``signing_data`` MUST include a nonce to protect against replay attacks.
+- The ``RevokeCredentialOtherParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
   The holders's nonce is sequentially increased every time a revocation request is successfully executed.
   The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
 - The revocation MUST fail if:
