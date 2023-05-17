@@ -442,7 +442,7 @@ These DIDs are not registered on the blockchain.
 Identity Provider DID
 ^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+Identity providers can be added as a `chain update <https://docs.rs/concordium_base/1.2.0/concordium_base/updates/index.html>`_ transaction of type `UpdateAddIdentityProvider <https://docs.rs/concordium_base/1.2.0/concordium_base/updates/enum.UpdateType.html#variant.UpdateAddIdentityProvider>`_.
 
 Read
 ----
@@ -454,7 +454,7 @@ The DID document information for a DID of the form
 
 ``did:ccd:NET:acc:ADDR``
 
-can be resolved by looking up the account with address ``ADDR`` on blockchain ``NET``.
+can be resolved by looking up an account with address ``ADDR`` on blockchain ``NET``.
 
 Data required to construct the DID document can be acquired by using the gRPC interface command ``GetAccountInfo``.
 
@@ -472,7 +472,13 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 Concordium Credential DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+The DID document information for a DID of the form
+
+``did:ccd:NET:cred:CRED``
+
+can be resolved by looking up a credential with ID ``CRED`` on blockchain ``NET``.
+
+Data required to construct the DID document can be acquired by using the same gRPC interface command ``GetAccountInfo`` as for Concodrium account DIDs.
 
 .. TODO update, once we have a DID resolver
 
@@ -484,7 +490,7 @@ The DID document information for a DID of the form
 
 ``did:ccd:NET:sci:IND:SUBIND``
 
-can be resolved by looking up the smart contract instance with indices ``IND``, ``SUBIND`` on blockchain ``NET``.
+can be resolved by looking up a smart contract instance with indices ``IND``, ``SUBIND`` on blockchain ``NET``.
 This includes a lookup of the owner's account.
 
 Data required to construct the DID document can be acquired by using the gRPC interface command ``GetInstanceInfo``.
