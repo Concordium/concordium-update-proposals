@@ -357,9 +357,10 @@ The public key is part of :ref:`CIS-4-CredentialInfo` that is used when register
 Parameter
 ~~~~~~~~~
 
-It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and message data ``RevocationDataHolder`` consisting of :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
 
-  RevokeCredentialHolderParam ::= (credential_id: CredentialID) (signing_data: SigningData) (signature: SignatureEd25519) (reason: OptionReason)
+  RevocationDataHolder ::= (credential_id: CredentialID) (signing_data: SigningData) (reason: OptionReason)
+  RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (data : RevocationDataHolder)
 
 
 Requirements
@@ -395,9 +396,10 @@ In particular, it enables the issuer to provide a service for selected entities 
 Parameter
 ~~~~~~~~~
 
-It is serialized as :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), :ref:`CIS-4-SignatureEd25519` (``signature``), two bytes little endian of the revocation key index encoding an integer number, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and message data ``RevocationDataOther`` consisting of :ref:`CIS-4-CredentialID` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), a reovocation public key :ref:`CIS-4-PublicKeyEd25519` , and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
 
-  RevokeCredentialOtherParam ::= (credential_id: CredentialID) (signing_data: SigningData) (signature: SignatureEd25519) (revocation_key_index: Byte²) (reason: OptionReason)
+  RevocationDataOther ::= (credential_id: CredentialID) (signing_data: SigningData) (revocation_key: PublicKeyEd25519) (reason: OptionReason)
+  RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (data : RevocationDataOther)
 
 
 Requirements
@@ -409,7 +411,7 @@ Requirements
   The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
 - The revocation MUST fail if:
     - The credential ID is not present in the registry.
-    - The revocation key index in unknown.
+    - The revocation key in unknown.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
     - The signature was intended for a different contract.
     - The signature was intended for a different entrypoint.
