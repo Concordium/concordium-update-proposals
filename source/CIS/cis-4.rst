@@ -447,27 +447,6 @@ The ``RevokeCredentialEvent`` event is serialized as: a first a byte with the va
             | (2: Byte) (key: PublicKeyEd25519) // Other
   RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (revoker: Revoker) (reason: OptionReason)
 
-Rejection errors
-----------------
-
-A smart contract following this specification MAY reject using the following error codes:
-
-.. list-table::
-  :header-rows: 1
-
-  * - Name
-    - Error code
-    - Description
-  * - TBD
-    - TBD
-    - TBD
-
-
-Rejecting using an error code from the table above MUST only occur in a situation as described in the corresponding error description.
-
-The smart contract implementing this specification MAY introduce custom error codes other than the ones specified in the table above.
-
-
 Issuer metadata JSON
 --------------------
 
