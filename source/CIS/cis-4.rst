@@ -450,7 +450,7 @@ The ``RevokeCredentialEvent`` event is serialized as: a first a byte with the va
 Issuer metadata JSON
 --------------------
 
-The token metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) file.
+The issuer metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) file.
 
 All of the fields in the JSON file are optional, and this specification reserves a number of field names, shown in the table below.
 
@@ -518,6 +518,27 @@ Attributes are objects with the following fields:
 
 Example issuer metadata
 ^^^^^^^^^^^^^^^^^^^^^^^
+
+TBD
+
+Credential metadata JSON
+------------------------
+
+The credential metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) file.
+
+.. list-table:: Credential metadata JSON Object
+  :header-rows: 1
+
+  * - Property
+    - JSON value type [JSON-Schema]
+    - Description
+  * - TBD
+    - TBD
+    - TBD
+
+
+Example credential metadata
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 TBD
 
