@@ -193,7 +193,7 @@ It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519`
 
   OptionTimestamp ::= (0: Byte)
                     | (1: Byte) (timestamp: Timestamp)
-  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: Timestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType)
+  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: Timestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType) (metadata_url: MetadataUrl)
 
 .. note::
   The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 value), then the credential never expires.
@@ -208,7 +208,7 @@ TBD
 .. _CIS-4-functions-credentialEntry:
 
 ``credentialEntry``
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 
 Query a credential entry from the registry by ID.
 
@@ -373,6 +373,7 @@ Requirements
 - The revocation MUST fail if:
     - The credential ID is not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
+    - The credential is not holder-revocable.
     - The signature was intended for a different contract.
     - The signature was intended for a different entrypoint.
     - The signature is expired.
@@ -418,6 +419,70 @@ Requirements
     - The signature is expired.
     - The signature can not be validated.
       The smart contract logic SHOULD practice its best efforts to ensure that only the revocation authority can generate and authorize a revocation request with a valid signature.
+
+.. _CIS-4-functions-registerRevocationKeys:
+
+``registerRevocationKeys``
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Register public keys that can be used by revocation authorities.
+
+Parameter
+~~~~~~~~~
+
+It is serialized as First 2 bytes encode the length (``n``) the vector of kesy, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+
+  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
+
+Requirements
+~~~~~~~~~~~~
+
+- The revocation MUST fail if:
+    - The the transaction ``sender`` is not the issuer.
+    - Some of the keys are already registered.
+- The smart contract MUST prevent resetting the nonce associated with a public key.
+  For example, the contract logic could keep track of all keys seen by the contract and avoid reusing the same keys even after the keys was made unavailable by calling :ref:`CIS-4-functions-removeRevocationKeys`.
+
+
+.. _CIS-4-functions-removeRevocationKeys:
+
+``removeRevocationKeys``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Make a list of public keys unavailable to revocation authorities.
+
+Parameter
+~~~~~~~~~
+
+It is serialized as: First 2 bytes encode the length (``n``) the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+
+  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
+
+Requirements
+~~~~~~~~~~~~
+
+- The revocation MUST fail if:
+    - The the transaction ``sender`` is not the issuer.
+    - Some of the keys are unknown.
+
+
+.. _CIS-4-functions-revocationKeys:
+
+``revocationKeys``
+^^^^^^^^^^^^^^^^^^
+
+Query revocation keys.
+
+Response
+~~~~~~~~
+
+The function output a list of available revocation keys.
+Valid signatures with the corresponding private keys can be used to revoke any credential in the registry.
+
+It is serialized as: First 2 bytes encode the length (``n``) the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+
+  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
+
 
 Logged events
 -------------
