@@ -13,9 +13,14 @@ CIS-4: Credential Registry Standard
 Abstract
 ========
 
-A standard interface for verified credential registries.
-The interface provides entrypoints for managing credentials (register, update, revoke), querying credential status and data.
-The interface also includes entrypoints for managing of public keys for the issuer and revocation authorities
+A standard interface for verifiable credential (VC) registries.
+A registry keeps track of public VC data and manages the VC lifecycle.
+The interface provides functionality for the following roles of users:
+
+- *credential issuers* can register and revoke credentials;
+- *credential holders* can revoke holder-revocable credentials by signing a revocation message;
+- *verifiers* can query credential status and data that are used to check a verifiable presentation requested from a holder;
+- *revocation authorities* can revoke credentials by signing a revocation message.
 
 Specification
 =============
@@ -56,7 +61,13 @@ It is serialized as 16 bytes little endian::
 
 A URL and optional checksum for metadata stored outside of this contract.
 
-Serialized in the same way as :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
+It is serialized as: 2 bytes for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) followed by an optional checksum.
+The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) follows::
+
+  MetadataChecksum ::= (0: Byte)
+                     | (1: Byte) (hash: Byte³²)
+
+  MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
 
 .. _CIS-4-ContractAddress:
 
@@ -198,12 +209,40 @@ It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519`
 .. note::
   The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 value), then the credential never expires.
 
+
+.. _CIS-4-CredentialStatus:
+
+``CredentialStatus``
+^^^^^^^^^^^^^^^^^^^^
+
+The status of a verifiable credential.
+
+It is serialized as 1 byte where ``0`` correponds to the status ``Active``, ``1`` corresponds to  ``Revoked``, ``2`` corresponds to  ``Expired``, ``3`` corresponds to ``NotActivated``::
+
+  CredentialStatus ::= (0: Byte) // Active
+                     | (1: Byte) // Revoked
+                     | (2: Byte) // Expired
+                     | (3: Byte) // NotActivated
+
 .. _CIS-4-functions:
 
 Contract functions
 ------------------
 
-TBD
+A smart contract implementing this standard MUST export the following functions:
+
+- :ref:`CIS-4-functions-credentialEntry`
+- :ref:`CIS-4-functions-credentialStatus`
+- :ref:`CIS-4-functions-issuer`
+- :ref:`CIS-4-functions-issuerMetadata`
+- :ref:`CIS-4-functions-registerCredential`
+- :ref:`CIS-4-functions-revokeCredentialIssuer`
+- :ref:`CIS-4-functions-revokeCredentialHolder`
+- :ref:`CIS-4-functions-revokeCredentialOther`
+- :ref:`CIS-4-functions-registerRevocationKeys`
+- :ref:`CIS-4-functions-removeRevocationKeys`
+- :ref:`CIS-4-functions-revocationKeys`
+
 
 .. _CIS-4-functions-credentialEntry:
 
@@ -253,12 +292,7 @@ Response
 
 The function returns the status of a credential.
 
-It is serialized as::
-
-  CredentialStatus ::= (0: Byte) // Active
-                     | (1: Byte) // Revoked
-                     | (2: Byte) // Expired
-                     | (3: Byte) // NotActivated
+See the serialization rules in :ref:`CIS-4-CredentialStatus`
 
 Requirements
 ~~~~~~~~~~~~
@@ -312,6 +346,7 @@ Requirements
 ~~~~~~~~~~~~
 
 - The credential registration request MUST fail if the credential ID is already present in the registry.
+- The credential status after registration MUST NOT be ``Revoked`` (See the possible values for the status in :ref:`CIS-4-CredentialStatus`).
 
 .. _CIS-4-functions-revokeCredentialIssuer:
 
@@ -513,6 +548,30 @@ The ``RevokeCredentialEvent`` event is serialized as: a first a byte with the va
             | (1: Byte)                         // Holder
             | (2: Byte) (key: PublicKeyEd25519) // Other
   RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (revoker: Revoker) (reason: OptionReason)
+
+``CredentialMetadataEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``CredentialMetadataEvent`` MUST be logged when updating the credential metadata.
+If consist of a credential ID and a URL for the location of the metadata for this credential with an optional SHA256 checksum of the content.
+
+The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by the token ID :ref:`CIS-2-TokenID` (``id``), and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
+
+  TokenMetadataEvent ::= (252: Byte) (id: CredentialID) (metadata: MetadataUrl)
+
+
+``CredentialSchemaRefEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``CredentialSchemaRefEvent`` MUST be logged when updating the credential schema reference for a credential type.
+If consist of a credential type and a URL for the location of the schema for this credential with an optional SHA256 checksum of the content.
+
+The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
+
+  CredentialSchemaRefEvent ::= (251: Byte) (type: CredentialType) (schema_ref: SchemaRef)
+
+``RevocationKeyEvent``
+^^^^^^^^^^^^^^^^^^^^^^
 
 Issuer metadata JSON
 --------------------
