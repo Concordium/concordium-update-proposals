@@ -277,10 +277,6 @@ The entrypoint name MUST be 100 bytes or less:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ReceiveHookName ::= (n: Byte²) (name: Byteⁿ)
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This type is passed in a parameter for smart contract function calls. Be aware of the parameter size limit of 1024 bytes.</p>
-</div>
 </section>
 <section id="accountaddress">
 <span id="cis-2-accountaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code><a class="headerlink" href="#accountaddress" title="Permalink to this headline">¶</a></h4>
@@ -331,8 +327,7 @@ In case the first byte is 1 then a <code class="docutils literal notranslate"><s
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This type is passed as part of a parameter for smart contract function calls.
-Be aware of the parameter size limit of 1024 bytes.</p>
+<p>This type is passed as part of a parameter for smart contract function calls.</p>
 </div>
 </section>
 <section id="metadataurl">
@@ -368,9 +363,7 @@ TransferParameter ::= (n: Byte²) (transfers: Transferⁿ)
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Be aware of the smart contract parameter size limit of 1024 bytes.
-Since the byte size of a single transfer can vary in size, this will limit the number of transfers that can be included in the same function call.
-Currently, with the smallest possible transfers, the parameter can contain 21 transfers and with the biggest possible transfer, it will take the whole parameter.</p>
+<p>Since the byte size of a single transfer can vary in size, this will limit the number of transfers that can be included in the same function call since a maximum size of a parameter is 65535 bytes.</p>
 </div>
 </section>
 <section id="receive-hook-parameter">
@@ -451,10 +444,6 @@ A query is serialized as <a class="reference internal" href="#cis-2-tokenid"><sp
 BalanceOfParameter ::= (n: Byte²) (queries: BalanceOfQueryⁿ)
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID.</p>
-</div>
 </section>
 <section id="response">
 <h5>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h5>
@@ -493,10 +482,6 @@ A query is serialized as <a class="reference internal" href="#cis-2-address"><sp
 OperatorOfParameter ::= (n: Byte²) (queries: OperatorOfQueryⁿ)
 </pre></div>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries.</p>
-</div>
 </section>
 <section id="id6">
 <h5>Response<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h5>
@@ -532,10 +517,6 @@ OperatorOfResultParameter ::= (n: Byte²) (results: OperatorOfQueryResultⁿ)
 <p>It is serialized as: 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of <a class="reference internal" href="#cis-2-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">ids</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataParameter ::= (n: Byte²) (ids: TokenIDⁿ)
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID.</p>
 </div>
 </section>
 <section id="id9">
