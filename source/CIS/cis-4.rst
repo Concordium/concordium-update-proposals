@@ -298,6 +298,9 @@ Requirements
 ~~~~~~~~~~~~
 
 - The query MUST fail if the credential ID is unknown.
+- The credential status MUST be ``Expired`` if the credential is not revoked, the field ``valid_until`` was present in :ref:`CIS-4-CredentialInfo` when registering the credential, and ``valid_until < now``.
+- The credential status MUST NOT be ``Expired`` if the field ``valid_until`` was not present in :ref:`CIS-4-CredentialInfo` when registering the credential.
+- The credential status MUST be ``Acive`` if the credential is not revoked, and does not qualify as ``Expired`` or ``NotActivated``.
 
 .. _CIS-4-functions-issuer:
 
@@ -549,11 +552,22 @@ The ``RevokeCredentialEvent`` event is serialized as: a first a byte with the va
             | (2: Byte) (key: PublicKeyEd25519) // Other
   RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (revoker: Revoker) (reason: OptionReason)
 
+``IssuerMetadata``
+^^^^^^^^^^^^^^^^^^
+
+A ``IssuerMetadata`` event MUST be logged when updating the credential metadata.
+This also applies to contract initialization.
+It consists of a URL for the location of the metadata for the issuer with an optional SHA256 checksum of the content.
+
+The ``IssuerMetadata`` event is serialized as: first a byte with the value of 253, followed by :ref:`CIS-2-MetadataUrl` (``metadata``)::
+
+  IssuerMetadata ::= (253: Byte) (metadata: MetadataUrl)
+
 ``CredentialMetadataEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``CredentialMetadataEvent`` MUST be logged when updating the credential metadata.
-If consist of a credential ID and a URL for the location of the metadata for this credential with an optional SHA256 checksum of the content.
+A ``CredentialMetadataEvent`` event MUST be logged when updating the credential metadata.
+It consist of a credential ID and a URL for the location of the metadata for this credential with an optional SHA256 checksum of the content.
 
 The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by the token ID :ref:`CIS-2-TokenID` (``id``), and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
 
@@ -563,8 +577,8 @@ The ``TokenMetadataEvent`` event is serialized as: first a byte with the value o
 ``CredentialSchemaRefEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``CredentialSchemaRefEvent`` MUST be logged when updating the credential schema reference for a credential type.
-If consist of a credential type and a URL for the location of the schema for this credential with an optional SHA256 checksum of the content.
+A ``CredentialSchemaRefEvent`` event MUST be logged when updating the credential schema reference for a credential type.
+It consist of a credential type and a URL for the location of the schema for this credential with an optional SHA256 checksum of the content.
 
 The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
 
@@ -572,6 +586,15 @@ The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the v
 
 ``RevocationKeyEvent``
 ^^^^^^^^^^^^^^^^^^^^^^
+
+A ``RevocationKeyEvent`` event MUST be logged when registering a new or removing an existing revocation key.
+It consist of the key and the action performed with the key (registration or removal).
+
+The ``RevocationKeyEvent`` event is serialized as: first a byte with the value of 250, followed by the key bytes :ref:`CIS-4-PublicKeyEd25519` and 1 byte encoding the action (0 for ``Register``, 1 for ``Remove``)::
+
+  RevocationKeyAction ::= (0: Byte)    // Register
+                        | (1: Byte)    // Remove
+  RevocationKeyEvent ::= (250: Byte) (action: RevocationKeyAction)
 
 Issuer metadata JSON
 --------------------
