@@ -125,7 +125,7 @@ It is serialized as 8 bytes in little endian::
 ``Nonce``
 ^^^^^^^^^
 
-An unsigned 64 bit integer number that increases sequentially to protect against replay attacks.
+An unsigned 64-bit integer number that increases sequentially to protect against replay attacks.
 
 It is serialized as 8 bytes in little endian::
 
@@ -275,7 +275,7 @@ It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``) followed b
 Requirements
 ~~~~~~~~~~~~
 
-- The query MUST fail if the credential ID is unknown.
+- The query MUST fail if the credential ID is not present in the registry.
 
 .. _CIS-4-functions-credentialStatus:
 
@@ -301,7 +301,7 @@ See the serialization rules in :ref:`CIS-4-CredentialStatus`
 Requirements
 ~~~~~~~~~~~~
 
-- The query MUST fail if the credential ID is unknown.
+- The query MUST fail if the credential ID is not present in the registry.
 - The credential status MUST be ``Expired`` if the credential is not revoked, the field ``valid_until`` was present in :ref:`CIS-4-CredentialInfo` when registering the credential, and ``valid_until < now``.
 - The credential status MUST NOT be ``Expired`` if the field ``valid_until`` was not present in :ref:`CIS-4-CredentialInfo` when registering the credential.
 - The credential status MUST be ``Acive`` if the credential is not revoked, and does not qualify as ``Expired`` or ``NotActivated``.
@@ -455,7 +455,7 @@ Requirements
   The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
 - The revocation MUST fail if:
     - The credential ID is not present in the registry.
-    - The revocation key in unknown.
+    - The revocation key in not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
     - The signature was intended for a different contract.
     - The signature was intended for a different entrypoint.
@@ -506,7 +506,7 @@ Requirements
 
 - The revocation MUST fail if:
     - The sender of the transaction is not the issuer.
-    - Some of the keys are unknown.
+    - Some of the keys are not present in the registry.
 
 
 .. _CIS-4-functions-revocationKeys:
