@@ -562,6 +562,9 @@ The ``RevokeCredentialEvent`` event is serialized as: first a byte with the valu
             | (2: Byte) (key: PublicKeyEd25519) // Other
   RevokeCredentialEvent ::= (248: Byte) (credential_id: CredentialHolderId) (revoker: Revoker) (reason: OptionReason)
 
+
+.. _CIS-4-events-IssuerMetadata:
+
 ``IssuerMetadata``
 ^^^^^^^^^^^^^^^^^^
 
@@ -572,6 +575,9 @@ It consists of a URL for the location of the metadata for the issuer with an opt
 The ``IssuerMetadata`` event is serialized as: first a byte with the value of 253, followed by :ref:`CIS-2-MetadataUrl` (``metadata``)::
 
   IssuerMetadata ::= (247: Byte) (metadata: MetadataUrl)
+
+
+.. _CIS-4-events-CredentialMetadataEvent:
 
 ``CredentialMetadataEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -606,6 +612,9 @@ The ``RevocationKeyEvent`` event is serialized as: first a byte with the value o
                         | (1: Byte)    // Remove
   RevocationKeyEvent ::= (244: Byte) (action: RevocationKeyAction)
 
+
+.. _CIS-4-issuer-metadata-json:
+
 Issuer metadata JSON
 --------------------
 
@@ -619,12 +628,9 @@ All of the fields in the JSON file are optional, and this specification reserves
   * - Property
     - JSON value type [JSON-Schema]
     - Description
-  * - ``name`` (optional)
+  * - ``name``
     - string
     - The name to display for the issuer.
-  * - ``symbol`` (optional)
-    - string
-    - Short text to display for the issuer.
   * - ``description`` (optional)
     - string
     - A description for the issuer.
@@ -634,12 +640,15 @@ All of the fields in the JSON file are optional, and this specification reserves
   * - ``display`` (optional)
     - URL JSON object
     - An image URL to a large image for displaying the issuer.
+  * - ``url``
+    - string (:rfc:`3986`) [``uri-reference``]
+    - A URL of the issuer's website.
   * - ``attributes`` (optional)
     - JSON array of Attribute JSON objects
     - Assign a number of attributes to the issuer.
       Attributes can be used to include extra information about the issuer.
 
-Optionally a SHA256 hash of the JSON file can be logged with the TokenMetadata event for checking integrity.
+Optionally a SHA256 hash of the JSON file can be logged with the :ref:`CIS-4-events-IssuerMetadata` event for checking integrity.
 Since the metadata JSON file could contain URLs, a SHA256 hash can optionally be associated with the URL.
 To associate a hash with a URL the JSON value is an object:
 
@@ -650,8 +659,8 @@ To associate a hash with a URL the JSON value is an object:
     - JSON value type [JSON-Schema]
     - Description
   * - ``url``
-    - string (:rfc:`3986`, DID) [``uri-reference``]
-    - A URL or DID.
+    - string (:rfc:`3986`) [``uri-reference``]
+    - A URL.
   * - ``hash`` (optional)
     - string
     - A SHA256 hash of the URL content encoded as a hex string.
@@ -672,7 +681,7 @@ Attributes are objects with the following fields:
     - Name of the attribute.
   * - ``value``
     - string
-    - Value of the attrbute.
+    - Value of the attribute.
 
 
 Example issuer metadata
@@ -691,9 +700,22 @@ The credential metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) fil
   * - Property
     - JSON value type [JSON-Schema]
     - Description
-  * - TBD
-    - TBD
-    - TBD
+  * - ``title``
+    - string
+    - The name to display for the credential.
+  * - ``logo``
+    - URL JSON object
+    - An image URL for displaying the credential.
+  * - ``background_color``
+    - string
+    - A hex code of the background color for displaying the credential.
+  * - ``image`` (optional)
+    - URL JSON object
+    - A background image URL for displaying the credential.
+
+Where URL JSON object the same as in :ref:`CIS-4-events-IssuerMetadata`.
+
+Optionally a SHA256 hash of the JSON file can be logged with the :ref:`CIS-4-events-CredentialMetadataEvent` event for checking integrity.
 
 
 Example credential metadata
