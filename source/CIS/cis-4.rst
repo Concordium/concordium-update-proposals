@@ -545,7 +545,7 @@ The event records the credential identifier, the credential type, and the corres
 The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 255, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
 
   CredentialEventData ::= (credential_id: CredentialHolderId) (schema_ref: SchemaRef) (credential_type: CredentialType)
-  RegisterCredentialEvent ::= (255: Byte) (data: CredentialEventData)
+  RegisterCredentialEvent ::= (249: Byte) (data: CredentialEventData)
 
 ``RevokeCredentialEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -558,7 +558,7 @@ The ``RevokeCredentialEvent`` event is serialized as: first a byte with the valu
   Revoker ::= (0: Byte)                         // Issuer
             | (1: Byte)                         // Holder
             | (2: Byte) (key: PublicKeyEd25519) // Other
-  RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialHolderId) (revoker: Revoker) (reason: OptionReason)
+  RevokeCredentialEvent ::= (248: Byte) (credential_id: CredentialHolderId) (revoker: Revoker) (reason: OptionReason)
 
 ``IssuerMetadata``
 ^^^^^^^^^^^^^^^^^^
@@ -569,7 +569,7 @@ It consists of a URL for the location of the metadata for the issuer with an opt
 
 The ``IssuerMetadata`` event is serialized as: first a byte with the value of 253, followed by :ref:`CIS-2-MetadataUrl` (``metadata``)::
 
-  IssuerMetadata ::= (253: Byte) (metadata: MetadataUrl)
+  IssuerMetadata ::= (247: Byte) (metadata: MetadataUrl)
 
 ``CredentialMetadataEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -577,9 +577,9 @@ The ``IssuerMetadata`` event is serialized as: first a byte with the value of 25
 A ``CredentialMetadataEvent`` event MUST be logged when updating the credential metadata.
 It consist of a credential ID and a URL for the location of the metadata for this credential with an optional SHA256 checksum of the content.
 
-The ``TokenMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by the token ID :ref:`CIS-2-TokenID` (``id``), and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
+The ``CredentialMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by the token ID :ref:`CIS-2-TokenID` (``id``), and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
 
-  TokenMetadataEvent ::= (252: Byte) (id: CredentialHolderId) (metadata: MetadataUrl)
+  CredentialMetadataEvent ::= (246: Byte) (id: CredentialHolderId) (metadata: MetadataUrl)
 
 
 ``CredentialSchemaRefEvent``
@@ -590,7 +590,7 @@ It consist of a credential type and a URL for the location of the schema for thi
 
 The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
 
-  CredentialSchemaRefEvent ::= (251: Byte) (type: CredentialType) (schema_ref: SchemaRef)
+  CredentialSchemaRefEvent ::= (245: Byte) (type: CredentialType) (schema_ref: SchemaRef)
 
 ``RevocationKeyEvent``
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -602,7 +602,7 @@ The ``RevocationKeyEvent`` event is serialized as: first a byte with the value o
 
   RevocationKeyAction ::= (0: Byte)    // Register
                         | (1: Byte)    // Remove
-  RevocationKeyEvent ::= (250: Byte) (action: RevocationKeyAction)
+  RevocationKeyEvent ::= (244: Byte) (action: RevocationKeyAction)
 
 Issuer metadata JSON
 --------------------
