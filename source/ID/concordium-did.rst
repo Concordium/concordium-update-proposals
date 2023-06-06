@@ -289,7 +289,7 @@ The Smart Contract Instance DID Document MUST contain the following data:
 
 - ``id`` - the DID of the smart contract instance.
 - ``creator`` - a DID of an account that initialized the contract instance represented as a JSON object containing fields ``id`` and ``account``.
-- ``entrypoints`` - a list on the contract's entrypoints.
+- ``entrypoints`` - a list on the contract's entrypoints. Each entrypoint is an object containing fields ``id`` and ``name``.
 
 The document MAY include any other public data of a smart contract instance.
 
