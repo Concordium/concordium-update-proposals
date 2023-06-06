@@ -354,7 +354,9 @@ Requirements
 ~~~~~~~~~~~~
 
 - The credential registration request MUST fail if the credential ID is already present in the registry.
-- The credential status after registration MUST NOT be ``Revoked`` (See the possible values for the status in :ref:`CIS-4-CredentialStatus`).
+- After successful registration:
+    - Querying the credential by its ID with :ref:`CIS-4-functions-credentialEntry`  MUST succeed.
+    - Querying the credential status by ID with :ref:`CIS-4-functions-credentialStatus` MUST succeed and MUST NOT return ``Revoked`` (See the possible values for the status in :ref:`CIS-4-CredentialStatus`).
 
 .. _CIS-4-functions-revokeCredentialIssuer:
 
@@ -395,7 +397,7 @@ Requirements
 Revoke a credential by the holders's request.
 
 The holder is authorized to revoke a credential by verifying the signature with the holder's public key.
-It replaces the authorization checks conducted on the ``sender/invoker`` variable with signature verification.
+It replaces the authorization based on checking the transaction sender address with signature verification.
 The public key is part of :ref:`CIS-4-CredentialInfo` that is used when registering a credential with the :ref:`CIS-4-functions-registerCredential` entrypoint.
 
 Parameter
