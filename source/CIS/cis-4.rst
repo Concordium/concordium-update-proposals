@@ -50,11 +50,11 @@ A boolean is serialized as a byte with value 0 for false and 1 for true::
 ``CredentialID``
 ^^^^^^^^^^^^^^^^
 
-A UUID v4 identifier represented as a ``u128`` unsigned integer number.
+A credential identifier is a holder's public key.
+It is expected that for each issued credential a unique public key is generated.
+The credential identifier also identifies the credential holder and can be used to prove ownership of the credential by the holder.
 
-It is serialized as 16 bytes little endian::
-
-  CredentialID ::= (id: Byte¹⁶)
+It is serialized as :ref:`CIS-4-PublicKeyEd25519`.
 
 
 .. _CIS-4-MetadataUrl:
@@ -207,8 +207,9 @@ Basic data for a verifiable credential.
 It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), a :ref:`CIS-4-Timestamp` from which the credential is valid (``valid_from``), an optional :ref:`CIS-4-Timestamp` until which the credential is valid (``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``). The optional timestamp is serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp is present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
 
   OptionalTimestamp ::= (0: Byte)
-                    | (1: Byte) (timestamp: Timestamp)
-  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: Timestamp) (valid_until: OptionTimestamp) (credential_type: CredentialType) (metadata_url: MetadataUrl)
+                      | (1: Byte) (timestamp: Timestamp)
+  CredentialInfo ::= (holder_id: PublicKeyEd25519) (holder_revocable: Bool) (commitment: Commitment) (valid_from: Timestamp)
+                     (valid_until: OptionTimestamp) (credential_type: CredentialType) (metadata_url: MetadataUrl)
 
 .. note::
   The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 value), then the credential never expires.
@@ -538,24 +539,26 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 ``RegisterCredentialEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``RegisterCredentialEvent`` event MUST be logged when a new credential is registered with :ref:`CIS-4-functions-registerCredential`.
+A ``RegisterCredentialEvent`` event MUST be logged when a new credential is registered.
+The event records the credential identifier, the credential type, and the corresponding schema reference.
 
-The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 255, followed by :ref:`CIS-4-CredentialID` (``crednetial_id``), a public key of the holder :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
+The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 255, followed by :ref:`CIS-4-CredentialID` (``crednetial_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
 
-  CredentialEventData ::= (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (schema_ref: SchemaRef) (credential_type: CredentialType)
+  CredentialEventData ::= (credential_id: CredentialID) (schema_ref: SchemaRef) (credential_type: CredentialType)
   RegisterCredentialEvent ::= (255: Byte) (data: CredentialEventData)
 
 ``RevokeCredentialEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``RevokeCredentialEvent`` event MUST be logged when a new credential is revoked by the issuer :ref:`CIS-4-functions-revokeCredentialIssuer`, the holder :ref:`CIS-4-functions-revokeCredentialHolder`, or a revocation authority :ref:`CIS-4-functions-revokeCredentialOther`.
+A ``RevokeCredentialEvent`` event MUST be logged when a credential is revoked.
+The event records the credential identifier, who requested the revocation (the holder, the issuer or a revocation authority), and an optional string with a short comment on the revocation reason.
 
-The ``RevokeCredentialEvent`` event is serialized as: first a byte with the value of 254, followed by :ref:`CIS-4-CredentialID` (``crednetial_id``), a public key of the holder :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a ``revoker``, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`; ``revoker`` is serialized as 1 byte to indicate who sent the revocation request ( 0 - issuer, 1 - holder, 2 -revocation authority); if the first byte is 2, then it is followed by a public key :ref:`CIS-4-PublicKeyEd25519` of the revoker::
+The ``RevokeCredentialEvent`` event is serialized as: first a byte with the value of 254, followed by :ref:`CIS-4-CredentialID` (``crednetial_id``), a ``revoker``, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`; ``revoker`` is serialized as 1 byte to indicate who sent the revocation request ( 0 - issuer, 1 - holder, 2 -revocation authority); if the first byte is 2, then it is followed by a public key :ref:`CIS-4-PublicKeyEd25519` of the revoker::
 
   Revoker ::= (0: Byte)                         // Issuer
             | (1: Byte)                         // Holder
             | (2: Byte) (key: PublicKeyEd25519) // Other
-  RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialID) (holder_id: PublicKeyEd25519) (revoker: Revoker) (reason: OptionReason)
+  RevokeCredentialEvent ::= (254: Byte) (credential_id: CredentialID) (revoker: Revoker) (reason: OptionReason)
 
 ``IssuerMetadata``
 ^^^^^^^^^^^^^^^^^^
