@@ -129,8 +129,6 @@ A smart contract instance with the ``credentialEntry`` entrypoint taking a param
 Concordium DID Documents
 ========================
 
-.. TODO add formal DID documents
-
 Account DID
 -----------
 
