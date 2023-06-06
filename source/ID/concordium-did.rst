@@ -27,8 +27,6 @@ Status of This Document
 
 This is a draft document and may be updated.
 
-[Add more legal text here?]
-
 Specification
 =============
 
