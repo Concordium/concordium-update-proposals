@@ -355,7 +355,7 @@ Requirements
 
 - The credential registration request MUST fail if the credential ID is already present in the registry.
 - After successful registration:
-    - Querying the credential by its ID with :ref:`CIS-4-functions-credentialEntry`  MUST succeed.
+    - Querying the credential by its ID with :ref:`CIS-4-functions-credentialEntry` MUST succeed.
     - Querying the credential status by ID with :ref:`CIS-4-functions-credentialStatus` MUST succeed and MUST NOT return ``Revoked`` (See the possible values for the status in :ref:`CIS-4-CredentialStatus`).
 
 .. _CIS-4-functions-revokeCredentialIssuer:
@@ -375,7 +375,7 @@ It is serialized as :ref:`CIS-4-CredentialHolderId` followed by 1 byte to indica
 If its value is 0, then no reason string is present, if the value is 1 then the bytes corresponding to the reason string follow::
 
   OptionalReason ::= (0: Byte)
-                 | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
+                   | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
   RevokeCredentialIssuerParam ::= (credential_id: CredentialHolderId) (reason: OptionReason)
 
 .. TODO: what kind of characters are allowed? ASCII, Unicode?
