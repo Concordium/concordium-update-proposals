@@ -139,7 +139,6 @@ In order to do that, it specifies a `DID verification method <did-vefication-met
 
 The Account DID Document MUST contain the following data:
 
-- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the account.
 - ``verificationMethod`` - the account's verification method.
   It is a nested :ref:`threshold scheme <concordium-did-verification-method>` requiring at ``T`` out of ``M`` credentials to sign; each credential uses its own threshold scheme requiring ``R_i`` out of ``N_i`` keys to sign, where ``i = 1..M``.and ``j = 1..N_i``.
@@ -161,10 +160,6 @@ The document MAY include any other public data of a Concordium account.
 .. code-block:: json
 
   {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "Concordium DID URI"
-    ],
     "id": "did:ccd:NET:acc:ADDR",
     "verificationMethod": [
       {
@@ -241,12 +236,11 @@ The document MAY include any other public data of a Concordium account.
 Concordium Credential DID
 -------------------------
 
-The goal of the Account DID Document is to provide information about Concordium credentials, including a possibility to reference particular pieces of data, such as public keys.
+The goal of the Concordium Credential DID Document is to provide information about Concordium credentials, including a possibility to reference particular pieces of data, such as public keys.
 In order to do that, it specifies a `DID verification method <did-vefication-method_>`_ that reflects the credential authentication data.
 
 The Concordium Credential DID Document MUST contain the following data:
 
-- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the credential.
 - ``verificationMethod`` - the credential's verification method.
 - ``authentication`` - authentication method for the credential.
@@ -259,10 +253,6 @@ The credential has ``N`` keys and uses a threshold signature scheme requiring ``
 .. code-block:: json
 
   {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "Concordium DID URI"
-    ],
     "id": "did:ccd:NET:cred:CRED#credential-1",
     "verificationMethod": [
       {
@@ -295,11 +285,10 @@ Smart Contract Instance DID
 ---------------------------
 
 The goal of the Smart Contract Instance DID is to provide meta-data about the contract instance.
-At the moment, the main piece of meta-data is the Concordium account that send the initialization transaction.
+At the moment, it contains an account address of the initialization transaction sender, and the list of the contract's entrypoints.
 
 The Smart Contract Instance DID Document MUST contain the following data:
 
-- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the smart contract instance.
 - ``creator`` - a DID of an account that initialized the contract instance represented as a JSON object containing fields ``id`` and ``account``.
 - ``entrypoints`` - a list on the contract's entrypoints.
@@ -309,10 +298,6 @@ The document MAY include any other public data of a smart contract instance.
 .. code-block:: json
 
   {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "Concordium DID URI"
-    ],
     "id": "did:ccd:sci:IND:SUBIND",
     "owner": {
       "id": "did:ccd:sci:IND:SUBIND#creator",
@@ -341,7 +326,6 @@ The goal of the Public Key Cryptography DID is to represent a public key and the
 
 The Public Key Cryptography DID Document MUST contain the following data:
 
-- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the public key.
 - ``verificationMethod`` - specifies a `DID verification method <did-vefication-method_>`_ for verifying a signature corresponding to the public key.
 - ``authentication`` - authentication method for the key.
@@ -349,10 +333,6 @@ The Public Key Cryptography DID Document MUST contain the following data:
 .. code-block:: json
 
   {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "Concordium DID URI"
-    ],
     "id": "did:ccd:pkc:XX",
     "verificationMethod": [
       {
@@ -378,7 +358,6 @@ IDPs are used in the account creation process to issue an identity.
 IDP DIDs can represent an issuer of a verifiable credential.
 
 The Identity Provider DID Document MUST contain the following data:
-- ``@context`` - the attribute that expresses context information.
 - ``id`` - the DID of the IDP.
 - ``name`` - the IDP name.
 - ``url`` - A link to more information about the IDP.
@@ -388,10 +367,6 @@ The Identity Provider DID Document MUST contain the following data:
 .. code-block:: json
 
   {
-    "@context": [
-      "https://www.w3.org/ns/did/v1",
-      "Concordium DID URI"
-    ],
     "id": "did:ccd:testnet:idp:3",
     "name": "Digital Trust Solutions TestNet",
     "url": "https://www.digitaltrustsolutions.nl",
@@ -515,15 +490,14 @@ Smart Contract Instance Reference
 
 Dereferencing a DID reference of the form
 
-``did:ccd:NET:sci:IND:SUBIND/EP[/PAR][?standard=STD]``
+``did:ccd:NET:sci:IND:SUBIND/EP[/PAR]``
 
 can be done by using the gRPC interface command ``InvokeInstance``.
 The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
 The parameter ``PAR`` is passed to the entrypoint.
 
 The result of the invocation is the return value produced by the contract or an error, if the invocation failed.
-The optional query parameter ``standard=STD`` specifies the formatting of the return value.
-If not specified, the return value is in the JSON format corresponding to the embedded smart contract schema.
+The return value is in the JSON format corresponding to the embedded smart contract schema.
 If a contract does not have an embedded schema, the following JSON is returned:
 
 .. code-block:: json
@@ -533,65 +507,6 @@ If a contract does not have an embedded schema, the following JSON is returned:
   }
 
 ``BASE16DATA`` is a base16-encoded return value.
-
-As an example, consider CIS-4 Concordium smart contract standard that specifies a verifiable credential registry.
-The special formatting rules apply to the following entrypoints:
-
-- ``revocationKey`` - the entrypoint return value is expected to be a pair of an array of bytes for a public key ``XX`` and a ``u64`` value (nonce) ``N``.
-  The output is a DID document with a verification method based on the public key ``XX``.
-  The bytes of ``XX`` are represented in the base16 encoding in the document.
-  The key index ``K`` corresponds to the input parameter to the ``revocationKey`` entrypoint.
-
-  .. code-block:: json
-
-    {
-      "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "Concordium DID URI"
-      ],
-      "id": "did:ccd:NET:sci:IND:SUBIND/revocationKey/PAR?standard=CIS-4",
-      "nonce": "N",
-      "verificationMethod": [
-        {
-          "id": "did:ccd:NET:sci:IND:SUBIND/revocationKey/PAR?standard=CIS-4#key-K",
-          "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "fXX"
-        }
-      ]
-    }
-
-- ``issuerKeys`` - the entrypoint return value is expected to be a list of pairs: key index, key bytes.
-  For example, ``[(0, XX); (1, YY); (2, ZZ)]``.
-  The output is a DID document with a list of verification methods based on public keys ``XX``, ``YY`` and ``ZZ``.
-  The bytes of the keys are represented in the base16 encoding in the document.
-  The key indices correspond to the first components of the each pair in the list.
-
-  .. code-block:: json
-
-    {
-      "@context": [
-        "https://www.w3.org/ns/did/v1",
-        "Concordium DID URI"
-      ],
-      "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4",
-      "verificationMethod": [
-        {
-          "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4#key-0",
-          "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "fXX"
-        },
-        {
-          "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4#key-1",
-          "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "fYY"
-        },
-        {
-          "id": "did:ccd:NET:sci:IND:SUBIND/issuerKeys?format=CIS-4#key-2",
-          "type": "Ed25519VerificationKey2020",
-          "publicKeyMultibase": "fZZ"
-        }
-      ]
-    }
 
 From the command line, ``concordium-client`` allows for invoking a smart contract instance in the following way:
 
@@ -647,8 +562,6 @@ Update
 ------
 
 At this time Concordium does not support the update of DID documents.
-
-.. TODO Technically the account based DIDs are updateable, add something about it?
 
 Deactivate
 ----------
