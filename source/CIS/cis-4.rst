@@ -631,22 +631,15 @@ All of the fields in the JSON file are optional, and this specification reserves
   * - ``name``
     - string
     - The name to display for the issuer.
+  * - ``icon``
+    - URL JSON object
+    - An image URL for displaying the issuer.
   * - ``description`` (optional)
     - string
     - A description for the issuer.
-  * - ``thumbnail`` (optional)
-    - URL JSON object
-    - An image URL to a small image for displaying the issuer.
-  * - ``display`` (optional)
-    - URL JSON object
-    - An image URL to a large image for displaying the issuer.
-  * - ``url``
+  * - ``url`` (optional)
     - string (:rfc:`3986`) [``uri-reference``]
     - A URL of the issuer's website.
-  * - ``attributes`` (optional)
-    - JSON array of Attribute JSON objects
-    - Assign a number of attributes to the issuer.
-      Attributes can be used to include extra information about the issuer.
 
 Optionally a SHA256 hash of the JSON file can be logged with the :ref:`CIS-4-events-IssuerMetadata` event for checking integrity.
 Since the metadata JSON file could contain URLs, a SHA256 hash can optionally be associated with the URL.
@@ -665,29 +658,20 @@ To associate a hash with a URL the JSON value is an object:
     - string
     - A SHA256 hash of the URL content encoded as a hex string.
 
-Attributes are objects with the following fields:
-
-.. list-table:: Attribute JSON object
-  :header-rows: 1
-
-  * - Property
-    - JSON value type [JSON-Schema]
-    - Description
-  * - ``type``
-    - string
-    - Type for the value field of the attribute.
-  * - ``name``
-    - string
-    - Name of the attribute.
-  * - ``value``
-    - string
-    - Value of the attribute.
-
-
 Example issuer metadata
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+.. code-block:: json
+
+  {
+    "name": "Concordium",
+    "icon" : {
+      "url":  "https://concordium.com/wp-content/uploads/2022/07/Concordium-1.png",
+      "hash": "1c74f7eb1b3343a5834e60e9a8fce277f2c7553112accd42e63fae7a09e0caf8"
+      }
+    "description": "A public-layer 1, science-backed blockchain",
+    "url": "https://concordium.com"
+  }
 
 Credential metadata JSON
 ------------------------
@@ -721,7 +705,19 @@ Optionally a SHA256 hash of the JSON file can be logged with the :ref:`CIS-4-eve
 Example credential metadata
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-TBD
+.. code-block:: json
+
+ {
+    "title": "Concordium Employment",
+    "logo" : {
+      "url":  "https://concordium.com/wp-content/uploads/2022/07/Concordium-1.png",
+      "hash": "1c74f7eb1b3343a5834e60e9a8fce277f2c7553112accd42e63fae7a09e0caf8"
+      }
+    "background_color": "#000000",
+    "image": {
+      "url": "https://concordium.com/employment/vc-background.png",
+    }
+  }
 
 .. _CIS-4-smart-contract-limitations:
 
