@@ -493,16 +493,28 @@ The entrypoint is considered a *view*: no state changes are persisted, only the 
 The parameter ``PAR`` is passed to the entrypoint.
 
 The result of the invocation is the return value produced by the contract or an error, if the invocation failed.
-The return value is in the JSON format corresponding to the embedded smart contract schema.
-If a contract does not have an embedded schema, the following JSON is returned:
+
+If the contract contains an embedded schema, then the response is the following:
 
 .. code-block:: json
 
   {
-    "contractBinaryResponse" : "BASE16DATA"
+    "type" : "json",
+    "data": "JSON"
   }
 
-``BASE16DATA`` is a base16-encoded return value.
+Where ``JSON`` is the JSON rendering of the response.
+
+If the contract does not contain an embedded schema, then the response is the following:
+
+.. code-block:: json
+
+  {
+    "type" : "raw",
+    "data": "BASE16DATA"
+  }
+
+Where ``BASE16DATA`` is a base16-encoded return value.
 
 From the command line, ``concordium-client`` allows for invoking a smart contract instance in the following way:
 
@@ -567,24 +579,23 @@ At this time Concordium does not support deactivation of DID documents.
 Security Considerations
 =======================
 
-The ``did:ccd`` method is built on top the Concordium blockchain, a public
-permissionless DLT. Security of the DID method reduces to the security of the
-underlying blockchain protocol. This concerns attacks such as eavesdropping, replay,
-message insertion, deletion, modification, denial of service, amplification, and
-man-in-the-middle.
+The ``did:ccd`` method is built on top the Concordium blockchain, a public permissionless DLT.
+Security of the DID method reduces to the security of the underlying blockchain protocol.
+This concerns attacks such as eavesdropping, replay, message insertion, deletion, modification, denial of service, amplification, and man-in-the-middle.
 
-Parties SHOULD run a full node of the underlying blockchain protocol to ensure that
-they can read and write securely to the DLT.
+Parties SHOULD run a full node of the underlying blockchain protocol to ensure that they can read and write securely to the DLT.
 
-Authorization is perfomed by means of digital signature keys. Leakage of private keys
-allows an attacker to take control. Parties therefore MUST handle private keys with
-care.
+Authorization is performed by means of digital signature keys.
+Leakage of private keys allows an attacker to take control.
+Parties therefore MUST handle private keys with care.
 
 
 Privacy Considerations
 =======================
 
-DIDs SHOULD be assumed to be pseudonyoums and public as they might be stored on the underlying DLT. Correlation attacks MAY be possible if information asocciated to DIDs is published. It is therefore NOT RECOMMENDED to reuse PKC DIDs.
+DIDs SHOULD be assumed to be pseudonyoums and public as they might be stored on the underlying DLT.
+Correlation attacks MAY be possible if information assocciated to DIDs is published.
+It is therefore NOT RECOMMENDED to reuse PKC DIDs.
 
 
 Appendices
