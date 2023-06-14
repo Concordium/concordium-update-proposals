@@ -7,7 +7,7 @@ Concordium DID Method Version 1.0
 About
 =====
 
-The Concordium DID method specification conforms to the requirements specified in `Decentralized Identifiers (DIDs) v1.0 <w3c-did-core-v1.0_>`_ [DID] published by the W3C Credentials Community Group.
+The Concordium DID method specification conforms to the requirements specified in `Decentralized Identifiers (DIDs) v1.0 <w3c-did-core-v1.0_>`_ published by the W3C Credentials Community Group.
 For more information about DIDs and DID method specifications, please see the `DID Primer`_ and `DID Spec`_.
 
 Abstract
@@ -84,10 +84,9 @@ Concordium smart contract entrypoints can be addressed using DID references.
 
 .. code-block:: ABNF
 
-  ccd-sc-ref = "/" entrypoint *1("/" parameter) *1("?" "standard" "=" standard)
+  ccd-sc-ref = "/" entrypoint *1("/" parameter)
   parameter = base16char
   entrypoint = 1*(ALPHA / DIGIT / punctuation)
-  standard = "CIS" "-" 1*(DIGIT)
   punctuation = "!" / DQUOTE / "#" / "$" / "%" / "&" / "'" / "(" /
                 ")" / "*" / "+" / "," / "-" / "." / "/" / ";" /
                 "<" / "=" / ">" / "?" / "@" / "[" / "\" / "]" /
@@ -159,7 +158,7 @@ The document MAY include any other public data of a Concordium account.
     "id": "did:ccd:NET:acc:ADDR",
     "verificationMethod": [
       {
-        "id": "did:ccd:NET:acc:ADDR#acc-1",
+        "id": "did:ccd:NET:acc:ADDR#acc-vm",
         "controller": "did:ccd:NET:acc:ADDR",
         "type": "VerifiableCondition2021",
         "blockchainAccountId": "ADDR",
@@ -220,7 +219,7 @@ The document MAY include any other public data of a Concordium account.
       }
     ],
     "authentication": [
-      "#acc-1"
+      "#acc-vm"
     ]
   }
 
@@ -249,9 +248,10 @@ The credential has ``N`` keys and uses a threshold signature scheme requiring ``
 .. code-block:: json
 
   {
-    "id": "did:ccd:NET:cred:CRED#credential-1",
+    "id": "did:ccd:NET:cred:CRED",
     "verificationMethod": [
       {
+        "did:ccd:NET:cred:CRED#credential-vm"
         "type": "VerifiableCondition2021",
         "threshold": "T",
         "conditionThreshold": [
@@ -272,7 +272,7 @@ The credential has ``N`` keys and uses a threshold signature scheme requiring ``
       }
     ],
     "authentication": [
-      "#credential-1"
+      "#credential-vm"
     ]
   }
 
@@ -348,12 +348,13 @@ The Public Key Cryptography DID Document MUST contain the following data:
 Identity Provider DID
 ---------------------
 
-The goal of the Identity Provider DID is identify a Concordium identity provider (IDP).
+The goal of the Identity Provider DID is identify a Concordium identity provider.
 An identity provider is an organization, approved by Concordium, that performs off-chain identification of users.
-IDPs are used in the account creation process to issue an identity.
-IDP DIDs can represent an issuer of a verifiable credential.
+Identity providers are used in the account creation process to issue an identity.
+Identity provider DIDs can represent an issuer of a verifiable credential.
 
 The Identity Provider DID Document MUST contain the following data:
+
 - ``id`` - the DID of the IDP.
 - ``name`` - the IDP name.
 - ``url`` - A link to more information about the IDP.
@@ -363,15 +364,15 @@ The Identity Provider DID Document MUST contain the following data:
 .. code-block:: json
 
   {
-    "id": "did:ccd:testnet:idp:3",
-    "name": "Digital Trust Solutions TestNet",
+    "id": "did:ccd:testnet:idp:0",
+    "name": "Concordium testnet IP",
     "url": "https://www.digitaltrustsolutions.nl",
-    "description": "Identity verified by Digital Trust Solutions on behalf of Concordium",
+    "description": "Concordium testnet identity provider",
     "verificationMethod": [
       {
-        "id": "did:ccd:testnet:idp:3#cdi-key",
+        "id": "did:ccd:testnet:idp:0#cdi-key",
         "type": "Ed25519VerificationKey2020",
-        "controller": "did:ccd:NET:pkc:PK",
+        "controller": "did:ccd:testnet:idp:0",
         "publicKeyMultibase": "fXX"
       }
     ]
@@ -395,7 +396,7 @@ The resulting DID is ``did:ccd:NET:acc:ADDR`` where ``ADDR`` is the base58 encod
 Concordium Credential DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A Concordium Credential DID is created as part of the account opening process.
+A Concordium Credential DID is created as part of the account opening process, or by adding a Concordium credential to an existing account.
 
 Smart Contract Instance DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -569,12 +570,26 @@ From the command line, ``concordium-client`` allows to retrieve the data in the 
 Update
 ------
 
-At this time Concordium does not support the update of DID documents.
+Account DID
+^^^^^^^^^^^
+
+It is possible to update Account DID documents by sending an `update credentials transaction <https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html>`_.
+This type of transactions allows for adding/removing credentials and changing the signature threshold.
+
+Concordium Credential DID
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to update Concordium Credential DID documents by sending an `update credentials keys transaction <https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/send/fn.update_credential_keys.html>`_.
+This type of transactions allows for updating the keys associated with a Concordium credential and the corresponding signature threshold.
+
 
 Deactivate
 ----------
 
-At this time Concordium does not support deactivation of DID documents.
+Concordium Credential DID
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A Concordium Credential DID can be deactivated by removing the corresponding credential with an `update credentials transaction <https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html>`_.
 
 Security Considerations
 =======================
