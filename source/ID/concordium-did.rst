@@ -366,7 +366,7 @@ The Identity Provider DID Document MUST contain the following data:
   {
     "id": "did:ccd:testnet:idp:0",
     "name": "Concordium testnet IP",
-    "url": "https://www.digitaltrustsolutions.nl",
+    "url": "",
     "description": "Concordium testnet identity provider",
     "verificationMethod": [
       {
