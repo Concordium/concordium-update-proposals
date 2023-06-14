@@ -18,7 +18,7 @@ We distinguish the following types of DIDs:
 
 - **Account DID** refers to accounts on the Concordium blockchain.
 - **Concordium Credential DID** refers to a Concordium credential object.
-- **Smart Contract DID** refers to smart contracts instances on the Concordium blockchain.
+- **Smart Contract DID** refers to smart contract instances on the Concordium blockchain.
 - **Public Key DID** refers to a subject that knows the corresponding secret key.
 - **Identity Provider DID** refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.
 
@@ -348,7 +348,7 @@ The Public Key Cryptography DID Document MUST contain the following data:
 Identity Provider DID
 ---------------------
 
-The goal of the Identity Provider DID is identify a Concodrium identity provider (IDP).
+The goal of the Identity Provider DID is identify a Concordium identity provider (IDP).
 An identity provider is an organization, approved by Concordium, that performs off-chain identification of users.
 IDPs are used in the account creation process to issue an identity.
 IDP DIDs can represent an issuer of a verifiable credential.
@@ -449,7 +449,7 @@ The DID document information for a DID of the form
 
 can be resolved by looking up a credential with ID ``CRED`` on blockchain ``NET``.
 
-Data required to construct the DID document can be acquired by using the same gRPC interface command ``GetAccountInfo`` as for Concodrium account DIDs.
+Data required to construct the DID document can be acquired by using the same gRPC interface command ``GetAccountInfo`` as for Concordium account DIDs.
 
 .. TODO update, once we have a DID resolver
 
