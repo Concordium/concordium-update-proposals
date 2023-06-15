@@ -213,7 +213,7 @@ It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519`
                      (valid_until: OptionTimestamp) (credential_type: CredentialType) (metadata_url: MetadataUrl)
 
 .. note::
-  The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 value), then the credential never expires.
+  The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 tag), then the credential never expires.
 
 
 .. _CIS-4-CredentialStatus:
