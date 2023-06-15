@@ -179,7 +179,8 @@ Serialized in the same way as :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
 ``CredentialType``
 ^^^^^^^^^^^^^^^^^^
 
-Is a short ASCII string (up to 256 characters) describing the credential type that is used to identify which schema the credential is based on.
+A short string (up to 256 characters) in the UTF-8 encoding.
+The string describes the credential type that is used to identify which schema the credential is based on.
 It corresponds to a value of the ``name`` attribute of the credential schema.
 
 It is serialized as: First byte encodes the length (``n``) of the credential type, followed by this many bytes for the credential type string::
@@ -369,7 +370,7 @@ The issuer is authorized to revoke a credential if the transaction sender's addr
 Parameter
 ~~~~~~~~~
 
-The parameter is the credential ID :ref:`CIS-4-CredentialHolderId` and optional string indicating the revocation reason.
+The parameter is the credential ID :ref:`CIS-4-CredentialHolderId` and an optional string in the UTF-8 encoding that indicates the revocation reason.
 
 It is serialized as :ref:`CIS-4-CredentialHolderId` followed by 1 byte to indicate whether a reason is included.
 If its value is 0, then no reason string is present, if the value is 1 then the bytes corresponding to the reason string follow::
@@ -378,13 +379,11 @@ If its value is 0, then no reason string is present, if the value is 1 then the 
                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
   RevokeCredentialIssuerParam ::= (credential_id: CredentialHolderId) (reason: OptionReason)
 
-.. TODO: what kind of characters are allowed? ASCII, Unicode?
-
 Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The revocation MUST fail if:
+- The revocation MUST fail if any of the following conditions are met:
     - The sender of the transaction is not the issuer.
     - The credential ID is not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
@@ -413,10 +412,13 @@ Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The message to be signed is produced in the following way:
+    - Start with the bytes of the domain separation string ``WEB3ID:REVOKE``.
+    - Append ``RevocationDataHolder`` bytes from the input parameter.
 - The ``RevokeCredentialHolderParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
   The holders's nonce is sequentially increased every time a revocation request is successfully executed.
   The function MUST only accept a ``RevokeCredentialHolderParam`` if it has the next nonce following the sequential order.
-- The revocation MUST fail if:
+- The revocation MUST fail if any of the following conditions are met:
     - The credential ID is not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
     - The credential is not holder-revocable.
@@ -453,10 +455,13 @@ Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
+- The message to be signed is produced in the following way:
+    - Start with the bytes of the domain separation string ``WEB3ID:REVOKE``.
+    - Append ``RevocationDataOther`` bytes from the input parameter.
 - The ``RevokeCredentialOtherParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
   The revocation authority's nonce is sequentially increased every time a revocation request is successfully executed.
   The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
-- The revocation MUST fail if:
+- The revocation MUST fail if any of the following conditions are met any of the following conditions are met:
     - The credential ID is not present in the registry.
     - The revocation key in not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
@@ -483,7 +488,7 @@ It is serialized as First 2 bytes encode the length (``n``) the vector of kesy, 
 Requirements
 ~~~~~~~~~~~~
 
-- The revocation MUST fail if:
+- The revocation MUST fail if any of the following conditions are met:
     - The sender of the transaction is not the issuer.
     - Some of the keys are already registered.
 - The smart contract MUST prevent resetting the nonce associated with a public key.
@@ -507,7 +512,7 @@ It is serialized as: First 2 bytes encode the length (``n``) the vector of keys,
 Requirements
 ~~~~~~~~~~~~
 
-- The revocation MUST fail if:
+- The revocation MUST fail if any of the following conditions are met:
     - The sender of the transaction is not the issuer.
     - Some of the keys are not present in the registry.
 
@@ -522,7 +527,7 @@ Query revocation keys.
 Response
 ~~~~~~~~
 
-The function output a list of available revocation keys.
+The function outputs a list of available revocation keys.
 Valid signatures with the corresponding private keys can be used to revoke any credential in the registry.
 
 It is serialized as: First 2 bytes encode the length (``n``) the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
@@ -569,7 +574,6 @@ The ``RevokeCredentialEvent`` event is serialized as: first a byte with the valu
 ^^^^^^^^^^^^^^^^^^
 
 A ``IssuerMetadata`` event MUST be logged when setting the metadata url of the issuer.
-This also applies to contract initialization.
 It consists of a URL for the location of the metadata for the issuer with an optional SHA256 checksum of the content.
 
 The ``IssuerMetadata`` event is serialized as: first a byte with the value of 253, followed by :ref:`CIS-2-MetadataUrl` (``metadata``)::
