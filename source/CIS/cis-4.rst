@@ -230,6 +230,8 @@ It is serialized as 1 byte where ``0`` correponds to the status ``Active``, ``1`
                      | (2: Byte) // Expired
                      | (3: Byte) // NotActivated
 
+See requirements for :ref:`CIS-4-functions-credentialStatus` for details of how statues are returned.
+
 .. _CIS-4-functions:
 
 Contract functions
@@ -306,6 +308,7 @@ Requirements
 - The query MUST fail if the credential ID is not present in the registry.
 - The credential status MUST be ``Expired`` if the credential is not revoked, the field ``valid_until`` was present in :ref:`CIS-4-CredentialInfo` when registering the credential, and ``valid_until < now``.
 - The credential status MUST NOT be ``Expired`` if the field ``valid_until`` was not present in :ref:`CIS-4-CredentialInfo` when registering the credential.
+- The credential status MUST be ``NotActivated`` if ``now < valid_from``, where ``valid_from`` is the corresponding value from :ref:`CIS-4-CredentialInfo` provided when registering the credential.
 - The credential status MUST be ``Acive`` if the credential is not revoked, and does not qualify as ``Expired`` or ``NotActivated``.
 
 .. _CIS-4-functions-issuer:
@@ -355,9 +358,7 @@ Requirements
 ~~~~~~~~~~~~
 
 - The credential registration request MUST fail if the credential ID is already present in the registry.
-- After successful registration:
-    - Querying the credential by its ID with :ref:`CIS-4-functions-credentialEntry` MUST succeed.
-    - Querying the credential status by ID with :ref:`CIS-4-functions-credentialStatus` MUST succeed and MUST NOT return ``Revoked`` (See the possible values for the status in :ref:`CIS-4-CredentialStatus`).
+- After successful registration, querying the credential by its ID with :ref:`CIS-4-functions-credentialEntry` MUST succeed.
 
 .. _CIS-4-functions-revokeCredentialIssuer:
 
