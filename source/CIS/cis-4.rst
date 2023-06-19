@@ -329,7 +329,7 @@ It is serialized as :ref:`CIS-4-AccountAddress`.
 ``issuerMetadata``
 ^^^^^^^^^^^^^^^^^^
 
-Query the current token metadata URLs for a list of token IDs.
+Query the issuer's metadata URL.
 
 Response
 ~~~~~~~~
@@ -343,16 +343,23 @@ It is serialized as :ref:`CIS-2-MetadataUrl`.
 ``registerCredential``
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Register a credential with the given ID.
+Register public data for a new credential.
 
 Parameter
 ~~~~~~~~~
 
-The parameter is the credential ID and credential information that is used to create an entry in the registry.
+The parameter is credential information that is used to create an entry in the registry.
 
-It is serialized as :ref:`CIS-4-CredentialHolderId` (``credential_id``) followed by :ref:`CIS-4-CredentialInfo` (``credential_info``)::
+It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``) followed by auxiliary data, which is serialized as 2 bytes to encode the length (``n``) of the vector of keys, followed by this many bytes of data::
 
-  RegisterCredentialParameter ::= (credential_id: CredentialHolderId) (credential_info: CredentialInfo)
+  AuxData ::= (n: Byte²) (data: Byteⁿ)
+  RegisterCredentialParameter ::= (credential_info: CredentialInfo) (auxiliary_data: AuxData)
+
+.. note::
+
+  A possible use case for auxiliary data is storing the encrypted credential data in another storage smart contract.
+  In this case, ``auxiliary_data`` contains serialized parameters to the storage contract.
+  This makes the "register and store" operation atomic, because the operation is a single top-level smart contract call.
 
 Requirements
 ~~~~~~~~~~~~
@@ -478,11 +485,12 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Register public keys that can be used by revocation authorities.
+The caller is authorized to register the keys if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
 
 Parameter
 ~~~~~~~~~
 
-It is serialized as First 2 bytes encode the length (``n``) the vector of kesy, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+It is serialized as First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
 
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
 
@@ -502,11 +510,12 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Make a list of public keys unavailable to revocation authorities.
+The caller is authorized to remove the keys if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
 
 Parameter
 ~~~~~~~~~
 
-It is serialized as: First 2 bytes encode the length (``n``) the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
 
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
 
@@ -531,7 +540,7 @@ Response
 The function outputs a list of available revocation keys.
 Valid signatures with the corresponding private keys can be used to revoke any credential in the registry.
 
-It is serialized as: First 2 bytes encode the length (``n``) the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
 
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
 
@@ -590,7 +599,7 @@ The ``IssuerMetadata`` event is serialized as: first a byte with the value of 25
 A ``CredentialMetadataEvent`` event MUST be logged when updating the credential metadata.
 It consist of a credential ID and a URL for the location of the metadata for this credential with an optional SHA256 checksum of the content.
 
-The ``CredentialMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by the token ID :ref:`CIS-2-TokenID` (``id``), and then a :ref:`CIS-2-MetadataUrl` (``metadata``)::
+The ``CredentialMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by :ref:`CIS-4-CredentialHolderID` (``id``), and then a :ref:`CIS-4-MetadataUrl` (``metadata``)::
 
   CredentialMetadataEvent ::= (246: Byte) (id: CredentialHolderId) (metadata: MetadataUrl)
 
@@ -601,7 +610,7 @@ The ``CredentialMetadataEvent`` event is serialized as: first a byte with the va
 A ``CredentialSchemaRefEvent`` event MUST be logged when updating the credential schema reference for a credential type.
 It consist of a credential type and a URL for the location of the schema for this credential with an optional SHA256 checksum of the content.
 
-The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 251, followed by the token ID :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
+The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 251, followed by :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
 
   CredentialSchemaRefEvent ::= (245: Byte) (type: CredentialType) (schema_ref: SchemaRef)
 
