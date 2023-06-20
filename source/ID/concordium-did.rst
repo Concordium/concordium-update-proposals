@@ -594,7 +594,7 @@ A Concordium Credential DID can be deactivated by removing the corresponding cre
 Security Considerations
 =======================
 
-The ``did:ccd`` method is built on top the Concordium blockchain, a public permissionless DLT.
+The ``did:ccd`` method is built on top the Concordium blockchain, a public permissionless DL.
 Security of the DID method reduces to the security of the underlying blockchain protocol.
 This concerns attacks such as eavesdropping, replay, message insertion, deletion, modification, denial of service, amplification, and man-in-the-middle.
 
