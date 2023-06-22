@@ -574,13 +574,13 @@ Account DID
 ^^^^^^^^^^^
 
 It is possible to update Account DID documents by sending an `update credentials transaction <https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html>`_.
-This type of transactions allows for adding/removing credentials and changing the signature threshold.
+This type of transaction allows for adding/removing credentials and changing the signature threshold.
 
 Concordium Credential DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It is possible to update Concordium Credential DID documents by sending an `update credentials keys transaction <https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/send/fn.update_credential_keys.html>`_.
-This type of transactions allows for updating the keys associated with a Concordium credential and the corresponding signature threshold.
+This type of transaction allows for updating the keys associated with a Concordium credential and the corresponding signature threshold.
 
 
 Deactivate
