@@ -280,7 +280,7 @@ The credential has ``N`` keys and uses a threshold signature scheme requiring ``
 Smart Contract Instance DID
 ---------------------------
 
-The goal of the Smart Contract Instance DID is to provide meta-data about the contract instance.
+The goal of the Smart Contract Instance DID is to provide metadata about the contract instance.
 At the moment, it contains an account address of the initialization transaction sender, and the list of the contract's entrypoints.
 
 The Smart Contract Instance DID Document MUST contain the following data:
@@ -310,7 +310,7 @@ The document MAY include any other public data of a smart contract instance.
   }
 
 Where ``IND`` and ``SUBIND`` are the contract index and subindex.
-``NET`` and ``ADDR`` correspond to the network and to the owner's account address.
+``NET`` and ``ADDR`` correspond to the network and to the owner's account address respectively.
 
 
 .. _concordium-did-pkc:
@@ -349,7 +349,7 @@ Identity Provider DID
 ---------------------
 
 The goal of the Identity Provider DID is identify a Concordium identity provider.
-An identity provider is an organization, approved by Concordium, that performs off-chain identification of users.
+An identity provider (IDP) is an organization, approved by Concordium, that performs off-chain identification of users.
 Identity providers are used in the account creation process to issue an identity.
 Identity provider DIDs can represent an issuer of a verifiable credential.
 
