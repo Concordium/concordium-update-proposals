@@ -432,7 +432,7 @@ Data required to construct the DID document can be acquired by using the gRPC in
 
 See the details in the `gRPC v2 documentation`_.
 
-From the command line, ``concordium-client`` allows to retrieve the data in the following way:
+From the command line, ``concordium-client`` allows retrieving the data in the following way:
 
 .. code-block:: console
 
@@ -469,7 +469,7 @@ Data required to construct the DID document can be acquired by using the gRPC in
 
 See the details in the `gRPC v2 documentation`_.
 
-From the command line, ``concordium-client`` allows for retrieving the data in the following way:
+From the command line, ``concordium-client`` allows retrieving the data in the following way:
 
 .. code-block:: console
 
@@ -493,7 +493,7 @@ can be done by using the gRPC interface command ``InvokeInstance``.
 The entrypoint is considered a *view*: no state changes are persisted, only the result of the invocation is returned to the caller.
 The parameter ``PAR`` is passed to the entrypoint.
 
-The result of the invocation is the return value produced by the contract or an error, if the invocation failed.
+The result of the invocation is the return value produced by the contract or an error if the invocation fails.
 
 If the contract contains an embedded schema, then the response is the following:
 
@@ -517,7 +517,7 @@ If the contract does not contain an embedded schema, then the response is the fo
 
 Where ``BASE16DATA`` is a base16-encoded return value.
 
-From the command line, ``concordium-client`` allows for invoking a smart contract instance in the following way:
+From the command line, ``concordium-client`` allows invoking a smart contract instance in the following way:
 
 .. code-block::
 
@@ -560,7 +560,7 @@ Data required to construct the DID document can be acquired by using the gRPC in
 
 See the details in the `gRPC v2 documentation`_.
 
-From the command line, ``concordium-client`` allows to retrieve the data in the following way:
+From the command line, ``concordium-client`` allows retrieving the data in the following way:
 
 .. code-block:: console
 
@@ -602,7 +602,7 @@ Parties SHOULD run a full node of the underlying blockchain protocol to ensure t
 
 Authorization is performed by means of digital signature keys.
 Leakage of private keys allows an attacker to take control.
-Parties therefore MUST handle private keys with care.
+Therefore, parties MUST handle private keys with care.
 
 
 Privacy Considerations
