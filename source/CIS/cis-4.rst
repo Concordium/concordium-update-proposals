@@ -23,7 +23,7 @@ A standard interface for verifiable credential (VC) registries.
 A registry keeps track of public VC data and manages the VC lifecycle.
 The interface provides functionality for the following roles of users:
 
-- *credential issuers* can register and revoke credentials;
+- *credential issuers* can register and revoke credentials, manage revocation keys;
 - *credential holders* can revoke holder-revocable credentials by signing a revocation message;
 - *verifiers* can query credential status and data that are used to check a verifiable presentation requested from a holder;
 - *revocation authorities* can revoke credentials by signing a revocation message.
@@ -190,17 +190,6 @@ It is serialized as: First byte encodes the length (``n``) of the credential typ
 
   CredentialType ::= (n: Byte) (credential_type: Byteⁿ)
 
-.. _CIS-4-Commitment:
-
-``Commitment``
-^^^^^^^^^^^^^^
-
-A vector Pedersen commitment to the credential attributes.
-
-It is serialized as: First 2 bytes encode the length (``n``) of the commitment, followed by this many bytes for the commitment data::
-
-  Commitment ::= (n: Byte²) (commitment: Byteⁿ)
-
 .. _CIS-4-CredentialInfo:
 
 ``CredentialInfo``
@@ -208,11 +197,12 @@ It is serialized as: First 2 bytes encode the length (``n``) of the commitment, 
 
 Basic data for a verifiable credential.
 
-It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a vector Pedersen commitment to the credential attributes :ref:`CIS-4-Commitment` (``commitment``), a :ref:`CIS-4-Timestamp` from which the credential is valid (``valid_from``), an optional :ref:`CIS-4-Timestamp` until which the credential is valid (``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``). The optional timestamp is serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp is present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
+It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a :ref:`CIS-4-Timestamp` from which the credential is valid (``valid_from``), an optional :ref:`CIS-4-Timestamp` until which the credential is valid (``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``).
+The optional timestamp is serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp is present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
 
   OptionalTimestamp ::= (0: Byte)
                       | (1: Byte) (timestamp: Timestamp)
-  CredentialInfo ::= (holder_id: CredentialHolderId) (holder_revocable: Bool) (commitment: Commitment) (valid_from: Timestamp)
+  CredentialInfo ::= (holder_id: CredentialHolderId) (holder_revocable: Bool) (valid_from: Timestamp)
                      (valid_until: OptionTimestamp) (credential_type: CredentialType) (metadata_url: MetadataUrl)
 
 .. note::
@@ -319,13 +309,14 @@ Requirements
 ``issuer``
 ^^^^^^^^^^
 
-Query the issuer's account address.
+Query the issuer's public key.
+The corresponding private key is used to sign the public part of verifiable credentials issued by this issuer.
 
 Response
 ~~~~~~~~
 
-The function output is the issuer's account address.
-It is serialized as :ref:`CIS-4-AccountAddress`.
+The function output is the issuer's public key.
+It is serialized as :ref:`CIS-4-PublicKeyEd25519`.
 
 .. _CIS-4-functions-issuerMetadata:
 
@@ -348,6 +339,12 @@ It is serialized as :ref:`CIS-2-MetadataUrl`.
 
 Register public data for a new credential.
 
+.. note::
+  This standard does not specify how the issuer is authenticated.
+  Implementations can use various mechanisms.
+  For example, the transaction sender's address is checked against the issuer's account address stored in the contract.
+  Another option is to use ``auxiliary_data`` to implement signature-based authentication mechanism.
+
 Parameter
 ~~~~~~~~~
 
@@ -357,12 +354,6 @@ It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``) followed b
 
   AuxData ::= (n: Byte²) (data: Byteⁿ)
   RegisterCredentialParameter ::= (credential_info: CredentialInfo) (auxiliary_data: AuxData)
-
-.. note::
-
-  A possible use case for auxiliary data is storing the encrypted credential data in another storage smart contract.
-  In this case, ``auxiliary_data`` contains serialized parameters to the storage contract.
-  This makes the "register and store" operation atomic, because the operation is a single top-level smart contract call.
 
 Requirements
 ~~~~~~~~~~~~
@@ -376,7 +367,12 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Revoke a credential by the issuer's request.
-The issuer is authorized to revoke a credential if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
+
+.. note::
+  This standard does not specify how the issuer is authenticated.
+  Implementations can use various mechanisms.
+  For example, the transaction sender's address is checked against the issuer's account address stored in the contract.
+  Another option is to use ``auxiliary_data`` to implement signature-based authentication mechanism.
 
 Parameter
 ~~~~~~~~~
@@ -395,7 +391,6 @@ Requirements
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
 - The revocation MUST fail if any of the following conditions are met:
-    - The sender of the transaction is not the issuer.
     - The credential ID is not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
 
@@ -488,7 +483,12 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Register public keys that can be used by revocation authorities.
-The caller is authorized to register the keys if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
+
+.. note::
+  This standard does not specify how the issuer is authenticated.
+  Implementations can use various mechanisms.
+  For example, the transaction sender's address is checked against the issuer's account address stored in the contract.
+  Another option is to use ``auxiliary_data`` to implement signature-based authentication mechanism.
 
 Parameter
 ~~~~~~~~~
@@ -500,9 +500,7 @@ It is serialized as First 2 bytes encode the length (``n``) of the vector of key
 Requirements
 ~~~~~~~~~~~~
 
-- The revocation MUST fail if any of the following conditions are met:
-    - The sender of the transaction is not the issuer.
-    - Some of the keys are already registered.
+- The revocation MUST fail if some of the keys are already registered.
 - The smart contract MUST prevent resetting the nonce associated with a public key.
   For example, the contract logic could keep track of all keys seen by the contract and avoid reusing the same keys even after the keys were made unavailable by calling :ref:`CIS-4-functions-removeRevocationKeys`.
 
@@ -513,7 +511,12 @@ Requirements
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 Make a list of public keys unavailable to revocation authorities.
-The caller is authorized to remove the keys if the transaction sender's address is the same as the return value of :ref:`CIS-4-functions-issuer`.
+
+.. note::
+  This standard does not specify how the issuer is authenticated.
+  Implementations can use various mechanisms.
+  For example, the transaction sender's address is checked against the issuer's account address stored in the contract.
+  Another option is to use ``auxiliary_data`` to implement signature-based authentication mechanism.
 
 Parameter
 ~~~~~~~~~
@@ -525,9 +528,7 @@ It is serialized as: First 2 bytes encode the length (``n``) of the vector of ke
 Requirements
 ~~~~~~~~~~~~
 
-- The revocation MUST fail if any of the following conditions are met:
-    - The sender of the transaction is not the issuer.
-    - Some of the keys are not present in the registry.
+- The revocation MUST fail if some of the keys are not present in the registry.
 
 
 .. _CIS-4-functions-revocationKeys:
