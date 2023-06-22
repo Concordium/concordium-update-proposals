@@ -402,7 +402,6 @@ Requirements
 Revoke a credential by the holders's request.
 
 The holder is authorized to revoke a credential by verifying the signature with the holder's public key.
-It replaces the authorization based on checking the transaction sender address with signature verification.
 The public key is part of :ref:`CIS-4-CredentialInfo` that is used when registering a credential with the :ref:`CIS-4-functions-registerCredential` entrypoint.
 
 Parameter
