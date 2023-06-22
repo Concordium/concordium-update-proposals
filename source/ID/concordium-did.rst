@@ -136,7 +136,7 @@ The Account DID Document MUST contain the following data:
 
 - ``id`` - the DID of the account.
 - ``verificationMethod`` - the account's verification method.
-  It is a nested :ref:`threshold scheme <concordium-did-verification-method>` requiring at ``T`` out of ``M`` credentials to sign; each credential uses its own threshold scheme requiring ``R_i`` out of ``N_i`` keys to sign, where ``i = 1..M``.and ``j = 1..N_i``.
+  It is a nested :ref:`threshold scheme <concordium-did-verification-method>` requiring ``T`` out of ``M`` credentials to sign; each credential uses its own threshold scheme requiring ``R_i`` out of ``N_i`` keys to sign, where ``i = 1..M``.and ``j = 1..N_i``.
   The credentials are identified by a `DID fragment`_ ``#credential-i``, and the keys in each credentials by ``#key-j-i`` where ``i = 1..M`` and ``j = 1..N_i``.
 - ``authentication`` - authentication method for the account.
 
