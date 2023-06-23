@@ -384,7 +384,7 @@ If its value is 0, then no reason string is present, if the value is 1 then the 
 
   OptionalReason ::= (0: Byte)
                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
-  RevokeCredentialIssuerParam ::= (credential_id: CredentialHolderId) (reason: OptionReason)
+  RevokeCredentialIssuerParam ::= (credential_id: CredentialHolderId) (reason: OptionalReason)
 
 Requirements
 ~~~~~~~~~~~~
@@ -466,7 +466,7 @@ Requirements
 - The ``RevokeCredentialOtherParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
   The revocation authority's nonce is sequentially increased every time a revocation request is successfully executed.
   The function MUST only accept a ``RevokeCredentialOtherParam`` if it has the next nonce following the sequential order.
-- The revocation MUST fail if any of the following conditions are met any of the following conditions are met:
+- The revocation MUST fail if any of the following conditions are met:
     - The credential ID is not present in the registry.
     - The revocation key in not present in the registry.
     - The credential status is not one of ``Active`` or ``NotActivated`` (see :ref:`CIS-4-functions-credentialStatus`).
@@ -578,7 +578,7 @@ The ``RevokeCredentialEvent`` event is serialized as: first a byte with the valu
   Revoker ::= (0: Byte)                         // Issuer
             | (1: Byte)                         // Holder
             | (2: Byte) (key: PublicKeyEd25519) // Other
-  RevokeCredentialEvent ::= (248: Byte) (credential_id: CredentialHolderId) (revoker: Revoker) (reason: OptionReason)
+  RevokeCredentialEvent ::= (248: Byte) (credential_id: CredentialHolderId) (revoker: Revoker) (reason: OptionalReason)
 
 
 .. _CIS-4-events-IssuerMetadata:
