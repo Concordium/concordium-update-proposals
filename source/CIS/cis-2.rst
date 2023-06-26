@@ -83,10 +83,6 @@ The entrypoint name MUST be 100 bytes or less::
 
   ReceiveHookName ::= (n: Byte²) (name: Byteⁿ)
 
-.. note::
-
-  This type is passed in a parameter for smart contract function calls. Be aware of the parameter size limit of 1024 bytes.
-
 .. _CIS-2-AccountAddress:
 
 ``AccountAddress``
@@ -154,7 +150,6 @@ It is serialized as: the first 2 bytes encode the length (``n``) of the data, fo
 .. note::
 
   This type is passed as part of a parameter for smart contract function calls.
-  Be aware of the parameter size limit of 1024 bytes.
 
 .. _CIS-2-MetadataUrl:
 
@@ -202,9 +197,7 @@ Each transfer is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-T
 
 .. note::
 
-  Be aware of the smart contract parameter size limit of 1024 bytes.
-  Since the byte size of a single transfer can vary in size, this will limit the number of transfers that can be included in the same function call.
-  Currently, with the smallest possible transfers, the parameter can contain 21 transfers and with the biggest possible transfer, it will take the whole parameter.
+  Since the byte size of a single transfer can vary in size, this will limit the number of transfers that can be included in the same function call since a maximum size of a parameter is 65535 bytes.
 
 .. _CIS-2-functions-transfer-receive-hook-parameter:
 
@@ -293,10 +286,6 @@ A query is serialized as :ref:`CIS-2-TokenID` (``id``) followed by :ref:`CIS-2-A
 
   BalanceOfParameter ::= (n: Byte²) (queries: BalanceOfQueryⁿ)
 
-.. note::
-
-  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID.
-
 Response
 ~~~~~~~~
 
@@ -337,10 +326,6 @@ A query is serialized as :ref:`CIS-2-Address` (``owner``) followed by :ref:`CIS-
 
   OperatorOfParameter ::= (n: Byte²) (queries: OperatorOfQueryⁿ)
 
-.. note::
-
-  Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries.
-
 Response
 ~~~~~~~~
 
@@ -380,11 +365,6 @@ The parameter consists of a list of token IDs.
 It is serialized as: 2 bytes for the number of queries (``n``) and then this number of :ref:`CIS-2-TokenID` (``ids``)::
 
   TokenMetadataParameter ::= (n: Byte²) (ids: TokenIDⁿ)
-
-.. note::
-
-  Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID.
-
 
 Response
 ~~~~~~~~
