@@ -1,0 +1,860 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="CIS-3: Sponsored Transaction Standard" href="../CIS/cis-3.html" />
+
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
+        <title>Concordium DID Method Version 1.0 - Interoperability Specifications</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  body[data-theme="dark"] {
+    --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+  }
+  @media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+  }
+</style></head>
+  <body>
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path stroke="none" d="M0 0h24v24H0z" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="10" y1="12" x2="20" y2="12" />
+      <line x1="6" y1="18" x2="20" y2="18" />
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Interoperability Specifications</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/concordium-logo-black.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/concordium-logo-white.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Interoperability Specifications</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Protocol Updates</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Standards</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-0.html">CIS-0: Standard Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-1.html">CIS-1: Concordium Token Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-2.html">CIS-2: Concordium Token Standard 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Concordium DID Method Version 1.0</a></li>
+</ul>
+
+</div>
+</div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="concordium-did-method-version-1-0">
+<span id="concordium-did"></span><h1>Concordium DID Method Version 1.0<a class="headerlink" href="#concordium-did-method-version-1-0" title="Permalink to this headline">¶</a></h1>
+<section id="about">
+<h2>About<a class="headerlink" href="#about" title="Permalink to this headline">¶</a></h2>
+<p>The Concordium DID method specification conforms to the requirements specified in <a class="reference external" href="https://www.w3.org/TR/did-core/">Decentralized Identifiers (DIDs) v1.0</a> published by the W3C Credentials Community Group.
+For more information about DIDs and DID method specifications, please see the <a class="reference external" href="https://github.com/WebOfTrustInfo/rebooting-the-web-of-trust-fall2017/blob/master/topics-and-advance-readings/did-primer.md">DID Primer</a> and <a class="reference external" href="https://w3c-ccg.github.io/did-spec/">DID Spec</a>.</p>
+</section>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<p>Concordium is a layer-1 blockchain with identity built into the core protocol.
+We distinguish the following types of DIDs:</p>
+<ul class="simple">
+<li><p><strong>Account DID</strong> refers to accounts on the Concordium blockchain.</p></li>
+<li><p><strong>Concordium Credential DID</strong> refers to a Concordium credential object.</p></li>
+<li><p><strong>Smart Contract DID</strong> refers to smart contract instances on the Concordium blockchain.</p></li>
+<li><p><strong>Public Key DID</strong> refers to a subject that knows the corresponding secret key.</p></li>
+<li><p><strong>Identity Provider DID</strong> refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.</p></li>
+</ul>
+</section>
+<section id="status-of-this-document">
+<h2>Status of This Document<a class="headerlink" href="#status-of-this-document" title="Permalink to this headline">¶</a></h2>
+<p>This is a draft document and may be updated.</p>
+</section>
+<section id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
+<p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
+</section>
+<section id="concordium-did-identifier">
+<h2>Concordium DID Identifier<a class="headerlink" href="#concordium-did-identifier" title="Permalink to this headline">¶</a></h2>
+<section id="method-name">
+<h3>Method Name<a class="headerlink" href="#method-name" title="Permalink to this headline">¶</a></h3>
+<p>The Concordium DID method name is <code class="docutils literal notranslate"><span class="pre">ccd</span></code>.
+A DID identifier that uses this method must begin with the following prefix: <code class="docutils literal notranslate"><span class="pre">did:ccd</span></code>.
+Per DID specification [DID] this string must be in lowercase.</p>
+</section>
+<section id="identifier-syntax">
+<h3>Identifier Syntax<a class="headerlink" href="#identifier-syntax" title="Permalink to this headline">¶</a></h3>
+<p>Concordium DID identifiers are defined by the following <a class="reference external" href="https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form">ABNF</a>:</p>
+<div class="highlight-ABNF notranslate"><div class="highlight"><pre><span></span><span class="nc">ccd-did</span> <span class="o">=</span> <span class="nc">prefix</span> <span class="l">":"</span> <span class="o">*1</span><span class="p">(</span><span class="nc">network</span> <span class="l">":"</span><span class="p">)</span> <span class="p">(</span><span class="nc">acctype</span> <span class="o">/</span> <span class="nc">pkctype</span> <span class="o">/</span> <span class="nc">scitype</span> <span class="o">/</span> <span class="nc">idptype</span> <span class="o">/</span> <span class="nc">credtype</span><span class="p">)</span>
+<span class="nc">prefix</span>  <span class="o">=</span> <span class="l">%s"did:ccd"</span>
+<span class="nc">network</span> <span class="o">=</span> <span class="l">"testnet"</span> <span class="o">/</span> <span class="l">"mainnet"</span>
+<span class="nc">acctype</span> <span class="o">=</span> <span class="l">"acc:"</span> <span class="o">50</span><span class="p">(</span><span class="nc">base58char</span><span class="p">)</span>
+<span class="nc">pkctype</span> <span class="o">=</span> <span class="l">"pkc:"</span> <span class="o">64</span><span class="p">(</span><span class="nc">base16char</span><span class="p">)</span>
+<span class="nc">scitype</span> <span class="o">=</span> <span class="l">"sci:"</span> <span class="nc">index</span> <span class="o">*1</span><span class="p">(</span>“:” <span class="nc">subindex</span><span class="p">)</span>
+<span class="nc">idptype</span> <span class="o">=</span> <span class="l">"idp:"</span> <span class="nc">index</span>
+<span class="nc">credtype</span> <span class="o">=</span> <span class="l">"cred:"</span> <span class="o">96</span><span class="p">(</span><span class="nc">base16char</span><span class="p">)</span>
+<span class="nc">index</span> <span class="o">=</span> <span class="o">1*</span><span class="k">DIGIT</span>
+<span class="nc">subindex</span> <span class="o">=</span> <span class="o">1*</span><span class="k">DIGIT</span>
+<span class="nc">base16char</span> <span class="o">=</span> <span class="k">HEXDIG</span>
+<span class="nc">base58char</span> <span class="o">=</span> <span class="l">"1"</span> <span class="o">/</span> <span class="l">"2"</span> <span class="o">/</span> <span class="l">"3"</span> <span class="o">/</span> <span class="l">"4"</span> <span class="o">/</span> <span class="l">"5"</span> <span class="o">/</span> <span class="l">"6"</span> <span class="o">/</span> <span class="l">"7"</span> <span class="o">/</span> <span class="l">"8"</span> <span class="o">/</span> <span class="l">"9"</span> <span class="o">/</span>
+             <span class="l">"A"</span> <span class="o">/</span> <span class="l">"B"</span> <span class="o">/</span> <span class="l">"C"</span> <span class="o">/</span> <span class="l">"D"</span> <span class="o">/</span> <span class="l">"E"</span> <span class="o">/</span> <span class="l">"F"</span> <span class="o">/</span> <span class="l">"G"</span> <span class="o">/</span> <span class="l">"H"</span> <span class="o">/</span> <span class="l">"J"</span> <span class="o">/</span>
+             <span class="l">"K"</span> <span class="o">/</span> <span class="l">"L"</span> <span class="o">/</span> <span class="l">"M"</span> <span class="o">/</span> <span class="l">"N"</span> <span class="o">/</span> <span class="l">"P"</span> <span class="o">/</span> <span class="l">"Q"</span> <span class="o">/</span> <span class="l">"R"</span> <span class="o">/</span> <span class="l">"S"</span> <span class="o">/</span> <span class="l">"T"</span> <span class="o">/</span>
+             <span class="l">"U"</span> <span class="o">/</span> <span class="l">"V"</span> <span class="o">/</span> <span class="l">"W"</span> <span class="o">/</span> <span class="l">"X"</span> <span class="o">/</span> <span class="l">"Y"</span> <span class="o">/</span> <span class="l">"Z"</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the <a class="reference external" href="https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form">ABNF</a> grammar, string literals are case-insensitive, unless explicitly specified using the <code class="docutils literal notranslate"><span class="pre">%s</span></code> prefix.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The network part of a CCD DID is optional.
+<em>If omitted the network is assumed to be “mainnet” by default</em>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">subindex</span></code> part of the smart contract instance <code class="docutils literal notranslate"><span class="pre">sci</span></code> is optional.
+<em>If omitted the subindex is assumed to be `0` by default.</em></p>
+</div>
+</section>
+<section id="smart-contract-instance-reference-syntax">
+<h3>Smart Contract Instance Reference Syntax<a class="headerlink" href="#smart-contract-instance-reference-syntax" title="Permalink to this headline">¶</a></h3>
+<p>A DID reference is a DID with additional data, such as a path and query parameters.
+Concordium smart contract entrypoints can be addressed using DID references.</p>
+<div class="highlight-ABNF notranslate"><div class="highlight"><pre><span></span><span class="nc">ccd-sc-ref</span> <span class="o">=</span> <span class="l">"/"</span> <span class="nc">entrypoint</span> <span class="o">*1</span><span class="p">(</span><span class="l">"/"</span> <span class="nc">parameter</span><span class="p">)</span>
+<span class="nc">parameter</span> <span class="o">=</span> <span class="nc">base16char</span>
+<span class="nc">entrypoint</span> <span class="o">=</span> <span class="o">1*</span><span class="p">(</span><span class="k">ALPHA</span> <span class="o">/</span> <span class="k">DIGIT</span> <span class="o">/</span> <span class="nc">punctuation</span><span class="p">)</span>
+<span class="nc">punctuation</span> <span class="o">=</span> <span class="l">"!"</span> <span class="o">/</span> <span class="k">DQUOTE</span> <span class="o">/</span> <span class="l">"#"</span> <span class="o">/</span> <span class="l">"$"</span> <span class="o">/</span> <span class="l">"%"</span> <span class="o">/</span> <span class="l">"&amp;"</span> <span class="o">/</span> <span class="l">"'"</span> <span class="o">/</span> <span class="l">"("</span> <span class="o">/</span>
+              <span class="l">")"</span> <span class="o">/</span> <span class="l">"*"</span> <span class="o">/</span> <span class="l">"+"</span> <span class="o">/</span> <span class="l">","</span> <span class="o">/</span> <span class="l">"-"</span> <span class="o">/</span> <span class="l">"."</span> <span class="o">/</span> <span class="l">"/"</span> <span class="o">/</span> <span class="l">";"</span> <span class="o">/</span>
+              <span class="l">"&lt;"</span> <span class="o">/</span> <span class="l">"="</span> <span class="o">/</span> <span class="l">"&gt;"</span> <span class="o">/</span> <span class="l">"?"</span> <span class="o">/</span> <span class="l">"@"</span> <span class="o">/</span> <span class="l">"["</span> <span class="o">/</span> <span class="l">"\"</span> <span class="o">/</span> <span class="l">"]"</span> <span class="o">/</span>
+              <span class="l">"^"</span> <span class="o">/</span> <span class="l">"_"</span> <span class="o">/</span> <span class="l">"`"</span> <span class="o">/</span> <span class="l">"{"</span> <span class="o">/</span> <span class="l">"|"</span> <span class="o">/</span> <span class="l">"}"</span> <span class="o">/</span> <span class="l">"~"</span>
+</pre></div>
+</div>
+<p>See the details about <em>dereferencing</em> a smart contract instance reference in <a class="reference internal" href="#sci-reference"><span class="std std-ref">Smart Contract Instance Reference</span></a>.</p>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>An account on testnet:</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:testnet:acc:3ZFGxLtnUUSJGW2WqjMh1DDjxyq5rnytCwkSqxFTpsWSFdQnNn</span></code></p>
+<p>A Concordium credential on mainnet</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:mainnet:cred:9aa3641a212da36a9ffae6e6085b9cf486ca9b44fa059aa74565b0a1c0f7052d8e71168beccf299d767f3961b33aaae2</span></code></p>
+<p>A smart contract instance on the default network (<code class="docutils literal notranslate"><span class="pre">mainnet</span></code>):</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:sci:12:0</span></code></p>
+<p>A public key:</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:pkc:0c7f4421e44a4385850b883e3bbf098f5a9853ef6f1a862c2ce2856381b5f5e3</span></code></p>
+<p>A smart contract instance with the <code class="docutils literal notranslate"><span class="pre">issuerKeys</span></code> entrypoint that does not take any parameters</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:sci:321/issuerKeys</span></code></p>
+<p>A smart contract instance with the <code class="docutils literal notranslate"><span class="pre">credentialEntry</span></code> entrypoint taking a parameter</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:sci:123/credentialEntry/ee763364dc1a47d6aa4cc6bdb005e2b2</span></code></p>
+</section>
+</section>
+<section id="concordium-did-documents">
+<h2>Concordium DID Documents<a class="headerlink" href="#concordium-did-documents" title="Permalink to this headline">¶</a></h2>
+<section id="account-did">
+<h3>Account DID<a class="headerlink" href="#account-did" title="Permalink to this headline">¶</a></h3>
+<p>The goal of the Account DID Document is to provide information about the account authentication data, including a possibility to reference particular pieces of data, such as public keys.
+In order to do that, it specifies a <a class="reference external" href="https://w3c.github.io/did-core/#verification-methods">DID verification method</a> that reflects the account authentication data: public keys grouped into credentials.</p>
+<p>The Account DID Document MUST contain the following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> - the DID of the account.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verificationMethod</span></code> - the account’s verification method.
+It is a nested <a class="reference internal" href="#concordium-did-verification-method"><span class="std std-ref">threshold scheme</span></a> requiring <code class="docutils literal notranslate"><span class="pre">T</span></code> out of <code class="docutils literal notranslate"><span class="pre">M</span></code> credentials to sign; each credential uses its own threshold scheme requiring <code class="docutils literal notranslate"><span class="pre">R_i</span></code> out of <code class="docutils literal notranslate"><span class="pre">N_i</span></code> keys to sign, where <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">=</span> <span class="pre">1..M</span></code>.and <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">1..N_i</span></code>.
+The credentials are identified by a <a class="reference external" href="https://w3c.github.io/did-core/#dfn-did-fragments">DID fragment</a> <code class="docutils literal notranslate"><span class="pre">#credential-i</span></code>, and the keys in each credentials by <code class="docutils literal notranslate"><span class="pre">#key-j-i</span></code> where <code class="docutils literal notranslate"><span class="pre">i</span> <span class="pre">=</span> <span class="pre">1..M</span></code> and <code class="docutils literal notranslate"><span class="pre">j</span> <span class="pre">=</span> <span class="pre">1..N_i</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">authentication</span></code> - authentication method for the account.</p></li>
+</ul>
+<p>The document MAY include any other public data of a Concordium account.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A <a class="reference external" href="https://w3c.github.io/did-core/#dfn-did-fragments">DID fragment</a> allows for referencing a particular credential, or a key in the Account DID Document.
+The fragment is used to locate the (unique) JSON object by matching the DID URL with the object’s <code class="docutils literal notranslate"><span class="pre">id</span></code> property.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://w3c-ccg.github.io/did-resolution/#dereferencing">Dereferencing a DID URL</a> in the W3C Credentials Community Group draft report.</p>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+  <span class="nt">"verificationMethod"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#acc-vm"</span><span class="p">,</span>
+      <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"VerifiableCondition2021"</span><span class="p">,</span>
+      <span class="nt">"blockchainAccountId"</span><span class="p">:</span> <span class="s2">"ADDR"</span><span class="p">,</span>
+      <span class="nt">"threshold"</span><span class="p">:</span> <span class="s2">"T"</span><span class="p">,</span>
+      <span class="nt">"conditionThreshold"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="nt">"verificationMethod"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+              <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#credential-1"</span><span class="p">,</span>
+              <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+              <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"VerifiableCondition2021"</span><span class="p">,</span>
+              <span class="nt">"threshold"</span><span class="p">:</span> <span class="s2">"R_1"</span><span class="p">,</span>
+              <span class="nt">"conditionThreshold"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#key-1-1"</span><span class="p">,</span>
+                  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+                  <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+                  <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fXX"</span>
+                <span class="p">},</span>
+                <span class="s2">"..."</span><span class="p">,</span>
+                <span class="p">{</span>
+                  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#key-N_1-1"</span><span class="p">,</span>
+                  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+                  <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+                  <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fYY"</span>
+                <span class="p">}</span>
+              <span class="p">]</span>
+            <span class="p">}</span>
+          <span class="p">]</span>
+        <span class="p">},</span>
+        <span class="s2">"..."</span><span class="p">,</span>
+        <span class="p">{</span>
+          <span class="nt">"verificationMethod"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+              <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#credential-M"</span><span class="p">,</span>
+              <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+              <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"VerifiableCondition2021"</span><span class="p">,</span>
+              <span class="nt">"threshold"</span><span class="p">:</span> <span class="s2">"N"</span><span class="p">,</span>
+              <span class="nt">"conditionThreshold"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#key-1-M"</span><span class="p">,</span>
+                  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+                  <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+                  <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fVV"</span>
+                <span class="p">},</span>
+                <span class="s2">"..."</span><span class="p">,</span>
+                <span class="p">{</span>
+                  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR#key-N_M-M"</span><span class="p">,</span>
+                  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+                  <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span><span class="p">,</span>
+                  <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fZZ"</span>
+                <span class="p">}</span>
+              <span class="p">]</span>
+            <span class="p">}</span>
+          <span class="p">]</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">"authentication"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">"#acc-vm"</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">publicKeyMultibase</span></code> field contains a public key prefixed with <code class="docutils literal notranslate"><span class="pre">f</span></code> that denotes the base16 encoding.
+See <a class="reference external" href="https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03">The Multibase Encoding Scheme</a>.</p>
+</div>
+</section>
+<section id="concordium-credential-did">
+<h3>Concordium Credential DID<a class="headerlink" href="#concordium-credential-did" title="Permalink to this headline">¶</a></h3>
+<p>The goal of the Concordium Credential DID Document is to provide information about Concordium credentials, including a possibility to reference particular pieces of data, such as public keys.
+In order to do that, it specifies a <a class="reference external" href="https://w3c.github.io/did-core/#verification-methods">DID verification method</a> that reflects the credential authentication data.</p>
+<p>The Concordium Credential DID Document MUST contain the following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> - the DID of the credential.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verificationMethod</span></code> - the credential’s verification method.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">authentication</span></code> - authentication method for the credential.</p></li>
+</ul>
+<p>The document MAY include any other public data of a Concordium credential.</p>
+<p>The following document defines a Concordium credential with ID <code class="docutils literal notranslate"><span class="pre">CRED</span></code>.
+The credential has <code class="docutils literal notranslate"><span class="pre">N</span></code> keys and uses a threshold signature scheme requiring <code class="docutils literal notranslate"><span class="pre">T</span></code> signatures.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:cred:CRED"</span><span class="p">,</span>
+  <span class="nt">"verificationMethod"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">"did:ccd:NET:cred:CRED#credential-vm"</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"VerifiableCondition2021"</span><span class="p">,</span>
+      <span class="nt">"threshold"</span><span class="p">:</span> <span class="s2">"T"</span><span class="p">,</span>
+      <span class="nt">"conditionThreshold"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:cred:CRED#key-1"</span><span class="p">,</span>
+          <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+          <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:cred:CRED"</span><span class="p">,</span>
+          <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fXX"</span>
+        <span class="p">},</span>
+        <span class="s2">"..."</span><span class="p">,</span>
+        <span class="p">{</span>
+          <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:cred:CRED#key-N"</span><span class="p">,</span>
+          <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+          <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:cred:CRED"</span><span class="p">,</span>
+          <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fYY"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">"authentication"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">"#credential-vm"</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="smart-contract-instance-did">
+<h3>Smart Contract Instance DID<a class="headerlink" href="#smart-contract-instance-did" title="Permalink to this headline">¶</a></h3>
+<p>The goal of the Smart Contract Instance DID is to provide metadata about the contract instance.
+At the moment, it contains an account address of the initialization transaction sender, and the list of the contract’s entrypoints.</p>
+<p>The Smart Contract Instance DID Document MUST contain the following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> - the DID of the smart contract instance.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">creator</span></code> - a DID of an account that initialized the contract instance represented as a JSON object containing fields <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">account</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">entrypoints</span></code> - a list on the contract’s entrypoints. Each entrypoint is an object containing fields <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p></li>
+</ul>
+<p>The document MAY include any other public data of a smart contract instance.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:sci:IND:SUBIND"</span><span class="p">,</span>
+  <span class="nt">"owner"</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:sci:IND:SUBIND#creator"</span><span class="p">,</span>
+    <span class="nt">"account"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:acc:ADDR"</span>
+  <span class="p">}</span>
+  <span class="nt">"entrypoints"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span> <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:sci:IND:SUBIND#entrypoint-issuerKeys"</span><span class="p">,</span>
+      <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"issuerKeys"</span>
+    <span class="p">},</span>
+    <span class="p">{</span> <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:sci:IND:SUBIND#entrypoint-revocationKey"</span><span class="p">,</span>
+      <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"revocationKey"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">IND</span></code> and <code class="docutils literal notranslate"><span class="pre">SUBIND</span></code> are the contract index and subindex.
+<code class="docutils literal notranslate"><span class="pre">NET</span></code> and <code class="docutils literal notranslate"><span class="pre">ADDR</span></code> correspond to the network and to the owner’s account address respectively.</p>
+</section>
+<section id="public-key-cryptography-did">
+<span id="concordium-did-pkc"></span><h3>Public Key Cryptography DID<a class="headerlink" href="#public-key-cryptography-did" title="Permalink to this headline">¶</a></h3>
+<p>The goal of the Public Key Cryptography DID is to represent a public key and the corresponding signature verification method.</p>
+<p>The Public Key Cryptography DID Document MUST contain the following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> - the DID of the public key.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verificationMethod</span></code> - specifies a <a class="reference external" href="https://w3c.github.io/did-core/#verification-methods">DID verification method</a> for verifying a signature corresponding to the public key.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">authentication</span></code> - authentication method for the key.</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:pkc:XX"</span><span class="p">,</span>
+  <span class="nt">"verificationMethod"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:pkc:XX#key-0"</span><span class="p">,</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+      <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:NET:pkc:PK"</span><span class="p">,</span>
+      <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fXX"</span>
+    <span class="p">}</span>
+  <span class="p">],</span>
+  <span class="nt">"authentication"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="s2">"did:ccd:pkc:XX#key-0"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="identity-provider-did">
+<h3>Identity Provider DID<a class="headerlink" href="#identity-provider-did" title="Permalink to this headline">¶</a></h3>
+<p>The goal of the Identity Provider DID is identify a Concordium identity provider.
+An identity provider (IDP) is an organization, approved by Concordium, that performs off-chain identification of users.
+Identity providers are used in the account creation process to issue an identity.
+Identity provider DIDs can represent an issuer of a verifiable credential.</p>
+<p>The Identity Provider DID Document MUST contain the following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> - the DID of the IDP.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> - the IDP name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">url</span></code> - A link to more information about the IDP.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">description</span></code> - A free form description the IDP.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verificationMethod</span></code> - specifies a <a class="reference external" href="https://w3c.github.io/did-core/#verification-methods">DID verification method</a> for verifying a signature corresponding to the public key.</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:testnet:idp:0"</span><span class="p">,</span>
+  <span class="nt">"name"</span><span class="p">:</span> <span class="s2">"Concordium testnet IP"</span><span class="p">,</span>
+  <span class="nt">"url"</span><span class="p">:</span> <span class="s2">""</span><span class="p">,</span>
+  <span class="nt">"description"</span><span class="p">:</span> <span class="s2">"Concordium testnet identity provider"</span><span class="p">,</span>
+  <span class="nt">"verificationMethod"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:ccd:testnet:idp:0#cdi-key"</span><span class="p">,</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+      <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:ccd:testnet:idp:0"</span><span class="p">,</span>
+      <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"fXX"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="concordium-did-operations">
+<h2>Concordium DID Operations<a class="headerlink" href="#concordium-did-operations" title="Permalink to this headline">¶</a></h2>
+<p>Concordium DIDs are managed on the Concordium blockchain.</p>
+<section id="create">
+<h3>Create<a class="headerlink" href="#create" title="Permalink to this headline">¶</a></h3>
+<section id="id1">
+<h4>Account DID<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>An account DID can be created by <a class="reference external" href="https://developer.concordium.software/en/mainnet/net/references/manage-accounts.html">opening an account</a> on the <code class="docutils literal notranslate"><span class="pre">NET</span></code> blockchain.
+The resulting DID is <code class="docutils literal notranslate"><span class="pre">did:ccd:NET:acc:ADDR</span></code> where <code class="docutils literal notranslate"><span class="pre">ADDR</span></code> is the base58 encoded account address.</p>
+</section>
+<section id="id2">
+<h4>Concordium Credential DID<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<p>A Concordium Credential DID is created as part of the account opening process, or by adding a Concordium credential to an existing account.</p>
+</section>
+<section id="id3">
+<h4>Smart Contract Instance DID<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<p>A smart contract instance DID can be created by <a class="reference external" href="https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html">deploying a smart contract module</a> and <a class="reference external" href="https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html">initializing a smart contract instance</a> on the <code class="docutils literal notranslate"><span class="pre">NET</span></code> blockchain.
+The resulting DID is <code class="docutils literal notranslate"><span class="pre">did:ccd:NET:sci:IND:SUBIND</span></code> where <code class="docutils literal notranslate"><span class="pre">IND</span></code>, <code class="docutils literal notranslate"><span class="pre">SUBIND</span></code> are the index and the subindex of the instance.</p>
+</section>
+<section id="id4">
+<h4>Public Key Cryptography DID<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h4>
+<p>A public key cryptography DID can be created by generating a fresh Ed25519 key pair.
+The resulting DID is <code class="docutils literal notranslate"><span class="pre">did:ccd:NET:pkc:PK</span></code> where <code class="docutils literal notranslate"><span class="pre">PK</span></code> is the base16 encoded public key.
+These DIDs are not registered on the blockchain.</p>
+</section>
+<section id="id5">
+<h4>Identity Provider DID<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h4>
+<p>Identity providers can be added as a <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/updates/index.html">chain update</a> transaction of type <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/updates/enum.UpdateType.html#variant.UpdateAddIdentityProvider">UpdateAddIdentityProvider</a>.</p>
+</section>
+</section>
+<section id="read">
+<h3>Read<a class="headerlink" href="#read" title="Permalink to this headline">¶</a></h3>
+<section id="id6">
+<h4>Account DID<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h4>
+<p>The DID document information for a DID of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:acc:ADDR</span></code></p>
+<p>can be resolved by looking up an account with address <code class="docutils literal notranslate"><span class="pre">ADDR</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
+<p>Data required to construct the DID document can be acquired by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetAccountInfo</span></code>.</p>
+<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows retrieving the data in the following way:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>concordium-client raw GetAccountInfo ADDR
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h4>Concordium Credential DID<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h4>
+<p>The DID document information for a DID of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:cred:CRED</span></code></p>
+<p>can be resolved by looking up a credential with ID <code class="docutils literal notranslate"><span class="pre">CRED</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
+<p>Data required to construct the DID document can be acquired by using the same gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetAccountInfo</span></code> as for Concordium account DIDs.</p>
+</section>
+<section id="id8">
+<h4>Smart Contract Instance DID<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h4>
+<p>The DID document information for a DID of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:sci:IND:SUBIND</span></code></p>
+<p>can be resolved by looking up a smart contract instance with indices <code class="docutils literal notranslate"><span class="pre">IND</span></code>, <code class="docutils literal notranslate"><span class="pre">SUBIND</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.
+This includes a lookup of the owner’s account.</p>
+<p>Data required to construct the DID document can be acquired by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetInstanceInfo</span></code>.</p>
+<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows retrieving the data in the following way:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>concordium-client contract show IND
+</pre></div>
+</div>
+</section>
+<section id="smart-contract-instance-reference">
+<span id="sci-reference"></span><h4>Smart Contract Instance Reference<a class="headerlink" href="#smart-contract-instance-reference" title="Permalink to this headline">¶</a></h4>
+<p><em>Dereferencing</em> the smart contract DID reference invokes the specified entrypoint.</p>
+<p>Dereferencing a DID reference of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:sci:IND:SUBIND/EP[/PAR]</span></code></p>
+<p>can be done by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">InvokeInstance</span></code>.
+The entrypoint is considered a <em>view</em>: no state changes are persisted, only the result of the invocation is returned to the caller.
+The parameter <code class="docutils literal notranslate"><span class="pre">PAR</span></code> is passed to the entrypoint.</p>
+<p>The result of the invocation is the return value produced by the contract or an error if the invocation fails.</p>
+<p>If the contract contains an embedded schema, then the response is the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"type"</span> <span class="p">:</span> <span class="s2">"json"</span><span class="p">,</span>
+  <span class="nt">"data"</span><span class="p">:</span> <span class="s2">"JSON"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">JSON</span></code> is the JSON rendering of the response.</p>
+<p>If the contract does not contain an embedded schema, then the response is the following:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"type"</span> <span class="p">:</span> <span class="s2">"raw"</span><span class="p">,</span>
+  <span class="nt">"data"</span><span class="p">:</span> <span class="s2">"BASE16DATA"</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">BASE16DATA</span></code> is a base16-encoded return value.</p>
+<p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows invoking a smart contract instance in the following way:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>$concordium-client contract invoke IND --entrypoint EP --parameter-binary param.bin
+</pre></div>
+</div>
+<p>The base16 encoding of the <code class="docutils literal notranslate"><span class="pre">param.bin</span></code> file corresponds to <code class="docutils literal notranslate"><span class="pre">PAR</span></code>.</p>
+<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://w3c-ccg.github.io/did-resolution/#dereferencing">Dereferencing a DID URL</a> in the W3C Credentials Community Group draft report.</p>
+</div>
+</section>
+<section id="id9">
+<h4>Public Key Cryptography DID<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<p>The DID document corresponding to a DID of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:pkc:PK</span></code></p>
+<p>can be constructed directly from the DID without any lookup necessary.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">NET</span></code> part is optional and currently there is no difference how the documents are generated for different networks.
+In the future, however, the <code class="docutils literal notranslate"><span class="pre">vefiricationMethod</span></code> as it specified in <a class="reference internal" href="#concordium-did-pkc"><span class="std std-ref">Public Key Cryptography DID</span></a> might depend on the network.</p>
+</div>
+</section>
+<section id="id10">
+<h4>Identity Provider DID<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<p>The DID document information for a DID of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:idp:INDEX</span></code></p>
+<p>can be resolved by looking up an identity provider <code class="docutils literal notranslate"><span class="pre">INDEX</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
+<p>Data required to construct the DID document can be acquired by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetIdentityProviders</span></code>.</p>
+<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows retrieving the data in the following way:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>concordium-client raw GetIdentityProviders
+</pre></div>
+</div>
+</section>
+</section>
+<section id="update">
+<h3>Update<a class="headerlink" href="#update" title="Permalink to this headline">¶</a></h3>
+<section id="id11">
+<h4>Account DID<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<p>It is possible to update Account DID documents by sending an <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html">update credentials transaction</a>.
+This type of transaction allows for adding/removing credentials and changing the signature threshold.</p>
+</section>
+<section id="id12">
+<h4>Concordium Credential DID<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<p>It is possible to update Concordium Credential DID documents by sending an <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/send/fn.update_credential_keys.html">update credentials keys transaction</a>.
+This type of transaction allows for updating the keys associated with a Concordium credential and the corresponding signature threshold.</p>
+</section>
+</section>
+<section id="deactivate">
+<h3>Deactivate<a class="headerlink" href="#deactivate" title="Permalink to this headline">¶</a></h3>
+<section id="id13">
+<h4>Concordium Credential DID<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<p>A Concordium Credential DID can be deactivated by removing the corresponding credential with an <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html">update credentials transaction</a>.</p>
+</section>
+</section>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">did:ccd</span></code> method is built on top the Concordium blockchain, a public permissionless distributed ledger (DL).
+Security of the DID method reduces to the security of the underlying blockchain protocol.
+This concerns attacks such as eavesdropping, replay, message insertion, deletion, modification, denial of service, amplification, and man-in-the-middle.</p>
+<p>Parties SHOULD run a full node of the underlying blockchain protocol to ensure that they can read and write securely to the DL.</p>
+<p>Authorization is performed by means of digital signature keys.
+Leakage of private keys allows an attacker to take control.
+Therefore, parties MUST handle private keys with care.</p>
+</section>
+<section id="privacy-considerations">
+<h2>Privacy Considerations<a class="headerlink" href="#privacy-considerations" title="Permalink to this headline">¶</a></h2>
+<p>DIDs SHOULD be assumed to be pseudonyoums and public as they might be stored on the underlying DL.
+Correlation attacks MAY be possible if information assocciated to DIDs is published.
+It is therefore NOT RECOMMENDED to reuse PKC DIDs.</p>
+</section>
+<section id="appendices">
+<h2>Appendices<a class="headerlink" href="#appendices" title="Permalink to this headline">¶</a></h2>
+<section id="threshold-verification-method">
+<span id="concordium-did-verification-method"></span><h3>Threshold Verification Method<a class="headerlink" href="#threshold-verification-method" title="Permalink to this headline">¶</a></h3>
+<p>The threshold verification method used in Concordium DID Documents is based on a <a class="reference external" href="https://w3c-ccg.github.io/verifiable-conditions/">ConditionalProof verification method</a>.
+This is a new type of verification method under development.
+<code class="docutils literal notranslate"><span class="pre">ConditionalProof</span></code> features several extensions such as logical operations (<code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code>), threshold and weighted threshold.
+Note that the method is not yet a W3C standard and currently has a <em>draft</em> status.</p>
+<p>The example below shows the <code class="docutils literal notranslate"><span class="pre">2-out-of-3</span></code> signature verification method.
+It uses the <code class="docutils literal notranslate"><span class="pre">ConditionalProof2022</span></code> verification method.
+It specifies <code class="docutils literal notranslate"><span class="pre">conditionThreshold</span></code> with three keys <code class="docutils literal notranslate"><span class="pre">key-1</span></code>, <code class="docutils literal notranslate"><span class="pre">key-2</span></code> and <code class="docutils literal notranslate"><span class="pre">key-3</span></code>; each signature can be verified using <code class="docutils literal notranslate"><span class="pre">Ed25519VerificationKey2020</span></code>.
+The document that uses the <code class="docutils literal notranslate"><span class="pre">2-out-of-3</span></code> method is valid if it has at least two valid signatures.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:example:123#2-out-of-3"</span><span class="p">,</span>
+  <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"did:example:123"</span><span class="p">,</span>
+  <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"ConditionalProof2022"</span><span class="p">,</span>
+  <span class="nt">"threshold"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="nt">"conditionThreshold"</span><span class="p">:</span> <span class="p">[</span>
+    <span class="p">{</span>
+      <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:example:123#key-1"</span><span class="p">,</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+      <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"..."</span><span class="p">,</span>
+      <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"..."</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:example:123#key-2"</span><span class="p">,</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+      <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"..."</span><span class="p">,</span>
+      <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"..."</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">"id"</span><span class="p">:</span> <span class="s2">"did:example:123#key-3"</span><span class="p">,</span>
+      <span class="nt">"type"</span><span class="p">:</span> <span class="s2">"Ed25519VerificationKey2020"</span><span class="p">,</span>
+      <span class="nt">"controller"</span><span class="p">:</span> <span class="s2">"..."</span><span class="p">,</span>
+      <span class="nt">"publicKeyMultibase"</span><span class="p">:</span> <span class="s2">"..."</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          <a class="prev-page" href="../CIS/cis-3.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">CIS-3: Sponsored Transaction Standard</div>
+                
+              </div>
+            </a>
+        </div>
+
+        <div class="related-information">
+              Copyright &#169; 2021, Concordium |
+            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
+              and
+              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
+            <a class="muted-link" href="../_sources/ID/concordium-did.rst.txt"
+               rel="nofollow">
+              Show Source
+            </a>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            Contents
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Concordium DID Method Version 1.0</a><ul>
+<li><a class="reference internal" href="#about">About</a></li>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#status-of-this-document">Status of This Document</a></li>
+<li><a class="reference internal" href="#specification">Specification</a></li>
+<li><a class="reference internal" href="#concordium-did-identifier">Concordium DID Identifier</a><ul>
+<li><a class="reference internal" href="#method-name">Method Name</a></li>
+<li><a class="reference internal" href="#identifier-syntax">Identifier Syntax</a></li>
+<li><a class="reference internal" href="#smart-contract-instance-reference-syntax">Smart Contract Instance Reference Syntax</a></li>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#concordium-did-documents">Concordium DID Documents</a><ul>
+<li><a class="reference internal" href="#account-did">Account DID</a></li>
+<li><a class="reference internal" href="#concordium-credential-did">Concordium Credential DID</a></li>
+<li><a class="reference internal" href="#smart-contract-instance-did">Smart Contract Instance DID</a></li>
+<li><a class="reference internal" href="#public-key-cryptography-did">Public Key Cryptography DID</a></li>
+<li><a class="reference internal" href="#identity-provider-did">Identity Provider DID</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#concordium-did-operations">Concordium DID Operations</a><ul>
+<li><a class="reference internal" href="#create">Create</a><ul>
+<li><a class="reference internal" href="#id1">Account DID</a></li>
+<li><a class="reference internal" href="#id2">Concordium Credential DID</a></li>
+<li><a class="reference internal" href="#id3">Smart Contract Instance DID</a></li>
+<li><a class="reference internal" href="#id4">Public Key Cryptography DID</a></li>
+<li><a class="reference internal" href="#id5">Identity Provider DID</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#read">Read</a><ul>
+<li><a class="reference internal" href="#id6">Account DID</a></li>
+<li><a class="reference internal" href="#id7">Concordium Credential DID</a></li>
+<li><a class="reference internal" href="#id8">Smart Contract Instance DID</a></li>
+<li><a class="reference internal" href="#smart-contract-instance-reference">Smart Contract Instance Reference</a></li>
+<li><a class="reference internal" href="#id9">Public Key Cryptography DID</a></li>
+<li><a class="reference internal" href="#id10">Identity Provider DID</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#update">Update</a><ul>
+<li><a class="reference internal" href="#id11">Account DID</a></li>
+<li><a class="reference internal" href="#id12">Concordium Credential DID</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deactivate">Deactivate</a><ul>
+<li><a class="reference internal" href="#id13">Concordium Credential DID</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#security-considerations">Security Considerations</a></li>
+<li><a class="reference internal" href="#privacy-considerations">Privacy Considerations</a></li>
+<li><a class="reference internal" href="#appendices">Appendices</a><ul>
+<li><a class="reference internal" href="#threshold-verification-method">Threshold Verification Method</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/main.js"></script>
+    </body>
+</html>
