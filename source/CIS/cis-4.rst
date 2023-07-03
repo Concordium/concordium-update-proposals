@@ -714,13 +714,13 @@ The credential metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) fil
     - The name to display for the credential.
   * - ``logo``
     - URL JSON object
-    - An image URL for displaying the credential. The RECOMMENDED size on the image is 40x40.
+    - An image URL for displaying the credential. The RECOMMENDED size of the image is 40x40.
   * - ``background_color``
     - string
     - A hex code of the background color for displaying the credential.
   * - ``image`` (optional)
     - URL JSON object
-    - A background image URL for displaying the credential. The RECOMMENDED size on the image is 327x120.
+    - A background image URL for displaying the credential. The RECOMMENDED size of the image is 327x120.
   * - ``localization`` (optional)
     - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
     - URLs to JSON files with localized token metadata.
