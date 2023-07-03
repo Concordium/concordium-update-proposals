@@ -28,6 +28,12 @@ The interface provides functionality for the following roles of users:
 - *verifiers* can query credential status and data that are used to check a verifiable presentation requested from a holder;
 - *revocation authorities* can revoke credentials by signing a revocation message.
 
+Each contract instance MUST store public data of VCs of the same type.
+A *credential type* is a string that corresponds to the name of the credential schema, which credentials in the registry are based on.
+A `VCs JSON schema <https://w3c.github.io/vc-json-schema/>`_ is a JSON document containing the `JSON schema <http://json-schema.org/>`_ describing the attributes of a VC and some metadata about the schema.
+
+.. TODO: refer to the Concordium VC Data Model documentation, once we have it.
+
 Specification
 =============
 
@@ -197,13 +203,13 @@ It is serialized as: First byte encodes the length (``n``) of the credential typ
 
 Basic data for a verifiable credential.
 
-It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a :ref:`CIS-4-Timestamp` from which the credential is valid (``valid_from``), an optional :ref:`CIS-4-Timestamp` until which the credential is valid (``valid_until``), and the credential type :ref:`CIS-4-CredentialType` (``credential_type``).
+It is serialized as a credential holder identifier :ref:`CIS-4-PublicKeyEd25519` (``holder_id``), a flag whether the credential can be revoked by the holder :ref:`CIS-4-Bool` (``holder_revocable``), a :ref:`CIS-4-Timestamp` from which the credential is valid (``valid_from``), an optional :ref:`CIS-4-Timestamp` until which the credential is valid (``valid_until``), and a reference to the credential metadata :ref:`CIS-4-MetadataUrl` (``metadata_url``).
 The optional timestamp is serialized as 1 byte to indicate whether a timestamp is included, if its value is 0, then no timestamp is present, if the value is 1 then the :ref:`CIS-4-Timestamp` bytes follow::
 
   OptionalTimestamp ::= (0: Byte)
                       | (1: Byte) (timestamp: Timestamp)
   CredentialInfo ::= (holder_id: CredentialHolderId) (holder_revocable: Bool) (valid_from: Timestamp)
-                     (valid_until: OptionTimestamp) (credential_type: CredentialType) (metadata_url: MetadataUrl)
+                     (valid_until: OptionTimestamp) (metadata_url: MetadataUrl)
 
 .. note::
   The timestamp ``valid_until`` is optional; if it is not included (indicated by the 0 tag), then the credential never expires.
@@ -235,7 +241,7 @@ A smart contract implementing this standard MUST export the following functions:
 - :ref:`CIS-4-functions-credentialEntry`
 - :ref:`CIS-4-functions-credentialStatus`
 - :ref:`CIS-4-functions-issuer`
-- :ref:`CIS-4-functions-issuerMetadata`
+- :ref:`CIS-4-functions-registryMetadata`
 - :ref:`CIS-4-functions-registerCredential`
 - :ref:`CIS-4-functions-revokeCredentialIssuer`
 - :ref:`CIS-4-functions-revokeCredentialHolder`
@@ -318,19 +324,21 @@ Response
 The function output is the issuer's public key.
 It is serialized as :ref:`CIS-4-PublicKeyEd25519`.
 
-.. _CIS-4-functions-issuerMetadata:
+.. _CIS-4-functions-registryMetadata:
 
-``issuerMetadata``
-^^^^^^^^^^^^^^^^^^
+``registryMetadata``
+^^^^^^^^^^^^^^^^^^^^
 
-Query the issuer's metadata URL.
+Query the registry's metadata.
 
 Response
 ~~~~~~~~
 
-The function output is the issuer's metadata URL.
+The function output is the issuer's metadata URL, the credential type and schema for the credentials stored in the registry.
 
-It is serialized as :ref:`CIS-2-MetadataUrl`.
+It is serialized as the issuer's :ref:`CIS-4-MetadataUrl` (``issuer_metadata``) followed by the credential type of the registry :ref:`CIS-4-CredentialType` (``credential_type``) and the corresponding credential JSON schema reference :ref:`CIS-4-SchemaRef` (``credential_schema``)::
+
+  MetadataResponse := (issuer_metadata: MetadataUrl) (credential_type: CredentialType) (credential_schema: SchemaRef)
 
 .. _CIS-4-functions-registerCredential:
 
@@ -706,13 +714,18 @@ The credential metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) fil
     - The name to display for the credential.
   * - ``logo``
     - URL JSON object
-    - An image URL for displaying the credential.
+    - An image URL for displaying the credential. The RECOMMENDED size on the image is 40x40.
   * - ``background_color``
     - string
     - A hex code of the background color for displaying the credential.
   * - ``image`` (optional)
     - URL JSON object
-    - A background image URL for displaying the credential.
+    - A background image URL for displaying the credential. The RECOMMENDED size on the image is 327x120.
+  * - ``localization`` (optional)
+    - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
+    - URLs to JSON files with localized token metadata.
+
+.. TODO: check the actual image sizes before finalizing the standard.
 
 Where URL JSON object the same as in :ref:`CIS-4-events-IssuerMetadata`.
 
@@ -734,7 +747,27 @@ Example credential metadata
     "image": {
       "url": "https://concordium.com/employment/vc-background.png",
     }
+    "localization": {
+      "da-DK": {
+        "url": "https://location.of/the/danish/metadata.json",
+        "hash": "624a1a7e51f7a87effbf8261426cb7d436cf597be327ebbf113e62cb7814a34b"
+      }
+    }
   }
+
+Note that that URL addresses for images can come with or without the ``hash`` attribute.
+In the example, the ``image`` attribute value does not specify ``hash``.
+In this case, no content integrity check will be performed.
+
+The danish localization JSON file could be:
+
+.. code-block:: json
+
+  {
+    "degree": "Grad",
+    "graduationDate": "Dimissionsdato",
+  }
+
 
 .. _CIS-4-smart-contract-limitations:
 
