@@ -29,8 +29,8 @@ The interface provides functionality for the following roles of users:
 - *revocation authorities* can revoke credentials by signing a revocation message.
 
 Each contract instance MUST store public data of VCs of the same type.
-A *credential type* is a string that corresponds to the name of the credential schema, which credentials in the registry are based on.
-A `VCs JSON schema <https://w3c.github.io/vc-json-schema/>`_ is a JSON document containing the `JSON schema <http://json-schema.org/>`_ describing the attributes of a VC and some metadata about the schema.
+A *credential type* is a string that corresponds to the name of the VCs JSON schema, which credentials in the registry are based on.
+A `VCs JSON schema <https://w3c.github.io/vc-json-schema/>`_ is a JSON document containing a `JSON schema <http://json-schema.org/>`_ describing the attributes of a VC and some metadata about the schema.
 
 .. TODO: refer to the Concordium VC Data Model documentation, once we have it.
 
@@ -723,6 +723,7 @@ The credential metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) fil
     - A background image URL for displaying the credential. The RECOMMENDED size of the image is 327x120.
   * - ``localization`` (optional)
     - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
+      Credential issuers SHOULD provide localization files for all the languages they want to support.
     - URLs to JSON files with localized token metadata.
 
 .. TODO: check the actual image sizes before finalizing the standard.
@@ -764,8 +765,9 @@ The danish localization JSON file could be:
 .. code-block:: json
 
   {
-    "degree": "Grad",
-    "graduationDate": "Dimissionsdato",
+    "employer": "Arbejdsgiver",
+    "employedFrom": "Ansat fra",
+    "employedUntil": "Ansat indtil"
   }
 
 
