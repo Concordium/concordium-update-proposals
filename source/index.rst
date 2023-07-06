@@ -10,6 +10,7 @@ Concordium Interoperability Specifications
    updates/P3
    updates/P4
    updates/P5
+   updates/P6
 
 .. toctree::
    :maxdepth: 1
