@@ -30,7 +30,9 @@ The interface provides functionality for the following roles of users:
 
 Each contract instance MUST store public data of VCs of the same type.
 A *credential type* is a string that corresponds to the name of the VCs JSON schema, which credentials in the registry are based on.
-A `VCs JSON schema <https://w3c.github.io/vc-json-schema/>`_ is a JSON document containing a `JSON schema <http://json-schema.org/>`_ describing the attributes of a VC and some metadata about the schema.
+A `VCs JSON schema <https://w3c.github.io/vc-json-schema/>`_ is a `JSON schema <http://json-schema.org/>`_ describing the attributes of a VC.
+Attributes are sequentially numbered and have their numbers recorded in the additional ``index`` field in the schema.
+See VC schema examples and the corresponding VCs `here <https://github.com/Concordium/concordium-web3id/tree/main/examples/json-schemas>`_.
 
 .. TODO: refer to the Concordium VC Data Model documentation, once we have it.
 
