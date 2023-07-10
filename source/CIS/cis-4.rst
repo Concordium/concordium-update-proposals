@@ -572,7 +572,7 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 A ``RegisterCredentialEvent`` event MUST be logged when a new credential is registered.
 The event records the credential identifier, the credential type, and the corresponding schema reference.
 
-The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 255, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
+The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 249, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
 
   CredentialEventData ::= (credential_id: CredentialHolderId) (schema_ref: SchemaRef) (credential_type: CredentialType)
   RegisterCredentialEvent ::= (249: Byte) (data: CredentialEventData)
@@ -583,7 +583,7 @@ The ``RegisterCredentialEvent`` event is serialized as: first a byte with the va
 A ``RevokeCredentialEvent`` event MUST be logged when a credential is revoked.
 The event records the credential identifier, who requested the revocation (the holder, the issuer or a revocation authority), and an optional string with a short comment on the revocation reason.
 
-The ``RevokeCredentialEvent`` event is serialized as: first a byte with the value of 254, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a ``revoker``, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`; ``revoker`` is serialized as 1 byte to indicate who sent the revocation request ( 0 - issuer, 1 - holder, 2 -revocation authority); if the first byte is 2, then it is followed by a public key :ref:`CIS-4-PublicKeyEd25519` of the revoker::
+The ``RevokeCredentialEvent`` event is serialized as: first a byte with the value of 248, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a ``revoker``, and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`; ``revoker`` is serialized as 1 byte to indicate who sent the revocation request ( 0 - issuer, 1 - holder, 2 -revocation authority); if the first byte is 2, then it is followed by a public key :ref:`CIS-4-PublicKeyEd25519` of the revoker::
 
   Revoker ::= (0: Byte)                         // Issuer
             | (1: Byte)                         // Holder
@@ -599,7 +599,7 @@ The ``RevokeCredentialEvent`` event is serialized as: first a byte with the valu
 A ``IssuerMetadata`` event MUST be logged when setting the metadata url of the issuer.
 It consists of a URL for the location of the metadata for the issuer with an optional SHA256 checksum of the content.
 
-The ``IssuerMetadata`` event is serialized as: first a byte with the value of 253, followed by :ref:`CIS-2-MetadataUrl` (``metadata``)::
+The ``IssuerMetadata`` event is serialized as: first a byte with the value of 247, followed by :ref:`CIS-2-MetadataUrl` (``metadata``)::
 
   IssuerMetadata ::= (247: Byte) (metadata: MetadataUrl)
 
@@ -612,7 +612,7 @@ The ``IssuerMetadata`` event is serialized as: first a byte with the value of 25
 A ``CredentialMetadataEvent`` event MUST be logged when updating the credential metadata.
 It consist of a credential ID and a URL for the location of the metadata for this credential with an optional SHA256 checksum of the content.
 
-The ``CredentialMetadataEvent`` event is serialized as: first a byte with the value of 252, followed by :ref:`CIS-4-CredentialHolderID` (``id``), and then a :ref:`CIS-4-MetadataUrl` (``metadata``)::
+The ``CredentialMetadataEvent`` event is serialized as: first a byte with the value of 246, followed by :ref:`CIS-4-CredentialHolderID` (``id``), and then a :ref:`CIS-4-MetadataUrl` (``metadata``)::
 
   CredentialMetadataEvent ::= (246: Byte) (id: CredentialHolderId) (metadata: MetadataUrl)
 
@@ -623,7 +623,7 @@ The ``CredentialMetadataEvent`` event is serialized as: first a byte with the va
 A ``CredentialSchemaRefEvent`` event MUST be logged when updating the credential schema reference for a credential type.
 It consist of a credential type and a URL for the location of the schema for this credential with an optional SHA256 checksum of the content.
 
-The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 251, followed by :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
+The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the value of 245, followed by :ref:`CIS-4-CredentialType` (``type``), and then a :ref:`CIS-4-SchemaRef` (``schema_ref``)::
 
   CredentialSchemaRefEvent ::= (245: Byte) (type: CredentialType) (schema_ref: SchemaRef)
 
@@ -633,7 +633,7 @@ The ``CredentialSchemaRefEvent`` event is serialized as: first a byte with the v
 A ``RevocationKeyEvent`` event MUST be logged when registering a new or removing an existing revocation key.
 It consist of the key and the action performed with the key (registration or removal).
 
-The ``RevocationKeyEvent`` event is serialized as: first a byte with the value of 250, followed by the key bytes :ref:`CIS-4-PublicKeyEd25519` and 1 byte encoding the action (0 for ``Register``, 1 for ``Remove``)::
+The ``RevocationKeyEvent`` event is serialized as: first a byte with the value of 244, followed by the key bytes :ref:`CIS-4-PublicKeyEd25519` and 1 byte encoding the action (0 for ``Register``, 1 for ``Remove``)::
 
   RevocationKeyAction ::= (0: Byte)    // Register
                         | (1: Byte)    // Remove
