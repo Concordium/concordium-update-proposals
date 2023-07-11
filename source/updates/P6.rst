@@ -15,6 +15,9 @@ Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validatio
 Specification
 =============
 
+.. include:: ../../updates/P6.txt
+   :literal:
+
 Commentary
 ==========
 
