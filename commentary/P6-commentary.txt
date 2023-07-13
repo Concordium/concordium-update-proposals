@@ -1,0 +1,51 @@
+                      Protocol update commentary
+
+Protocol Version: 6
+Builds on Protocol Version: 5
+
+Protocol version 6 changes protocol version 5 in two main areas. The
+first area is a relatively modest extension of smart contract
+functionality, with the main effect being better support for sponsored
+transactions. The major update in protocol 6 however, is the new
+consensus protocol, Concordium BFT.
+
+Up to and including protocol 5, Concordium used a two-layer consensus
+design, with a proof of stake Nakamoto style consensus at the base
+layer with finalization on top which marked certain blocks as finalized.
+The idea being that the base Nakamoto layer works as long as more than
+1/2 of stake adheres to the protocol over long periods of time, but
+the finalization layer ensures speedy, explicit, finalization, in good
+conditions when there is more than 2/3 liveness and adherence to protocol.
+
+While this two-layer design did serve Concordium well during the initial
+phase, and is in theory robust, the two layer design is rather complex,
+and makes it challenging to optimize the consensus for both throughput and
+confirmation latency while maintaining security.
+
+In protocol 6 a new consensus protocol Concordium Byzantine Fault Tolerance
+(BFT) will be used instead. The protocol offers high transaction throughput
+and lower confirmation time because a block can be produced as soon as the
+previous block has been certified. The overall architecture remains the same.
+There are still bakers and a subset of them, the finalizers. In contrast to
+how time was split into slots in existing consensus, Concordium BFT no
+longer has a notion of slots. Instead it advances by rounds. In each round,
+a predetermined leader among the bakers should produce a block. The members
+of the finalization committee then sign this block, and their collective
+signatures are aggregated to form a quorum certificate (QC). This quorum
+certificate is then included in the next block. If the leader fails to
+produce a block in the round, or not enough signatures were gathered for a
+QC, then the finalizers will instead send timeout messages, which are
+aggregated to form a timeout certificate. Each block always contains a
+quorum certificate and may contain a timeout certificate for the previous
+round if and only if the previous round timed out. When blocks on a common
+chain in two consecutive rounds have quorum certificates, the block in the
+first of these rounds (together with its ancestors) is considered
+finalized. At this point, the protocol ensures that it cannot be rolled back.
+
+Regarding smart contracts, the main usability improvement is better
+support for sponsored transactions. Account's public keys are now
+exposed to smart contracts, so signatures by sponsorees can be verified
+without first registering public keys. Other improvements to smart
+contracts are compatibility with recent Wasm changes, and revision of
+execution costs to better reflect the actual costs involved in
+execution.

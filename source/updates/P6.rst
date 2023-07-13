@@ -21,3 +21,5 @@ Specification
 Commentary
 ==========
 
+.. include:: ../../commentary/P6-commentary.txt
+   :literal:
