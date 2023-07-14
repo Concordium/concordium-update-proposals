@@ -1,0 +1,165 @@
+                           Protocol update
+
+Protocol Version: 6
+Builds on Protocol Version: 5
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 6
+compared to protocol version 5.
+
+The protocol change has the following main effects
+- it changes the consensus protocol from an existing two-layer design
+  to a new ConcordiumBFT consensus
+- fixes the behavior of state rollbacks in specific scenarios with
+  version 1 contracts.
+- extends the list of supported Wasm instructions for version 1
+  contracts, and fixes an incompatibility with the Wasm standard
+- adds better support for sponsored transactions
+
+                              Background
+
+Protocol version 6 changes protocol version 5 in two main areas.
+The first area is a relatively modest extension of smart contract
+functionality, with the main effect being better support for
+sponsored transactions.
+The major update in protocol 6 however, is the new consensus protocol,
+ConcordiumBFT.
+
+Before this protocol update, the Concordium chain uses a two-layer
+consensus protocol following [1]. The first layer is a Nakomoto-style
+consensus where "bakers" propose blocks extending the best chain. The
+bakers are chosen by a distributed lottery, with their chance of winning
+weighted by their effective stake. The lottery takes place at regular
+time intervals ("slots") and there can be zero or more winners in any
+given slot. At this layer, branching and roll-backs can occur.
+
+The second layer is a Byzantine fault tolerant (BFT) protocol that
+recurrently declares blocks as finalized. Finalized blocks cannot be
+rolled back. The participants in the finalization protocol (the
+"finalization committee", or just "finalizers") are a subset of the
+bakers with the highest effective stakes.
+
+In protocol 6, the consensus protocol is replaced with ConcordiumBFT, a
+new protocol based on Jolteon [2]. In ConcordiumBFT, bakers are still
+selected by lottery to bake blocks. However, the lottery is no longer
+attached to time slots, but instead takes place in "rounds". A round
+does not correspond to a particular time, but is advanced once the
+finalization committee determines which block (if any) is to be
+certified in the round.
+
+When the winning baker for a round produces a block, it is distributed.
+The finalizers sign the block, sending out their signatures. Once
+signatures from 2/3 of the committee (weighted by stake) for the same
+block are collected, these form a quorum certificate (QC). This quorum
+certificate allows the bakers to advance to the next round. The baker
+for the next round includes the QC in its block.
+
+If a QC cannot be produced in a certain amount of time (for instance,
+because the baker did not produce a block), then the finalizers instead
+sign timeout messages. When 2/3 of the committee agree that the round
+has timed out, these messages are aggregated into a timeout certificate
+(TC). The timeout certificate allows the round to advance, and a baker can
+produce a block for the next round by including a TC for the previous
+round, and a QC for an earlier round.
+
+When blocks on a common chain in two consecutive rounds have quorum
+certificates, the block in the first of these rounds (together with its
+ancestors) is considered finalized. At this point, the protocol ensures
+that it cannot be rolled back. The two consecutive blocks must also be
+within the same epoch.
+
+Leaders are determined per epoch, and are known to everybody for the epoch.
+The notion of a payday, as it exists in protocols 4 and 5, remains largely
+unchanged, although payday transitions are slightly changed due to the
+technicalities of how epoch transitions occur in ConcordiumBFT.
+However in normal conditions there should be little observable effect on
+users of the chain.
+
+                               Changes
+
+The following behaviors are changed in protocol version 6.
+
+1. ConcordiumBFT takes effect. In particular this changes the format of
+   blocks, and the messages exchanged by the nodes.
+2. The election difficulty chain parameter is removed.
+3. There are new chain parameters
+   - the minimum timeout, and factors for increasing and decreasing round
+     timeout duration on successive round timeouts and finalizations,
+     respectively
+   - minimum block time, controlling the minimum time between blocks in two
+     successive rounds
+   - minimum number of finalizers and maximum number of finalizers. These,
+     together with the existing finalizer relative stake threshold
+     parameter, revise the condition on being a finalizer. The relative
+     stake threshold is not interpreted relative to the total effective
+     stake of bakers. The minimum number of finalizers must be reached
+     before the relative stake threshold applies. Analogously, the number
+     of finalizers are capped.
+4. Block energy limit becomes an updatable parameter.
+5. Smart contract validation has the following changes
+   - Version 1 smart contracts can now use sign extension Wasm
+     instructions (i32.extend8_s, i32.extend16_s, i64.extend8_s,
+     i64.extend16_s, i64.extend32_s), see
+     https://webassembly.github.io/spec/core/exec/instructions.html
+     for their meaning.
+   - In version 1 smart contracts, the contract schema, and other custom
+     sections, no longer count towards the cost when executing contracts
+     for modules that were deployed in protocol 6.
+   - The behavior of rollbacks in certain cases of reentrant contract
+     calls is corrected to conform to the intended semantics. In protocols
+     4 and 5 state changes might not be rolled back in case of failure of
+     nested, reentrant contract calls.
+6. In V1 smart contracts, the `invoke` operation allows for two additional
+   operations, querying account keys, and checking a signature with respect
+   to the account keys.
+
+                               Effects
+
+1. The consensus change has no direct effects on the state of accounts and
+   contracts. The overall immediate effect of the new consensus will be, in
+   normal network conditions, that transaction confirmation times will have
+   much less variance.
+
+2. The change of the condition on a baker being a finalizer can result in some
+   bakers that were not a finalizer before the protocol update becoming a
+   finalizer after, or vice-versa, depending on the update parameters and the
+   state of the chain at the time of the update.
+
+3. Behavior of existing V1 contract instances may be affected in the
+   following scenarios
+   - if the contract attempted to perform an operation with tags (operation
+     identifiers) 5 or 6 the execution would have triggered a runtime error. In
+     protocol 6 the response can either be a runtime error, or a response code
+     indicating the result of the operation, depending on the parameters
+     supplied to the operation.
+   - if the contract interaction triggered the incorrect rollback behavior
+     then the semantics of those contract executions will change.
+   - the cost of some smart contract executions may change slightly as a
+     result of fixes to address the incorrect behavior of rollbacks.
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of
+this file. The instruction needs the following auxiliary data
+
+- minimum round timeout in milliseconds
+- timeout increase factor
+- timeout decrease factor
+- minimum time between blocks in milliseconds
+– block energy limit
+- finalization relative stake threshold, minimum and maximum number of finalizers
+
+                     References
+
+  [1] Thomas Dinsdale-Young, Bernardo Magri, Christian Matt, Jesper Buus
+      Nielsen, and Daniel Tschudi: "Afgjort: A Partially Synchronous
+      Finality Layer for Blockchains". Cryptology ePrint Archive, Paper
+      2019/504. DOI 10.1007/978-3-030-57990-6_2
+      <https://eprint.iacr.org/2019/504>
+
+  [2] Rati Gelashvili, Lefteris Kokoris-Kogias, Alberto Sonnino,
+      Alexander Spiegelman, and Zhuolun Xiang: "Jolteon and Ditto:
+      Network-Adaptive Efficient Consensus with Asynchronous Fallback".
+      arXiv:2106.10362. DOI 10.48550/arXiv.2106.10362
+      <https://arxiv.org/abs/2106.10362>
