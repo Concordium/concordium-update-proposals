@@ -394,7 +394,8 @@ If its value is 0, then no reason string is present, if the value is 1 then the 
 
   OptionalReason ::= (0: Byte)
                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
-  RevokeCredentialIssuerParam ::= (credential_id: CredentialHolderId) (reason: OptionalReason)
+  AuxData ::= (n: Byte²) (data: Byteⁿ)
+  RevokeCredentialIssuerParam ::= (credential_id: CredentialHolderId) (reason: OptionalReason) (auxiliary_data: AuxData)
 
 Requirements
 ~~~~~~~~~~~~
