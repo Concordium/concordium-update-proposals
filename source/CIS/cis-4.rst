@@ -505,7 +505,8 @@ Parameter
 
 It is serialized as First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
 
-  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
+  AuxData ::= (n: Byte²) (data: Byteⁿ)
+  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ (auxiliary_data: AuxData)
 
 Requirements
 ~~~~~~~~~~~~
@@ -533,7 +534,8 @@ Parameter
 
 It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
 
-  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
+  AuxData ::= (n: Byte²) (data: Byteⁿ)
+  RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ (auxiliary_data: AuxData)
 
 Requirements
 ~~~~~~~~~~~~
