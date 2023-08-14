@@ -720,7 +720,7 @@ The credential metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) fil
   * - ``logo``
     - URL JSON object
     - An image URL for displaying the credential. The RECOMMENDED size of the image is 40x40.
-  * - ``background_color``
+  * - ``backgroundColor``
     - string
     - A hex code of the background color for displaying the credential.
   * - ``image`` (optional)
@@ -749,7 +749,7 @@ Example credential metadata
       "url":  "https://concordium.com/wp-content/uploads/2022/07/Concordium-1.png",
       "hash": "1c74f7eb1b3343a5834e60e9a8fce277f2c7553112accd42e63fae7a09e0caf8"
       }
-    "background_color": "#000000",
+    "backgroundColor": "#000000",
     "image": {
       "url": "https://concordium.com/employment/vc-background.png",
     }
