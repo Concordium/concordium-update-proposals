@@ -418,10 +418,10 @@ The public key is part of :ref:`CIS-4-CredentialInfo` that is used when register
 Parameter
 ~~~~~~~~~
 
-It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and message data ``RevocationDataHolder`` consisting of :ref:`CIS-4-CredentialHolderId` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and data, for which the signature is computed ``RevocationDataHolder`` (``message``), consisting of :ref:`CIS-4-CredentialHolderId` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
 
   RevocationDataHolder ::= (credential_id: CredentialHolderId) (signing_data: SigningData) (reason: OptionalReason)
-  RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (data : RevocationDataHolder)
+  RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (message : RevocationDataHolder)
 
 
 Requirements
@@ -461,10 +461,10 @@ In particular, it enables the issuer to provide a service for selected entities 
 Parameter
 ~~~~~~~~~
 
-It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and message data ``RevocationDataOther`` consisting of :ref:`CIS-4-CredentialHolderId` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), a revocation public key :ref:`CIS-4-PublicKeyEd25519` , and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
+It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and data, for which the signature is computed ``RevocationDataHolder`` (``message``) consisting of :ref:`CIS-4-CredentialHolderId` (``credential_id``), metadata about the signature :ref:`CIS-4-SigningData` (``signing_data``), a revocation public key :ref:`CIS-4-PublicKeyEd25519` , and an optional revocation reason (``reason``), serialized similarly to :ref:`CIS-4-functions-revokeCredentialIssuer`::
 
   RevocationDataOther ::= (credential_id: CredentialHolderId) (signing_data: SigningData) (revocation_key: PublicKeyEd25519) (reason: OptionalReason)
-  RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (data : RevocationDataOther)
+  RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (message : RevocationDataOther)
 
 
 Requirements
