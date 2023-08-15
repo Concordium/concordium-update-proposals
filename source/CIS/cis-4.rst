@@ -423,6 +423,9 @@ It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and data, for 
   RevocationDataHolder ::= (credential_id: CredentialHolderId) (signing_data: SigningData) (reason: OptionalReason)
   RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (message : RevocationDataHolder)
 
+.. note::
+  The message data ``RevocationDataHolder`` MUST be pre-pended with the domain separating string "WEB3ID:REVOKE" before signing.
+
 
 Requirements
 ~~~~~~~~~~~~
@@ -465,6 +468,9 @@ It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and data, for 
 
   RevocationDataOther ::= (credential_id: CredentialHolderId) (signing_data: SigningData) (revocation_key: PublicKeyEd25519) (reason: OptionalReason)
   RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (message : RevocationDataOther)
+
+.. note::
+  The message data ``RevocationDataOther`` MUST be pre-pended with the domain separating string "WEB3ID:REVOKE" before signing.
 
 
 Requirements
