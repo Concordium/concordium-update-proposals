@@ -390,7 +390,8 @@ Parameter
 The parameter is the credential ID :ref:`CIS-4-CredentialHolderId` and an optional string in the UTF-8 encoding that indicates the revocation reason.
 
 It is serialized as :ref:`CIS-4-CredentialHolderId` followed by 1 byte to indicate whether a reason is included.
-If its value is 0, then no reason string is present, if the value is 1 then the bytes corresponding to the reason string follow::
+If its value is 0, then no reason string is present, if the value is 1 then the bytes corresponding to the reason string follow.
+The optional revocation reason is followed by auxiliary data, which is serialized as 2 bytes to encode the length (``n``) of the data vector, followed by this many bytes of data::
 
   OptionalReason ::= (0: Byte)
                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
@@ -509,9 +510,10 @@ Register public keys that can be used by revocation authorities.
 Parameter
 ~~~~~~~~~
 
-It is serialized as First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+It is serialized as First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys.
+The revocation keys are followed by auxiliary data, which is serialized as 2 bytes to encode the length (``m``) of the data vector, followed by this many bytes of data::
 
-  AuxData ::= (n: Byte²) (data: Byteⁿ)
+  AuxData ::= (m: Byte²) (data: Byteᵐ)
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ (auxiliary_data: AuxData)
 
 Requirements
@@ -538,9 +540,10 @@ Make a list of public keys unavailable to revocation authorities.
 Parameter
 ~~~~~~~~~
 
-It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys.
+The revocation keys are followed by auxiliary data, which is serialized as 2 bytes to encode the length (``m``) of the data vector, followed by this many bytes of data::
 
-  AuxData ::= (n: Byte²) (data: Byteⁿ)
+  AuxData ::= (m: Byte²) (data: Byteᵐ)
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ (auxiliary_data: AuxData)
 
 Requirements
