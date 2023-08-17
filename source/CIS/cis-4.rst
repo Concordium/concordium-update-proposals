@@ -182,7 +182,7 @@ It is serialized as :ref:`CIS-4-ContractAddress` (``contract_address``), :ref:`C
 
 A URL of the credential schema.
 
-Serialized in the same way as :ref:`CIS-2 MetadataUrl<CIS-2-MetadataUrl>`.
+Serialized in the same way as :ref:`CIS-4-MetadataUrl`.
 
 
 .. _CIS-4-CredentialType:
