@@ -424,15 +424,11 @@ It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and data, for 
   RevocationDataHolder ::= (credential_id: CredentialHolderId) (signing_data: SigningData) (reason: OptionalReason)
   RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (message : RevocationDataHolder)
 
-.. note::
-  The message data ``RevocationDataHolder`` MUST be pre-pended with the domain separating string "WEB3ID:REVOKE" before signing.
-
-
 Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The message to be signed is produced in the following way:
+- The message to be signed MUST be produced in the following way:
     - Start with the bytes of the domain separation string ``WEB3ID:REVOKE``.
     - Append ``RevocationDataHolder`` bytes from the input parameter.
 - The ``RevokeCredentialHolderParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
@@ -470,15 +466,11 @@ It is serialized as :ref:`CIS-4-SignatureEd25519` (``signature``) and data, for 
   RevocationDataOther ::= (credential_id: CredentialHolderId) (signing_data: SigningData) (revocation_key: PublicKeyEd25519) (reason: OptionalReason)
   RevokeCredentialHolderParam ::= (signature: SignatureEd25519) (message : RevocationDataOther)
 
-.. note::
-  The message data ``RevocationDataOther`` MUST be pre-pended with the domain separating string "WEB3ID:REVOKE" before signing.
-
-
 Requirements
 ~~~~~~~~~~~~
 
 - If revoked successfully, the credential status MUST change to ``Revoked`` (see :ref:`CIS-4-functions-credentialStatus`).
-- The message to be signed is produced in the following way:
+- The message to be signed MUST be produced in the following way:
     - Start with the bytes of the domain separation string ``WEB3ID:REVOKE``.
     - Append ``RevocationDataOther`` bytes from the input parameter.
 - The ``RevokeCredentialOtherParam``'s ``signing_data`` MUST include a nonce to protect against replay attacks.
