@@ -651,7 +651,8 @@ Issuer metadata JSON
 
 The issuer metadata is stored off-chain and MUST be a JSON (:rfc:`8259`) file.
 
-All of the fields in the JSON file are optional, and this specification reserves a number of field names shown in the table below.
+This specification reserves a number of field names, shown in the table below.
+Fields not marked with ``optional`` MUST be included.
 
 .. list-table:: Issuer metadata JSON Object
   :header-rows: 1
