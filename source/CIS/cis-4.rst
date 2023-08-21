@@ -442,7 +442,7 @@ Requirements
     - The signature was intended for a different entrypoint.
     - The signature is expired.
     - The signature cannot be validated.
-      The smart contract logic SHOULD practice its best efforts to ensure that only the holder can generate and authorize a revocation request with a valid signature.
+      The smart contract logic SHOULD use all possible efforts to ensure that only the holder can generate and authorize a revocation request with a valid signature.
 
 .. _CIS-4-functions-revokeCredentialOther:
 
@@ -484,7 +484,7 @@ Requirements
     - The signature was intended for a different entrypoint.
     - The signature is expired.
     - The signature can not be validated.
-      The smart contract logic SHOULD practice its best efforts to ensure that only the revocation authority can generate and authorize a revocation request with a valid signature.
+      The smart contract logic SHOULD use all possible efforts to ensure that only the revocation authority can generate and authorize a revocation request with a valid signature.
 
 .. _CIS-4-functions-registerRevocationKeys:
 
