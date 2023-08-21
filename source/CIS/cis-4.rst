@@ -75,7 +75,7 @@ It is serialized as :ref:`CIS-4-PublicKeyEd25519`.
 
 A URL and optional checksum for metadata stored outside of this contract.
 
-It is serialized as: 2 bytes for the length of the metadata URL (``n``) and then this many bytes for the URL to the metadata (``url``) followed by an optional checksum.
+It is serialized as: 2 bytes for the length of the metadata URL (``n``) in little-endian and then this many bytes for the URL to the metadata (``url``) followed by an optional checksum.
 The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included.
 If its value is 0, then there is no hash; if the value is 1, then 32 bytes for a SHA256 hash (``hash``) follows::
 
@@ -115,7 +115,7 @@ It is serialized as 32 bytes::
 
 A name for a smart contract function entrypoint.
 
-It is serialized as: First 2 bytes encode the length (``n``) of the entrypoint name, followed by this many bytes for the entrypoint name (``entrypoint``)::
+It is serialized as: First 2 bytes encode the length (``n``) of the entrypoint name in little-endian, followed by this many bytes for the entrypoint name (``entrypoint``)::
 
   EntrypointName ::= (n: Byte²) (entrypoint: Byteⁿ)
 
@@ -360,7 +360,7 @@ Parameter
 
 The parameter is credential information that is used to create an entry in the registry.
 
-It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``), followed by auxiliary data, which is serialized as 2 bytes to encode the length (``n``) of the vector of keys, followed by this many bytes of data::
+It is serialized as :ref:`CIS-4-CredentialInfo` (``credential_info``), followed by auxiliary data, which is serialized as 2 bytes to encode the length (``n``) of the vector of keys in little-endian, followed by this many bytes of data::
 
   AuxData ::= (n: Byte²) (data: Byteⁿ)
   RegisterCredentialParameter ::= (credential_info: CredentialInfo) (auxiliary_data: AuxData)
@@ -391,7 +391,7 @@ The parameter is the credential ID :ref:`CIS-4-CredentialHolderId` and an option
 
 It is serialized as :ref:`CIS-4-CredentialHolderId` followed by 1 byte to indicate whether a reason is included.
 If its value is 0, then no reason string is present; if the value is 1, then the bytes corresponding to the reason string follow.
-The optional revocation reason is followed by auxiliary data, which is serialized as 2 bytes to encode the length (``n``) of the data vector, followed by this many bytes of data::
+The optional revocation reason is followed by auxiliary data, which is serialized as 2 bytes to encode the length (``n``) of the data vector in little-endian, followed by this many bytes of data::
 
   OptionalReason ::= (0: Byte)
                    | (1: Byte) (n: Byte) (reason_string: Byteⁿ)
@@ -502,8 +502,8 @@ Register public keys that can be used by revocation authorities.
 Parameter
 ~~~~~~~~~
 
-It is serialized as First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys.
-The revocation keys are followed by auxiliary data, which is serialized as 2 bytes to encode the length (``m``) of the data vector, followed by this many bytes of data::
+It is serialized as First 2 bytes encode the length (``n``) of the vector of keys in little-endian, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys.
+The revocation keys are followed by auxiliary data, which is serialized as 2 bytes to encode the length (``m``) of the data vector in little-endian, followed by this many bytes of data::
 
   AuxData ::= (m: Byte²) (data: Byteᵐ)
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ (auxiliary_data: AuxData)
@@ -532,8 +532,8 @@ Make a list of public keys unavailable to revocation authorities.
 Parameter
 ~~~~~~~~~
 
-It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys.
-The revocation keys are followed by auxiliary data, which is serialized as 2 bytes to encode the length (``m``) of the data vector, followed by this many bytes of data::
+It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys in little-endian, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys.
+The revocation keys are followed by auxiliary data, which is serialized as 2 bytes to encode the length (``m``) of the data vector in little-endian, followed by this many bytes of data::
 
   AuxData ::= (m: Byte²) (data: Byteᵐ)
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ (auxiliary_data: AuxData)
@@ -557,7 +557,7 @@ Response
 The function outputs a list of available revocation keys.
 Valid signatures with the corresponding private keys can be used to revoke any credential in the registry.
 
-It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
+It is serialized as: First 2 bytes encode the length (``n``) of the vector of keys in little-endian, followed by this many :ref:`CIS-4-PublicKeyEd25519` keys::
 
   RegisterPublicKeyParameters ::= (n: Byte²) (key: PublicKeyEd25519)ⁿ
 
