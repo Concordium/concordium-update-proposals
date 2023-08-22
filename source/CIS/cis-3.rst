@@ -129,16 +129,16 @@ of the map, followed by this many key-value pairs::
 
 .. note::
 
-    Each account address on Concordium is controlled by one or several credential(s) (real-world identities) 
+    Each account address on Concordium is controlled by one or several credential(s) (real-world identities)
     and each credential has one or several public-private key pair(s). There are two thresholds associated with these maps.
     The outer map has an ``AccountThreshold`` (number of credentials needed to sign the transaction initiated by that account)
-    and the inner map has a ``SignatureThreshold`` (number of signatures needed for a specific credential 
+    and the inner map has a ``SignatureThreshold`` (number of signatures needed for a specific credential
     so that this credential is considered to have signed the transaction initiated by that account).
 
 .. note::
 
     The ``Signature`` type can support different cryptographic signature schemes. The first byte is used
-    to identify which schema to use. Currently, only the ``SignatureEd25519`` schema is supported. 
+    to identify which schema to use. Currently, only the ``SignatureEd25519`` schema is supported.
     The first byte in ``Signature`` type is hence set to ``0`` to specify an ed25519 signature.
 
 Logged events
