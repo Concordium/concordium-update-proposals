@@ -75,7 +75,7 @@ It is serialized as :ref:`CIS-4-PublicKeyEd25519`.
 
 A URL and optional checksum for metadata stored outside of this contract.
 
-It is serialized as: 2 bytes for the length of the metadata URL (``n``) in little-endian and then this many bytes for the URL to the metadata (``url``) followed by an optional checksum.
+It is serialized as: 2 bytes for the length (``n``) of the metadata URL in little-endian and then this many bytes for the URL to the metadata (``url``) followed by an optional checksum.
 The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included.
 If its value is 0, then there is no hash; if the value is 1, then 32 bytes for a SHA256 hash (``hash``) follows::
 
