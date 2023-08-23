@@ -6,7 +6,7 @@ Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validatio
    :stub-columns: 1
 
    * - Effective on Testnet
-     - planned Aug 21, 2023
+     - Aug 21, 2023
    * - Effective on Mainnet
      - planned Sep 25, 2023
    * - Specification hash
