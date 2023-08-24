@@ -9,6 +9,8 @@ CIS-4: Credential Registry Standard
 
    * - Created
      - May 1, 2023
+   * - Status
+     - Draft - Aug 23, 2023
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
