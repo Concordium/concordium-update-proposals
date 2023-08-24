@@ -10,7 +10,7 @@ CIS-3: Sponsored Transaction Standard
    * - Created
      - Apr 04, 2023
    * - Final
-     - Apr 19, 2023
+     - Aug 22, 2023
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
@@ -106,27 +106,48 @@ It is serialized as 64 bytes::
 
   SignatureEd25519 ::= (signature: Byte⁶⁴)
 
-.. _CIS-3-TwoLevelSignatureMap:
+.. _CIS-3-AccountSignatures:
 
-``TwoLevelSignatureMap``
-^^^^^^^^^^^^^^^^^^^^^^^^
+``AccountSignatures``
+^^^^^^^^^^^^^^^^^^^^^
 
-It consists of two maps. Each map stores key-value pairs, where the keys are unsigned 8 bit integers in both maps.
-The value in the outer map is the inner map and the value in the inner map is of type ``SignatureEd25519``.
+It consists of two maps. The inner map is called ``CredentialSignatures`` and the outer map is called ``AccountSignatures``.
+Each map stores key-value pairs, where the keys are unsigned 8-bit integers in both maps.
+The value in the outer map is the inner map and the value in the inner map is a byte to specify the cryptographic signature scheme
+followed by the ``SignatureEd25519``.
 
 It is serialized as: For each map, the first byte encodes the size (``n`` for the outer map and ``m`` for the inner map)
 of the map, followed by this many key-value pairs::
 
-  InnerMap ::= (m: Byte) (key: Byte, value: SignatureEd25519)ᵐ
-  TwoLevelSignatureMap ::= (n: Byte) (key: Byte, value: InnerMap)ⁿ
+  KeyIndex ::= Byte
+  CredentialIndex ::= Byte
+
+  Signature ::= (0: Byte) SignatureEd25519
+
+  CredentialSignatures ::= (m: Byte) (key: KeyIndex, value: Signature)ᵐ
+  AccountSignatures ::= (n: Byte) (key: CredentialIndex, value: CredentialSignatures)ⁿ
+
+.. note::
+
+    Each account address on Concordium is controlled by one or several credential(s) (real-world identities)
+    and each credential has one or several public-private key pair(s). There are two thresholds associated with these maps.
+    The outer map has an ``AccountThreshold`` (number of credentials needed to sign the transaction initiated by that account)
+    and the inner map has a ``SignatureThreshold`` (number of signatures needed for a specific credential
+    so that this credential is considered to have signed the transaction initiated by that account).
+
+.. note::
+
+    The ``Signature`` type can support different cryptographic signature schemes. The first byte is used
+    to identify which schema to use. Currently, only the ``SignatureEd25519`` schema is supported.
+    The first byte in ``Signature`` type is hence set to ``0`` to specify an ed25519 signature.
 
 Logged events
 -------------
 
-Entrypoints invoked via the `permit` function using the sponsored
+Entrypoints invoked via the ``permit`` function using the sponsored
 transaction mechanism MUST log the same events as if they were invoked
 by the sponsoree directly without the sponsored transaction mechanism.
-In addition, the `permit` function SHALL log an event with the `nonce` and the `sponsoree` address every time
+In addition, the ``permit`` function SHALL log an event with the ``nonce`` and the ``sponsoree`` address every time
 the `permit` function is invoked.
 
 The event defined by this specification is serialized using one byte to discriminate it from other events logged by the smart contract.
@@ -135,7 +156,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 ``NonceEvent``
 ^^^^^^^^^^^^^^
 
-A ``NonceEvent`` SHALL be logged for every `permit` function invoke.
+A ``NonceEvent`` SHALL be logged for every ``permit`` function invoke.
 
 The ``NonceEvent`` is serialized as: First a byte with the value of 250, followed by the :ref:`CIS-3-Nonce` (``nonce``) that was used in the PermitMessage, and an :ref:`CIS-3-AccountAddress` (``sponsoree``)::
 
@@ -175,13 +196,13 @@ The payload (``PermitPayload``) is serialized as: First 2 bytes encode the lengt
 
   PermitMessage ::= (contract_address: ContractAddress) (nonce: Nonce) (timestamp: Timestamp) (entry_point: EntrypointName) (payload: PermitPayload)
 
-  PermitParam ::= (signature: TwoLevelSignatureMap) (signer: AccountAddress) (message: PermitMessage)
+  PermitParam ::= (signature: AccountSignatures) (signer: AccountAddress) (message: PermitMessage)
 
 Requirements
 ~~~~~~~~~~~~
 
 - The requirements specified for an entrypoint and the outcome of the invoke MUST be the same as if it was invoked directly by the sponsoree. E.g. a smart contract implementing an `updateOperator/transfer` function from the CIS-2 standard, if these entrypoints are invoked via the `permit` function, the sponsored transaction invoke MUST adhere to the CIS-2 standard as well and create the same outcome as if the sponsoree invokes the `updateOperator/transfer` function directly.
-- The PermitMessage MUST include a nonce to protect against replay attacks. The sponsoree's nonce is sequentially increased every time a `PermitMessage` (signed by the sponsoree) is successfully executed in the `permit` function. The `permit` function MUST only accept a `PermitMessage` if it has the next nonce following the sequential order.
+- The PermitMessage MUST include a nonce to protect against replay attacks. The sponsoree's nonce is sequentially increased every time a ``PermitMessage`` (signed by the sponsoree) is successfully executed in the `permit` function. The `permit` function MUST only accept a `PermitMessage` if it has the next nonce following the sequential order.
 - An invoke MUST fail if the signature was intended for a different contract.
 - An invoke MUST fail if the signature was intended for a different entrypoint.
 - An invoke MUST fail if the signature is expired.
@@ -192,9 +213,9 @@ Requirements
 ``supportsPermit``
 ^^^^^^^^^^^^^^^^^^
 
-Query supported entrypoints by the `permit` function given a list of entrypoints.
+Query supported entrypoints by the ``permit`` function given a list of entrypoints.
 The response contains a corresponding result for each entrypoint, where the result is either
-"Entrypoint is not supported and can not be invoked via the `permit` function using the sponsored transaction mechanism" or "Entrypoint is supported and can be invoked via the `permit` function using the sponsored transaction mechanism".
+"Entrypoint is not supported and can not be invoked via the ``permit`` function using the sponsored transaction mechanism" or "Entrypoint is supported and can be invoked via the ``permit`` function using the sponsored transaction mechanism".
 
 Parameter
 ~~~~~~~~~
@@ -231,5 +252,3 @@ Limitations
 A number of limitations are important to be aware of:
 
 - Only accounts can generate a valid Ed25519 signature using public-private key cryptography. Smart contracts can not be a sponsoree as defined in this CIS-3 standard.
-
-- To validate a signature, the smart contract needs to have access to its corresponding public key. Concordium smart contracts currently have no way to query the corresponding public key(s) of an account within the smart contract code. For the time being a `public_key_registry` is recommended to be added to the smart contract to only allow a trusted party to register a public key for a given account. The Concordium team is working on exposing the public key within the smart contract code and this feature is planned to be included in the next protocol update.
