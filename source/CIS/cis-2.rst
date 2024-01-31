@@ -158,7 +158,7 @@ It is serialized as: the first 2 bytes encode the length (``n``) of the data, fo
 
 A URL and optional checksum for metadata stored outside of this contract.
 
-It is serialized as: 2 bytes for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) followed by an optional checksum.
+It is serialized as: 2 bytes (little endian) for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) followed by an optional checksum.
 The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) follows::
 
   MetadataChecksum ::= (0: Byte)
@@ -362,7 +362,7 @@ Parameter
 
 The parameter consists of a list of token IDs.
 
-It is serialized as: 2 bytes for the number of queries (``n``) and then this number of :ref:`CIS-2-TokenID` (``ids``)::
+It is serialized as: 2 bytes (little endian) for the number of queries (``n``) and then this number of :ref:`CIS-2-TokenID` (``ids``)::
 
   TokenMetadataParameter ::= (n: Byte²) (ids: TokenIDⁿ)
 
