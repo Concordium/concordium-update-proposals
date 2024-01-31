@@ -291,7 +291,7 @@ Response
 
 The function output response is a list of token amounts.
 
-It is serialized as: 2 bytes for the number of token amounts (``n``) and then this number of :ref:`CIS-2-TokenAmount` (``results``)::
+It is serialized as: 2 bytes (little endian) for the number of token amounts (``n``) and then this number of :ref:`CIS-2-TokenAmount` (``results``)::
 
   BalanceOfResponse ::= (n: Byte²) (results: TokenAmountⁿ)
 
@@ -331,7 +331,7 @@ Response
 
 The function output is a list of booleans, where a value is ``True`` if and only if the ``address`` is an operator of the ``owner`` address from the corresponding query.
 
-It is serialized as: 2 bytes for the number of results (``n``) and then this number of results (``results``).
+It is serialized as: 2 bytes (little endian) for the number of results (``n``) and then this number of results (``results``).
 A boolean is serialized as a byte with value 0 for false and 1 for true (``isOperator``)::
 
   Bool ::= (0: Byte) // False
