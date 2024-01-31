@@ -248,7 +248,7 @@ Parameter
 The parameter contains a list of operator updates. An operator update includes information on whether to add or remove an operator and the address to add/remove as operator.
 It does not contain the address which is adding/removing the operator as this will be the sender of the message invoking this function.
 
-The parameter is serialized as: first 2 bytes (``n``) for the number of updates followed by this number of operator updates (``updates``).
+The parameter is serialized as: first 2 bytes (little endian) (``n``) for the number of updates followed by this number of operator updates (``updates``).
 An operator update is serialized as: 1 byte (``update``) indicating whether to remove or add an operator, where if the byte value is 0 the sender is removing an operator, if the byte value is 1 the sender is adding an operator.
 The update is followed by the operator address (``operator``) :ref:`CIS-2-Address` to add or remove as operator for the sender::
 
