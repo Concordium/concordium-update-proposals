@@ -279,7 +279,7 @@ Parameter
 
 The parameter consists of a list of token ID and address pairs.
 
-It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
+It is serialized as: 2 bytes (little endian) for the number of queries (``n``) and then this number of queries (``queries``).
 A query is serialized as :ref:`CIS-2-TokenID` (``id``) followed by :ref:`CIS-2-Address` (``address``)::
 
   BalanceOfQuery ::= (id: TokenID) (address: Address)
@@ -319,7 +319,7 @@ Parameter
 
 The parameter consists of a list of address pairs.
 
-It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
+It is serialized as: 2 bytes (little endian) for the number of queries (``n``) and then this number of queries (``queries``).
 A query is serialized as :ref:`CIS-2-Address` (``owner``) followed by :ref:`CIS-2-Address` (``address``)::
 
   OperatorOfQuery ::= (owner: Address) (address: Address)
