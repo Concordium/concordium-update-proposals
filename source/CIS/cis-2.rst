@@ -143,7 +143,7 @@ In case the first byte is 1 then a ``ContractAddress`` (``address``) and bytes f
 
 Additional bytes to include in a transfer, which can be used to add additional parameters for the transfer function call.
 
-It is serialized as: the first 2 bytes encode the length (``n``) of the data, followed by this many bytes for the data (``data``)::
+It is serialized as: the first 2 bytes (little endian) encode the length (``n``) of the data, followed by this many bytes for the data (``data``)::
 
   AdditionalData ::= (n: Byte²) (data: Byteⁿ)
 
@@ -188,7 +188,7 @@ Parameter
 
 The parameter is a list of transfers.
 
-It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of transfers (``transfers``).
+It is serialized as: 2 bytes representing the number of transfers (in little endian) (``n``) followed by the bytes for this number of transfers (``transfers``).
 Each transfer is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-TokenAmount` (``amount``), the token owner address :ref:`CIS-2-Address` (``from``), the receiving address :ref:`CIS-2-Receiver` (``to``) and some additional data (``data``)::
 
   Transfer ::= (id: TokenID) (amount: TokenAmount) (from: Address) (to: Receiver) (data: AdditionalData)
