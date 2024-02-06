@@ -38,6 +38,10 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 General types and serialization
 -------------------------------
 
+.. note::
+
+  Bytes are encoded in big endian unless stated otherwise.
+
 .. _CIS-2-TokenID:
 
 ``TokenID``
