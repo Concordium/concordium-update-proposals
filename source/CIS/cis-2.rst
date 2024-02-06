@@ -40,7 +40,7 @@ General types and serialization
 
 .. note::
 
-  Bytes are encoded in big endian unless stated otherwise.
+  Integers are encoded in big endian unless stated otherwise.
 
 .. _CIS-2-TokenID:
 
