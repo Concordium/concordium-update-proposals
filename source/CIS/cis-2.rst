@@ -192,7 +192,7 @@ Parameter
 
 The parameter is a list of transfers.
 
-It is serialized as: 2 bytes representing the number of transfers (in little endian) (``n``) followed by the bytes for this number of transfers (``transfers``).
+It is serialized as: 2 bytes representing the number of transfers (little endian) (``n``) followed by the bytes for this number of transfers (``transfers``).
 Each transfer is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-TokenAmount` (``amount``), the token owner address :ref:`CIS-2-Address` (``from``), the receiving address :ref:`CIS-2-Receiver` (``to``) and some additional data (``data``)::
 
   Transfer ::= (id: TokenID) (amount: TokenAmount) (from: Address) (to: Receiver) (data: AdditionalData)
