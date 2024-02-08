@@ -40,7 +40,7 @@ General types and serialization
 
 .. note::
 
-  Integers are encoded in big endian unless stated otherwise.
+  Integers are encoded in little-endian unless stated otherwise.
 
 .. _CIS-2-TokenID:
 
@@ -147,7 +147,7 @@ In case the first byte is 1 then a ``ContractAddress`` (``address``) and bytes f
 
 Additional bytes to include in a transfer, which can be used to add additional parameters for the transfer function call.
 
-It is serialized as: the first 2 bytes (little endian) encode the length (``n``) of the data, followed by this many bytes for the data (``data``)::
+It is serialized as: the first 2 bytes encode the length (``n``) of the data, followed by this many bytes for the data (``data``)::
 
   AdditionalData ::= (n: Byte²) (data: Byteⁿ)
 
@@ -162,7 +162,7 @@ It is serialized as: the first 2 bytes (little endian) encode the length (``n``)
 
 A URL and optional checksum for metadata stored outside of this contract.
 
-It is serialized as: 2 bytes (little endian) for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) (utf-8 encoded) followed by an optional checksum.
+It is serialized as: 2 bytes for the length of the metadata url (``n``) and then this many bytes for the url to the metadata (``url``) (utf-8 encoded) followed by an optional checksum.
 The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (``hash``) follows::
 
   MetadataChecksum ::= (0: Byte)
@@ -192,7 +192,7 @@ Parameter
 
 The parameter is a list of transfers.
 
-It is serialized as: 2 bytes representing the number of transfers (little endian) (``n``) followed by the bytes for this number of transfers (``transfers``).
+It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of transfers (``transfers``).
 Each transfer is serialized as: a :ref:`CIS-2-TokenID` (``id``), a :ref:`CIS-2-TokenAmount` (``amount``), the token owner address :ref:`CIS-2-Address` (``from``), the receiving address :ref:`CIS-2-Receiver` (``to``) and some additional data (``data``)::
 
   Transfer ::= (id: TokenID) (amount: TokenAmount) (from: Address) (to: Receiver) (data: AdditionalData)
@@ -252,7 +252,7 @@ Parameter
 The parameter contains a list of operator updates. An operator update includes information on whether to add or remove an operator and the address to add/remove as operator.
 It does not contain the address which is adding/removing the operator as this will be the sender of the message invoking this function.
 
-The parameter is serialized as: first 2 bytes (little endian) (``n``) for the number of updates followed by this number of operator updates (``updates``).
+The parameter is serialized as: first 2 bytes (``n``) for the number of updates followed by this number of operator updates (``updates``).
 An operator update is serialized as: 1 byte (``update``) indicating whether to remove or add an operator, where if the byte value is 0 the sender is removing an operator, if the byte value is 1 the sender is adding an operator.
 The update is followed by the operator address (``operator``) :ref:`CIS-2-Address` to add or remove as operator for the sender::
 
@@ -283,7 +283,7 @@ Parameter
 
 The parameter consists of a list of token ID and address pairs.
 
-It is serialized as: 2 bytes (little endian) for the number of queries (``n``) and then this number of queries (``queries``).
+It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
 A query is serialized as :ref:`CIS-2-TokenID` (``id``) followed by :ref:`CIS-2-Address` (``address``)::
 
   BalanceOfQuery ::= (id: TokenID) (address: Address)
@@ -295,7 +295,7 @@ Response
 
 The function output response is a list of token amounts.
 
-It is serialized as: 2 bytes (little endian) for the number of token amounts (``n``) and then this number of :ref:`CIS-2-TokenAmount` (``results``)::
+It is serialized as: 2 bytes for the number of token amounts (``n``) and then this number of :ref:`CIS-2-TokenAmount` (``results``)::
 
   BalanceOfResponse ::= (n: Byte²) (results: TokenAmountⁿ)
 
@@ -323,7 +323,7 @@ Parameter
 
 The parameter consists of a list of address pairs.
 
-It is serialized as: 2 bytes (little endian) for the number of queries (``n``) and then this number of queries (``queries``).
+It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
 A query is serialized as :ref:`CIS-2-Address` (``owner``) followed by :ref:`CIS-2-Address` (``address``)::
 
   OperatorOfQuery ::= (owner: Address) (address: Address)
@@ -335,7 +335,7 @@ Response
 
 The function output is a list of booleans, where a value is ``True`` if and only if the ``address`` is an operator of the ``owner`` address from the corresponding query.
 
-It is serialized as: 2 bytes (little endian) for the number of results (``n``) and then this number of results (``results``).
+It is serialized as: 2 bytes for the number of results (``n``) and then this number of results (``results``).
 A boolean is serialized as a byte with value 0 for false and 1 for true (``isOperator``)::
 
   Bool ::= (0: Byte) // False
@@ -366,7 +366,7 @@ Parameter
 
 The parameter consists of a list of token IDs.
 
-It is serialized as: 2 bytes (little endian) for the number of queries (``n``) and then this number of :ref:`CIS-2-TokenID` (``ids``)::
+It is serialized as: 2 bytes for the number of queries (``n``) and then this number of :ref:`CIS-2-TokenID` (``ids``)::
 
   TokenMetadataParameter ::= (n: Byte²) (ids: TokenIDⁿ)
 
