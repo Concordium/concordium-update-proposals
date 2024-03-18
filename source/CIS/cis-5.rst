@@ -359,20 +359,23 @@ Requirements
 ``withdrawNativeCurrency``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Executes a withdrawal of CCDs (native currency) to a native account or smart contract out of the smart contract wallet.
+Executes a list of token withdrawals of CCDs (native currency) to native accounts and/or smart contracts out of the smart contract wallet.
 When transferring CCD to a contract address, a ccd receive hook function MUST be triggered.
-
 
 Parameter
 ~~~~~~~~~
 
-The parameter is the ``NativeCurrencyWithdrawParameter``.
+The parameter is a list of withdrawals.
 
-It is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
+It is serialized as: 2 bytes representing the number of withdrawals (``n``) followed by the bytes for this number of withdrawals.
+
+Each withdrawal is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
 a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
 the receiving address :ref:`CIS-2-Receiver` (``to``), a :ref:`CIS-5-CCDAmount` (``ccdAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
 
-  NativeCurrencyWithdrawParameter ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (to: Receiver) (ccdAmount: CCDAmount) (data: AdditionalData)
+  NativeCurrencyWithdrawal ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (to: Receiver) (ccdAmount: CCDAmount) (data: AdditionalData)
+
+  NativeCurrencyWithdrawParameter ::= (n: Byte²) (withdrawal: NativeCurrencyWithdrawalⁿ)
 
 .. _CIS-5-functions-transfer-ccd-receive-hook-parameter:
 
@@ -389,15 +392,16 @@ It is serialized as: a :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-Pub
 Requirements
 ~~~~~~~~~~~~
 
-- The function MUST emit a ``NonceEvent`` and a ``WithdrawNativeCurrencyEvent``.
-- The function MUST reject if the signature verification fails.
-
-- The withdrawal MUST fail, if the CCD balance of the ``signer`` is insufficient to do the withdrawal.
-- A withdrawal MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail.
+- The list of withdrawals MUST be executed in order.
+- The contract function MUST reject if any of the withdrawals fail to be executed.
+- The function MUST emit a ``NonceEvent`` and a ``WithdrawNativeCurrencyEvent`` for every withdrawal.
+- The function MUST reject if the signature verification fails for any withdrawal.
+- The function MUST fail, if the CCD balance of the ``signer`` is insufficient to do the withdrawal for any withdrawal.
+- A function MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any withdrawal.
 - A withdrawal back to this contract into the ``depositNativeCurrency`` entrypoint MUST be executed as a normal withdrawal.
 - A withdrawal of a CCD amount of zero MUST be executed as a normal withdrawal.
 - A withdrawal of any amount of CCD to a contract address MUST call a ccd receive hook function on the receiving smart contract with a :ref:`ccd receive hook parameter<CIS-5-functions-transfer-ccd-receive-hook-parameter>`.
-- The contract function MUST reject if the ccd receive hook function called on the contract receiving CCDs rejects.
+- The contract function MUST reject if the ccd receive hook function called on the contract receiving CCDs rejects for any withdrawal.
 - The balance of a public key not owning any CCD amount SHOULD be treated as having a balance of zero.
 
 .. warning::
@@ -411,18 +415,37 @@ Requirements
 ``withdrawCis2Tokens``
 ^^^^^^^^^^^^^^^^^^^^^^
 
+Executes a list of token withdrawals to native accounts and/or smart contracts out of the smart contract wallet.
+This function MUST call the ``transfer`` function on the CIS-2 token contract for every withdrawal.
+
 Parameter
 ~~~~~~~~~
 
+The parameter is a list of withdrawals.
+
+It is serialized as: 2 bytes representing the number of withdrawals (``n``) followed by the bytes for this number of withdrawals.
+
+Each withdrawal is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
+a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
+the receiving address :ref:`CIS-2-Receiver` (``to``), a :ref:`CIS-5-TokenAmount` (``tokenAmount``), a :ref:`CIS-5-TokenID` (``tokenID``), a :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
+
+  Cis2TokensWithdrawal ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (to: Receiver) (tokenAmount: tokenAmount) (tokenId: tokenID) (cis2TokenContractAddress: ContractAddress) (data: AdditionalData)
+
+  Cis2TokensWithdrawParameter ::= (n: Byte²) (withdrawal: Cis2TokensWithdrawalⁿ)
 
 Requirements
 ~~~~~~~~~~~~
 
-- The function MUST emit a ``NonceEvent`` and a ``WithdrawCis2TokensEvent``.
-- The function MUST reject if the signature verification fails.
-- This function has to call a ``transfer`` function on the cis2 token contract.
-
-
+- The list of withdrawals MUST be executed in order.
+- The contract function MUST reject if any of the withdrawals fail to be executed.
+- The function MUST emit a ``NonceEvent`` and a ``WithdrawCis2TokensEvent`` for every withdrawal.
+- The function MUST reject if the signature verification fails for any withdrawal.
+- This function MUST call the ``transfer`` function on the CIS-2 token contract for every withdrawal.
+- The function MUST fail, if the token balance of the ``signer`` is insufficient to do the withdrawal for any withdrawal.
+- A function MUST non-strictly decrease the token balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any withdrawal.
+- A withdrawal back to this contract into the ``depositCis2Tokens`` entrypoint MUST be executed as a normal withdrawal.
+- A withdrawal of a token amount of zero MUST be executed as a normal withdrawal.
+- The balance of a public key not owning any tokens SHOULD be treated as having a balance of zero.
 
 .. _CIS-5-functions-internalNativeCurrencyTransfer:
 
