@@ -745,6 +745,8 @@ The main argument is simplicity and to save energy cost on common cases, but oth
 
   The specification does not prevent adding more fine-grained authorization, such as token-level operators.
 
+.. _CIS-2-Receive-Hook-Function:
+
 Receive hook function
 ---------------------
 

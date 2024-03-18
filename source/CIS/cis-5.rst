@@ -1,8 +1,8 @@
 .. _CIS-5:
 
-=====================================
-CIS-5: Smart Contract Wallet Standard
-=====================================
+=========================================================
+CIS-5: Smart Contract Wallet Standard (Chaperone Account)
+=========================================================
 
 .. list-table::
    :stub-columns: 1
@@ -44,7 +44,7 @@ The three main actions in the smart contract that can be taken:
 - *withdraw*: withdraws the balance out of the smart contract wallet to a native account or smart contract.
 
 The goal of this standard is to simplify the account creation onboarding flow on Concordium
-allowing for CIS5 smart contract wallets to be supported as first-class citizens on Concordium wallets and tooling.
+allowing for CIS5 smart contract wallets to be supported as first-class citizens in Concordium wallets and tooling.
 
 Specification
 =============
@@ -63,7 +63,7 @@ General types and serialization
 ``TokenID``
 ^^^^^^^^^^^
 
-- The token ID SHALL be able to encode all possible tokenIds from the :ref:`CIS-2-TokenID` (``tokenId``)
+- The token ID SHALL be able to encode all possible Token IDs from the ``CIS-2 TokenID standard`` (:ref:`CIS-2-TokenID`)
 
 A token ID is serialized as 1 byte for the size (``n``) of the identifier, followed by this number of bytes for the token id (``id``)::
 
@@ -71,15 +71,16 @@ A token ID is serialized as 1 byte for the size (``n``) of the identifier, follo
 
 .. note::
 
-  Token IDs can be as small as a single byte (by setting the first byte to the value 0) or as big as 256 bytes leaving more than 10^614 possible token IDs.
-  The token ID in the CIS5 standard needs to be able to encode up to 256 bytes long tokenIds.
+  Token IDs (as defined in the CIS-2 standard) can be as small as a single byte (by setting the first byte to the value 0)
+  or as big as 256 bytes.
+  The token ID in the CIS5 standard needs to be able to encode up to 256 bytes long Token IDs as a result.
 
 .. _CIS-5-TokenAmount:
 
 ``TokenAmount``
 ^^^^^^^^^^^^^^^
 
-- The token amount SHALL be able to encode all possible tokenAmounts from the :ref:`CIS-2-TokenAmount` (``amount``). An amount of a token type is an unsigned integer up to 2^256 - 1.
+- The token amount SHALL be able to encode all possible tokenAmounts from the ``CIS-2 TokenAmount standard`` (:ref:`CIS-2-TokenAmount`). An amount of a token type is an unsigned integer up to 2^256 - 1.
 
 It is serialized using the LEB128_ variable-length unsigned integer encoding, with the additional constraint of the total number of bytes of the encoding MUST not exceed 37 bytes::
 
@@ -88,22 +89,16 @@ It is serialized using the LEB128_ variable-length unsigned integer encoding, wi
 
 .. _LEB128: https://en.wikipedia.org/wiki/LEB128
 
+.. _CIS-5-AccountAddress:
 
-.. _CIS-5-MetadataUrl:
+``AccountAddress``
+^^^^^^^^^^^^^^^^^^
 
-``MetadataUrl``
-^^^^^^^^^^^^^^^
+An address of an account.
 
-A URL and optional checksum for metadata stored outside of this contract.
+It is serialized as 32 bytes::
 
-It is serialized as: 2 bytes for the length (``n``) of the metadata URL in little-endian and then this many bytes for the URL to the metadata (``url``) followed by an optional checksum.
-The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included.
-If its value is 0, then there is no hash; if the value is 1, then 32 bytes for a SHA256 hash (``hash``) follows::
-
-  MetadataChecksum ::= (0: Byte)
-                     | (1: Byte) (hash: Byte³²)
-
-  MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
+  AccountAddress ::= (address: Byte³²)
 
 .. _CIS-5-ContractAddress:
 
@@ -117,17 +112,20 @@ It is serialized as: First 8 bytes for the index (``index``) followed by 8 bytes
 
   ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
 
+.. _CIS-5-Address:
 
-.. _CIS-5-AccountAddress:
+``Address``
+^^^^^^^^^^^
 
-``AccountAddress``
-^^^^^^^^^^^^^^^^^^
+Is either an :ref:`CIS-5-AccountAddress` or a :ref:`CIS-5-ContractAddress`.
 
-An address of an account.
+It is serialized as: First byte indicates whether it is an account address or a contract address.
+In case the first byte is 0 then an :ref:`CIS-5-AccountAddress` (``address``) follows.
+In case the first byte is 1 then a :ref:`CIS-5-ContractAddress` (``address``) follows::
 
-It is serialized as 32 bytes::
+  Address ::= (0: Byte) (address: AccountAddress)
+            | (1: Byte) (address: ContractAddress)
 
-  AccountAddress ::= (address: Byte³²)
 
 .. _CIS-5-EntrypointName:
 
@@ -179,7 +177,7 @@ It is serialized as 8 bytes in little-endian::
 ``PublicKeyEd25519``
 ^^^^^^^^^^^^^^^^^^^^
 
-A public key is represented as a 32-byte array.
+An Ed25519 public key is represented as a 32-byte array.
 
 It is serialized as 32 bytes::
 
@@ -227,18 +225,60 @@ The ``NonceEvent`` is serialized as: First a byte with the value of 250, followe
 
 A ``DepositNativeCurrencyEvent`` SHALL be logged for every `depositNativeCurrency` function invoke.
 
-The ``DepositNativeCurrencyEvent`` is serialized as: First a byte with the value of 249, followed by the :ref:`CIS-5-CCDAmount` (``amount``), and an :ref:`CIS-5-PublicKeyEd25519` (``beneficiary``)::
+The ``DepositNativeCurrencyEvent`` is serialized as: First a byte with the value of 249, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), the :ref:`CIS-5-Address` (``from``), and a :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
-  DepositNativeCurrencyEvent ::= (249: Byte) (amount: CCDAmount) (beneficiary: PublicKeyEd25519)
+  DepositNativeCurrencyEvent ::= (249: Byte) (ccdAmount: CCDAmount) (from: Address) (to: PublicKeyEd25519)
 
 ``DepositCis2TokensEvent``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A ``DepositCis2TokensEvent`` SHALL be logged for every `depositCis2Tokens` function invoke.
 
-The ``DepositCis2TokensEvent`` is serialized as: First a byte with the value of 248, followed by the :ref:`CIS-5-CCDAmount` (``amount``), and an :ref:`CIS-5-PublicKeyEd25519` (``beneficiary``)::
+The ``DepositCis2TokensEvent`` is serialized as: First a byte with the value of 248, followed by the
+:ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
+:ref:`CIS-5-ContractAddress` (``contractAddress``), the :ref:`CIS-5-Address` (``from``), and a :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
-  DepositCis2TokensEvent ::= (248: Byte) (amount: CCDAmount) (beneficiary: PublicKeyEd25519)
+  DepositCis2TokensEvent ::= (248: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (contractAddress: ContractAddress) (from: Address) (to: PublicKeyEd25519)
+
+``WithdrawNativeCurrencyEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``WithdrawNativeCurrencyEvent`` SHALL be logged for every `withdrawNativeCurrency` function invoke.
+
+The ``WithdrawNativeCurrencyEvent`` is serialized as: First a byte with the value of 247, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-Address` (``to``)::
+
+  DepositNativeCurrencyEvent ::= (247: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: Address)
+
+``WithdrawCis2TokensEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``WithdrawCis2TokensEvent`` SHALL be logged for every `withdrawCis2Tokens` function invoke.
+
+The ``WithdrawCis2TokensEvent`` is serialized as: First a byte with the value of 246, followed by the
+:ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
+:ref:`CIS-5-ContractAddress` (``contractAddress``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-Address` (``to``)::
+
+  WithdrawCis2TokensEvent ::= (246: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (contractAddress: ContractAddress) (from: PublicKeyEd25519) (to: Address)
+
+``InternalNativeCurrencyTransferEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``InternalNativeCurrencyTransferEvent`` SHALL be logged for every `internalNativeCurrencyTransfer` function invoke.
+
+The ``InternalNativeCurrencyTransferEvent`` is serialized as: First a byte with the value of 245, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-PublicKeyEd25519` (``to``)::
+
+  InternalNativeCurrencyTransferEvent ::= (245: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
+
+``InternalCis2TokensTransferEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A ``InternalCis2TokensTransferEvent`` SHALL be logged for every `internalCis2TokensTransfer` function invoke.
+
+The ``InternalCis2TokensTransferEvent`` is serialized as: First a byte with the value of 244, followed by the
+:ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
+:ref:`CIS-5-ContractAddress` (``contractAddress``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-PublicKeyEd25519` (``to``)::
+
+  InternalCis2TokensTransferEvent ::= (244: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (contractAddress: ContractAddress) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
 
 
 
@@ -264,46 +304,181 @@ A smart contract implementing this standard MUST export the following functions:
 ``depositNativeCurrency``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The function is payable and deposits/assigns the send CCDAmount (native currency) to a beneficiary (PublicKeyEd25519).
+The function is payable and deposits/assigns the send CCDAmount (native currency) to a public key (``PublicKeyEd25519``).
 
 Parameter
 ~~~~~~~~~
 
-The parameter is a PublicKeyEd25519.
+The parameter is a ``PublicKeyEd25519``.
 
 See the serialization rules in :ref:`CIS-5-PublicKeyEd25519`.
 
 Requirements
 ~~~~~~~~~~~~
 
-- The function MUST emit a `NonceEvent` and a `DepositEvent`.
+- The function MUST emit a ``DepositNativeCurrencyEvent``.
 
 .. _CIS-5-functions-depositCis2Tokens:
 
 ``depositCis2Tokens``
 ^^^^^^^^^^^^^^^^^^^^^
+
+This function SHOULD be called through the receive hook mechanism (:ref:`CIS-2-Receive-Hook-Function`)
+of a CIS-2 token contract. The function deposits/assigns the send CIS-2 token amount to a public key (``PublicKeyEd25519``).
+
+.. note::
+
+  If a use case wants to mint and deposit tokens to a public key in one transaction.
+  The CIS2 token has to have a mint function that calls this smart contract wallet ``depositCis2Tokens`` function via a hook mechanism.
+
+.. note::
+
+  The ``depositCis2Tokens`` function can be called by any smart contract. It is up to the exact implementation of the smart contract wallet whether it should trust the caller or not.
+  The smart contract wallet is not required to check if the invoking contract is a CIS-2 token contract or has some reasonable receive hook logic implemented.
+  If no additional authorization is added to this function, similar caution should be applied as if you would directly interact with any CIS-2 token contract.
+  Only interact with a CIS-2 token contract or value its recorded token balance if you checked its smart
+  contract logic or reasonable social reputation are given to the project/CIS-2 token contract.
+
+Parameter
+~~~~~~~~~
+
+The parameter is the :ref:`CIS-2-functions-transfer-receive-hook-parameter` (``OnReceivingCis2Params``) and the
+``data`` field of the ``OnReceivingCis2Params`` SHALL encode a ``PublicKeyEd25519``.
+
+See the serialization rules in :ref:`CIS-2-functions-transfer-receive-hook-parameter`
+and the serialization rules in :ref:`CIS-5-PublicKeyEd25519`.
+
+Requirements
+~~~~~~~~~~~~
+
+- The function MUST emit a ``DepositCis2TokensEvent``.
+- The function SHOULD check that a contract is the caller since only a contract can implement a receive hook mechanism.
+
 .. _CIS-5-functions-withdrawNativeCurrency:
 
 ``withdrawNativeCurrency``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Executes a withdrawal of CCDs (native currency) to a native account or smart contract out of the smart contract wallet.
+When transferring CCD to a contract address, a ccd receive hook function MUST be triggered.
+
+
+Parameter
+~~~~~~~~~
+
+The parameter is the ``NativeCurrencyWithdrawParameter``.
+
+It is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
+a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
+the receiving address :ref:`CIS-2-Receiver` (``to``), a :ref:`CIS-5-CCDAmount` (``ccdAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
+
+  NativeCurrencyWithdrawParameter ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (to: Receiver) (ccdAmount: CCDAmount) (data: AdditionalData)
+
+.. _CIS-5-functions-transfer-ccd-receive-hook-parameter:
+
+CCD Receive hook parameter
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The parameter for the ccd receive hook function contains information about the transfer and some additional data bytes.
+
+It is serialized as: a :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and some aditional data :ref:`CIS-2-AdditionalData` (``data``)::
+
+  CCDReceiveHookParameter ::= (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (data: AdditionalData)
+
+
+Requirements
+~~~~~~~~~~~~
+
+- The function MUST emit a ``NonceEvent`` and a ``WithdrawNativeCurrencyEvent``.
+- The function MUST reject if the signature verification fails.
+
+- The withdrawal MUST fail, if the CCD balance of the ``signer`` is insufficient to do the withdrawal.
+- A withdrawal MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail.
+- A withdrawal back to this contract into the ``depositNativeCurrency`` entrypoint MUST be executed as a normal withdrawal.
+- A withdrawal of a CCD amount of zero MUST be executed as a normal withdrawal.
+- A withdrawal of any amount of CCD to a contract address MUST call a ccd receive hook function on the receiving smart contract with a :ref:`ccd receive hook parameter<CIS-5-functions-transfer-ccd-receive-hook-parameter>`.
+- The contract function MUST reject if the ccd receive hook function called on the contract receiving CCDs rejects.
+- The balance of a public key not owning any CCD amount SHOULD be treated as having a balance of zero.
+
+.. warning::
+
+  Be aware of transferring CCDs to a non-existing account address or contract address.
+  This specification by itself does not include a standard that has to be followed.
+  Checking the existence of an account address/ contract address would ideally be done off-chain before the message is even sent to the smart contract.
+
 .. _CIS-5-functions-withdrawCis2Tokens:
 
 ``withdrawCis2Tokens``
 ^^^^^^^^^^^^^^^^^^^^^^
+
+Parameter
+~~~~~~~~~
+
+
+Requirements
+~~~~~~~~~~~~
+
+- The function MUST emit a ``NonceEvent`` and a ``WithdrawCis2TokensEvent``.
+- The function MUST reject if the signature verification fails.
+- This function has to call a ``transfer`` function on the cis2 token contract.
+
+
+
 .. _CIS-5-functions-internalNativeCurrencyTransfer:
 
 ``internalNativeCurrencyTransfer``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Parameter
+~~~~~~~~~
+
+
+Requirements
+~~~~~~~~~~~~
+
+- The function MUST emit a `NonceEvent` and a `InternalNativeCurrencyTransferEvent`.
+- The function MUST reject if the signature verification fails.
+
+
 .. _CIS-5-functions-internalCis2TokensTransfer:
 
 ``internalCis2TokensTransfer``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Parameter
+~~~~~~~~~
+
+
+Requirements
+~~~~~~~~~~~~
+
+- The function MUST emit a ``NonceEvent`` and a ``InternalCis2TokensTransferEvent``.
+- The function MUST reject if the signature verification fails.
+
 .. _CIS-5-functions-balanceOfNativeCurrency:
+
 
 ``balanceOfNativeCurrency``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Parameter
+~~~~~~~~~
+
+
+Requirements
+~~~~~~~~~~~~
+
+
 .. _CIS-5-functions-balanceOfCis2Tokens:
 
+
 ``balanceOfCis2Tokens``
-^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Parameter
+~~~~~~~~~
+
+
+Requirements
+~~~~~~~~~~~~
+
