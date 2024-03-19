@@ -359,7 +359,7 @@ Requirements
 ``withdrawNativeCurrency``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Executes a list of token withdrawals of CCDs (native currency) to native accounts and/or smart contracts out of the smart contract wallet.
+The function executes a list of token withdrawals of CCDs (native currency) to native accounts and/or smart contracts out of the smart contract wallet.
 When transferring CCD to a contract address, a ccd receive hook function MUST be triggered.
 
 Parameter
@@ -403,6 +403,7 @@ Requirements
 - A withdrawal of any amount of CCD to a contract address MUST call a ccd receive hook function on the receiving smart contract with a :ref:`ccd receive hook parameter<CIS-5-functions-transfer-ccd-receive-hook-parameter>`.
 - The contract function MUST reject if the ccd receive hook function called on the contract receiving CCDs rejects for any withdrawal.
 - The balance of a public key not owning any CCD amount SHOULD be treated as having a balance of zero.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every withdrawal.
 
 .. warning::
 
@@ -415,7 +416,7 @@ Requirements
 ``withdrawCis2Tokens``
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Executes a list of token withdrawals to native accounts and/or smart contracts out of the smart contract wallet.
+The function executes a list of token withdrawals to native accounts and/or smart contracts out of the smart contract wallet.
 This function MUST call the ``transfer`` function on the CIS-2 token contract for every withdrawal.
 
 Parameter
@@ -446,62 +447,142 @@ Requirements
 - A withdrawal back to this contract into the ``depositCis2Tokens`` entrypoint MUST be executed as a normal withdrawal.
 - A withdrawal of a token amount of zero MUST be executed as a normal withdrawal.
 - The balance of a public key not owning any tokens SHOULD be treated as having a balance of zero.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every withdrawal.
 
 .. _CIS-5-functions-internalNativeCurrencyTransfer:
 
 ``internalNativeCurrencyTransfer``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The function executes a list of CCD internal transfers to public keys within the smart contract wallet.
 
 Parameter
 ~~~~~~~~~
+
+The parameter is a list of internal transfers.
+
+It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of internal transfers.
+
+Each transfer is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
+a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
+a :ref:`CIS-5-PublicKeyEd25519` (``from``), a :ref:`CIS-5-PublicKeyEd25519` (``to``), and a :ref:`CIS-5-CCDAmount` (``ccdAmount``)::
+
+  NativeCurrencyInternalTransfer ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (from: PublicKeyEd25519) (to: PublicKeyEd25519) (ccdAmount: CCDAmount)
+  NativeCurrencyInternalTransferParameter ::= (n: Byte²) (transfer: NativeCurrencyInternalTransfer)
 
 
 Requirements
 ~~~~~~~~~~~~
 
-- The function MUST emit a `NonceEvent` and a `InternalNativeCurrencyTransferEvent`.
-- The function MUST reject if the signature verification fails.
-
+- The function MUST emit a ``NonceEvent`` and a ``InternalNativeCurrencyTransferEvent`` for every transfer.
+- The function MUST reject if the signature verification fails for any transfer.
+- The function MUST fail, if the CCD balance of the ``signer`` is insufficient to do the tranfser for any transfer.
+- A function MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any transfer.
+- A transfer of a CCD amount of zero MUST be executed as a normal transfer.
+- The balance of a public key not owning any CCD amount SHOULD be treated as having a balance of zero.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every transfer.
 
 .. _CIS-5-functions-internalCis2TokensTransfer:
 
 ``internalCis2TokensTransfer``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The function executes a list of token internal transfers to public keys within the smart contract wallet.
+
 Parameter
 ~~~~~~~~~
+
+The parameter is a list of internal transfers.
+
+It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of internal transfers.
+
+Each transfer is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
+a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
+a :ref:`CIS-5-PublicKeyEd25519` (``from``), a :ref:`CIS-5-PublicKeyEd25519` (``to``), a :ref:`CIS-5-TokenAmount` (``tokenAmount``), a :ref:`CIS-5-TokenID` (``tokenID``), and a :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``)::
+
+  Cis2TokensInternalTransfer ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (from: PublicKeyEd25519) (to: PublicKeyEd25519) (tokenAmount: tokenAmount) (tokenID: TokenID) (cis2TokenContractAddress: ContractAddress)
+  Cis2TokensInternalTransferParameter ::= (n: Byte²) (transfer: Cis2TokensInternalTransfer)
 
 
 Requirements
 ~~~~~~~~~~~~
 
-- The function MUST emit a ``NonceEvent`` and a ``InternalCis2TokensTransferEvent``.
-- The function MUST reject if the signature verification fails.
+- The function MUST emit a ``NonceEvent`` and a ``InternalCis2TokensTransferEvent`` for every transfer.
+- The function MUST reject if the signature verification fails for any of the transfers.
+- The function MUST fail, if the token balance of the ``signer`` is insufficient to do the transfer for any transfer.
+- A function MUST non-strictly decrease the token balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any transfer.
+- A transfer of a token amount of zero MUST be executed as a normal transfer.
+- The balance of a public key not owning any tokens SHOULD be treated as having a balance of zero.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every transfer.
 
 .. _CIS-5-functions-balanceOfNativeCurrency:
-
 
 ``balanceOfNativeCurrency``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The function queries the CCD balances of a list of public keys.
+
 Parameter
 ~~~~~~~~~
+
+The parameter consists of a list public keys.
+
+It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
+A query is serialized as a :ref:`CIS-5-PublicKeyEd25519` (``publicKey``)::
+
+  NativeCurrencyBalanceOfQuery ::= (publicKey: PublicKeyEd25519)
+
+  NativeCurrencyBalanceOfParameter ::= (n: Byte²) (queries: NativeCurrencyBalanceOfQueryⁿ)
+
+Response
+~~~~~~~~
+
+The function output response is a list of CCD amounts.
+
+It is serialized as: 2 bytes for the number of CCD amounts (``n``) and then this number of :ref:`CIS-5-CCDAmount` (``results``)::
+
+  NativeCurrencyBalanceOfResponse ::= (n: Byte²) (results: CCDAmountⁿ)
 
 
 Requirements
 ~~~~~~~~~~~~
 
+- The balance of a public key not owning any CCD  SHOULD be treated as having a balance of zero.
+- The number of results in the response MUST correspond to the number of the queries in the parameter.
+- The order of results in the response MUST correspond to the order of queries in the parameter.
+- The contract function MUST NOT increase or decrease the CCD balance or token balance of any public key for any token type.
 
 .. _CIS-5-functions-balanceOfCis2Tokens:
-
 
 ``balanceOfCis2Tokens``
 ^^^^^^^^^^^^^^^^^^^^^^^
 
+The function queries the token balances of a list of public keys for given token IDs, and CIS-2 token contract addresses.
+
 Parameter
 ~~~~~~~~~
 
+The parameter consists of a list of token ID, CIS-2 token contract address, and public key triplets.
+
+It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
+A query is serialized as a :ref:`CIS-5-TokenID` (``tokenID``), a :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``), and a :ref:`CIS-5-PublicKeyEd25519` (``publicKey``)::
+
+  Cis2TokensBalanceOfQuery ::= (tokenID: TokenID) (cis2TokenContractAddress: ContractAddress) (publicKey: PublicKeyEd25519)
+
+  Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQueryⁿ)
+
+Response
+~~~~~~~~
+
+The function output response is a list of token amounts.
+
+It is serialized as: 2 bytes for the number of token amounts (``n``) and then this number of :ref:`CIS-5-TokenAmount` (``results``)::
+
+  Cis2TokensBalanceOfResponse ::= (n: Byte²) (results: TokenAmountⁿ)
 
 Requirements
 ~~~~~~~~~~~~
 
+- The balance of an public key not owning any amount of a token type SHOULD be treated as having a balance of zero.
+- The number of results in the response MUST correspond to the number of the queries in the parameter.
+- The order of results in the response MUST correspond to the order of queries in the parameter.
+- The contract function MUST NOT increase or decrease the CCD balance or token balance of any public key for any token type.
