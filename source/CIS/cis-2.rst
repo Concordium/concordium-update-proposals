@@ -187,6 +187,8 @@ A transfer is a token ID, an amount of tokens to be transferred, and the ``from`
 
 When transferring tokens to a contract address, additional information for a receive function hook to trigger is required.
 
+.. _CIS-2-TransferParameter:
+
 Parameter
 ~~~~~~~~~
 
