@@ -22,8 +22,6 @@ Concordium Interoperability Specifications
    CIS/cis-3
    CIS/cis-4
    CIS/cis-5
-<<<<<<< HEAD
    CIS/cis-6
-=======
    ID/concordium-did.rst
->>>>>>> fb33efb (Add withdrawCis2Tokens function)
+
