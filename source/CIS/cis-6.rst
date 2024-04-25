@@ -16,6 +16,8 @@ CIS-6: Track-and-Trace Standard
        | (Protocol version 4 or newer)
    * - Standard identifier
      - ``CIS-6``
+   * - Requires
+     - :ref:`CIS-0<CIS-0>`
 
 
 Abstract
@@ -24,8 +26,8 @@ Abstract
 A standard interface that defines the logged events for tracking items in a smart contract.
 The interface defines two events:
 
-- *ItemCreatedEvent* loggs the `item_id`, `metadata_url`, and the `initial_status`;
-- *ItemStatusChangedEvent* loggs the `item_id`, `new_status`, and the `additional_data`;
+- *ItemCreatedEvent* loggs the ``item_id``, ``metadata_url``, and the ``initial_status``;
+- *ItemStatusChangedEvent* loggs the ``item_id``, ``new_status``, and the ``additional_data``;
 
 Specification
 =============
