@@ -7,10 +7,13 @@ on:
     branches:
       - main
 
+env:
+  PYTHON_VERSION: 3.12
+
 jobs:
   lint:
     runs-on: ubuntu-latest
-    container: sphinxdoc/sphinx
+    container: sphinxdoc/sphinx:7.0.0
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
@@ -22,7 +25,15 @@ jobs:
         run: |
           apt-get update
           apt-get install -y git rsync
-          pip3 install -r requirements.txt
+          pip3 install -r requirements.txt      
+
+      # - name: Set up Python ${{ env.PYTHON_VERSION }}
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: ${{ env.PYTHON_VERSION }}
+      #   # Printing the current Python version
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
 
       - name: Lint 🔍
         shell: bash
@@ -30,7 +41,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container: sphinxdoc/sphinx
+    container: sphinxdoc/sphinx:7.0.0
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
