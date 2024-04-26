@@ -10,7 +10,7 @@ CIS-6: Track-and-Trace Standard
    * - Created
      - Apr 25, 2024
    * - Final
-     - Apr 25, 2024
+     - Apr 26, 2024
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
@@ -72,7 +72,7 @@ If its value is 0, then there is no hash; if the value is 1, then 32 bytes for a
 ^^^^^^^^^^
 
 The status defined by this specification are serialized using one byte to discriminate the different statuses that an item can have.
-The smart contract can have upto 255 different statuses defined for an item.
+The smart contract can have up to 255 different statuses defined for an item.
 
 It is serialized as: a byte of value (``n``)::
 
@@ -102,9 +102,9 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 
 A ``ItemCreatedEvent`` event MUST be logged when a new item is created in the smart contract.
 
-The ``ItemStatusChangedEvent`` event is serialized as: first a byte with the value of 0, followed by the :ref:`CIS-6-ItemId` (``id``), the :ref:`CIS-6-MetadataUrl` (``metadata``), and then the :ref:`CIS-6-Status` (``initial_status``)::
+The ``ItemCreatedEvent`` event is serialized as: first a byte with the value of 0, followed by the :ref:`CIS-6-ItemId` (``id``), the :ref:`CIS-6-MetadataUrl` (``metadata``), and then the :ref:`CIS-6-Status` (``initial_status``)::
 
-  ItemStatusChangedEvent ::= (0: Byte) (item_id: ItemId) (metadata: MetadataUrl) (initial_status: Status)
+  ItemCreatedEvent ::= (0: Byte) (item_id: ItemId) (metadata: MetadataUrl) (initial_status: Status)
 
 .. _CIS-6-events-ItemStatusChangedEvent:
 
