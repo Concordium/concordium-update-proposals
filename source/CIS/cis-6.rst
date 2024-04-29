@@ -26,8 +26,8 @@ Abstract
 A standard interface that defines the logged events for tracking items in a smart contract.
 The interface defines two events:
 
-- *ItemCreatedEvent* loggs the ``item_id``, ``metadata_url``, and the ``initial_status``;
-- *ItemStatusChangedEvent* loggs the ``item_id``, ``new_status``, and the ``additional_data``;
+- *ItemCreatedEvent* logs the ``item_id``, ``metadata_url``, and the ``initial_status``;
+- *ItemStatusChangedEvent* logs the ``item_id``, ``new_status``, and the ``additional_data``;
 
 Specification
 =============
@@ -46,7 +46,7 @@ General types and serialization
 Each item MUST have a unique ``ItemId``.
 An ``ItemId`` is a variable-length ASCII string up to 255 characters.
 
-The identifier is serialized as: first 1 byte for the length followed this many bytes for the ASCII encoding of the identifier::
+The identifier is serialized as: 1 byte for the length (``n``) followed by this many bytes for the ASCII encoding of the identifier::
 
   StandardIdentifier ::= (n: Byte) (id: Byteⁿ)
 
@@ -71,7 +71,7 @@ If its value is 0, then there is no hash; if the value is 1, then 32 bytes for a
 ``Status``
 ^^^^^^^^^^
 
-The status defined by this specification are serialized using one byte to discriminate the different statuses that an item can have.
+The status defined by this specification is serialized using one byte to discriminate the different statuses that an item can have.
 The smart contract can have up to 255 different statuses defined for an item.
 
 It is serialized as: a byte of value (``n``)::
@@ -83,7 +83,7 @@ It is serialized as: a byte of value (``n``)::
 ``AdditionalData``
 ^^^^^^^^^^^^^^^^^^
 
-Additional bytes to include in the event ``ItemStatusChangedEvent``, which can be used to add additional usecase-specific data (e.g. temperature, longitude, latitude, ...) to the event.
+Additional bytes to include in the event ``ItemStatusChangedEvent``, which can be used to add additional use-case-specific data (e.g. temperature, longitude, latitude, ...) to the event.
 
 It is serialized as: the first 2 bytes encode the length (``n``) of the data, followed by this many bytes for the data (``data``)::
 
@@ -102,9 +102,9 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 
 A ``ItemCreatedEvent`` event MUST be logged when a new item is created in the smart contract.
 
-The ``ItemCreatedEvent`` event is serialized as: first a byte with the value of 0, followed by the :ref:`CIS-6-ItemId` (``id``), the :ref:`CIS-6-MetadataUrl` (``metadata``), and then the :ref:`CIS-6-Status` (``initial_status``)::
+The ``ItemCreatedEvent`` event is serialized as: first a byte with the value of 237, followed by the :ref:`CIS-6-ItemId` (``id``), the :ref:`CIS-6-MetadataUrl` (``metadata``), and then the :ref:`CIS-6-Status` (``initial_status``)::
 
-  ItemCreatedEvent ::= (0: Byte) (item_id: ItemId) (metadata: MetadataUrl) (initial_status: Status)
+  ItemCreatedEvent ::= (237: Byte) (item_id: ItemId) (metadata: MetadataUrl) (initial_status: Status)
 
 .. _CIS-6-events-ItemStatusChangedEvent:
 
@@ -113,6 +113,6 @@ The ``ItemCreatedEvent`` event is serialized as: first a byte with the value of 
 
 A ``ItemStatusChangedEvent`` event MUST be logged when an item status is updated in the smart contract state.
 
-The ``ItemStatusChangedEvent`` event is serialized as: first a byte with the value of 1, followed by the :ref:`CIS-6-ItemId` (``id``), the :ref:`CIS-6-Status` (``new_status``), and then the :ref:`CIS-6-AdditionalData` (``additional_data``)::
+The ``ItemStatusChangedEvent`` event is serialized as: first a byte with the value of 236, followed by the :ref:`CIS-6-ItemId` (``id``), the :ref:`CIS-6-Status` (``new_status``), and then the :ref:`CIS-6-AdditionalData` (``additional_data``)::
 
-  ItemStatusChangedEvent ::= (1: Byte) (item_id: ItemId) (new_status: Status) (additional_data: AdditionalData)
+  ItemStatusChangedEvent ::= (236: Byte) (item_id: ItemId) (new_status: Status) (additional_data: AdditionalData)
