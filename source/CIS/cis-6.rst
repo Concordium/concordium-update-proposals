@@ -48,7 +48,7 @@ An ``ItemId`` is a variable-length ASCII string up to 255 characters.
 
 The identifier is serialized as: 1 byte for the length (``n``) followed by this many bytes for the ASCII encoding of the identifier::
 
-  StandardIdentifier ::= (n: Byte) (id: Byteⁿ)
+  ItemId ::= (n: Byte) (id: Byteⁿ)
 
 .. _CIS-6-MetadataUrl:
 
