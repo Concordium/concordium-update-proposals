@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-1: Concordium Token Standard" href="cis-1.html" /><link rel="prev" title="Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution" href="../updates/P6.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Concordium DID Method Version 1.0" href="../ID/concordium-did.html" /><link rel="prev" title="CIS-4: Credential Registry Standard" href="cis-4.html" />
 
     <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
-        <title>CIS-0: Standard Detection - Interoperability Specifications</title>
+        <title>CIS-6: Track-and-Trace Standard - Interoperability Specifications</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
@@ -169,12 +169,12 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul class="current">
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-0: Standard Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-0.html">CIS-0: Standard Detection</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-1.html">CIS-1: Concordium Token Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-2.html">CIS-2: Concordium Token Standard 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-4.html">CIS-4: Credential Registry Standard</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-6: Track-and-Trace Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ID/concordium-did.html">Concordium DID Method Version 1.0</a></li>
 </ul>
 
@@ -202,8 +202,8 @@
           </label>
         </div>
         <article role="main">
-          <section id="cis-0-standard-detection">
-<span id="cis-0"></span><h1>CIS-0: Standard Detection<a class="headerlink" href="#cis-0-standard-detection" title="Permalink to this headline">¶</a></h1>
+          <section id="cis-6-track-and-trace-standard">
+<span id="cis-6"></span><h1>CIS-6: Track-and-Trace Standard<a class="headerlink" href="#cis-6-track-and-trace-standard" title="Permalink to this headline">¶</a></h1>
 <div class="table-wrapper"><table class="docutils align-default">
 <colgroup>
 <col style="width: 50%"/>
@@ -211,10 +211,10 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><th class="stub"><p>Created</p></th>
-<td><p>Jul 14, 2022</p></td>
+<td><p>Apr 25, 2024</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Final</p></th>
-<td><p>Aug 3, 2022</p></td>
+<td><p>Apr 26, 2024</p></td>
 </tr>
 <tr class="row-odd"><th class="stub"><p>Supported versions</p></th>
 <td><div class="line-block">
@@ -224,71 +224,86 @@
 </td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Standard identifier</p></th>
-<td><p><code class="docutils literal notranslate"><span class="pre">CIS-0</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">CIS-6</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Requires</p></th>
+<td><p><a class="reference internal" href="cis-0.html#cis-0"><span class="std std-ref">CIS-0</span></a></p></td>
 </tr>
 </tbody>
 </table></div>
 <section id="abstract">
 <h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
-<p>A standardized interface for how a smart contract indicates supported smart contract standards.
-Additionally, this specification includes a list of identifiers for each standard used on the Concordium blockchain.</p>
-<p>The interface provides an entrypoint for querying the smart contract about whether it supports a given standard. The smart contract responds with either: not supported, supported or supported by some contract address.</p>
+<p>A standard interface that defines the logged events for tracking items in a smart contract.
+The interface defines two events:</p>
+<ul class="simple">
+<li><p><em>ItemCreatedEvent</em> logs the <code class="docutils literal notranslate"><span class="pre">item_id</span></code>, <code class="docutils literal notranslate"><span class="pre">metadata_url</span></code>, and the <code class="docutils literal notranslate"><span class="pre">initial_status</span></code>;</p></li>
+<li><p><em>ItemStatusChangedEvent</em> logs the <code class="docutils literal notranslate"><span class="pre">item_id</span></code>, <code class="docutils literal notranslate"><span class="pre">new_status</span></code>, and the <code class="docutils literal notranslate"><span class="pre">additional_data</span></code>;</p></li>
+</ul>
 </section>
 <section id="specification">
 <h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
 <p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
-<section id="standard-identifer">
-<span id="cis-0-standard-identifer"></span><h3>Standard identifer<a class="headerlink" href="#standard-identifer" title="Permalink to this headline">¶</a></h3>
-<p>Each standard MUST have a unique identifier.
-An identifier is a variable-length ASCII string up to 255 characters.</p>
-<p>The identifier is serialized as: first 1 byte for the length followed this many bytes for the ASCII encoding of the identifier:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>StandardIdentifier ::= (n: Byte) (id: Byteⁿ)
+<section id="general-types-and-serialization">
+<h3>General types and serialization<a class="headerlink" href="#general-types-and-serialization" title="Permalink to this headline">¶</a></h3>
+<section id="itemid">
+<span id="cis-6-itemid"></span><h4><code class="docutils literal notranslate"><span class="pre">ItemId</span></code><a class="headerlink" href="#itemid" title="Permalink to this headline">¶</a></h4>
+<p>Each item MUST have a unique <code class="docutils literal notranslate"><span class="pre">ItemId</span></code>.
+An <code class="docutils literal notranslate"><span class="pre">ItemId</span></code> is a variable-length ASCII string up to 255 characters.</p>
+<p>The identifier is serialized as: 1 byte for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by this many bytes for the ASCII encoding of the identifier:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ItemId ::= (n: Byte) (id: Byteⁿ)
 </pre></div>
 </div>
 </section>
-<section id="contract-function">
-<h3>Contract function<a class="headerlink" href="#contract-function" title="Permalink to this headline">¶</a></h3>
-<p>A smart contract implementing CIS-0 MUST export the following function: <a class="reference internal" href="#cis-0-functions-supports"><span class="std std-ref">supports</span></a>.</p>
-<section id="supports">
-<span id="cis-0-functions-supports"></span><h4><code class="docutils literal notranslate"><span class="pre">supports</span></code><a class="headerlink" href="#supports" title="Permalink to this headline">¶</a></h4>
-<p>Query supported standards using a list of standard identifers. The response contains a corresponding result for each standard identifier, where the result is either “Standard is not supported”, “Standard is supported by this contract” or “Standard is supported by using some contract address”.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The result of “Standard is supported by using some contract address” can be used to add support for smart contract standards in another smart contract.
-This could be to split up logic or to later add support for a new standard.</p>
-</div>
-<section id="parameter">
-<h5>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h5>
-<p>The parameter consists of a list of standard identifers.</p>
-<p>It is serialized as: 2 bytes for the number (little endian) of standard identifers and then this number of <a class="reference internal" href="#cis-0-standard-identifer"><span class="std std-ref">Standard identifer</span></a> identifers:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SupportsParameter ::= (n : Byte²) (ids: StandardIdentifierⁿ)
-</pre></div>
-</div>
-</section>
-<section id="response">
-<h5>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h5>
-<p>The function output is a list of support results, where the order of the support results matches the order of standard identifers in the parameter.</p>
-<p>It is serialized as: 2 bytes for the number (little endian) of results (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of support results (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
-A support result is serialized as either: a byte with value <code class="docutils literal notranslate"><span class="pre">0</span></code> for “Standard is not supported”, a byte with the value <code class="docutils literal notranslate"><span class="pre">1</span></code> for “Standard is support by this contract” or a byte with value <code class="docutils literal notranslate"><span class="pre">2</span></code> for “Standard is supported by using another contract address” followed by a single byte encoding the number of contract addresses, then this number of contract addresses (<code class="docutils literal notranslate"><span class="pre">address</span></code>).
-A contract address is serialized as: first 8 bytes for the index (<code class="docutils literal notranslate"><span class="pre">index</span></code>) followed by 8 bytes for the subindex (<code class="docutils literal notranslate"><span class="pre">subindex</span></code>) both little endian:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
+<section id="metadataurl">
+<span id="cis-6-metadataurl"></span><h4><code class="docutils literal notranslate"><span class="pre">MetadataUrl</span></code><a class="headerlink" href="#metadataurl" title="Permalink to this headline">¶</a></h4>
+<p>A URL and optional checksum for metadata stored outside of this contract.</p>
+<p>It is serialized as: 2 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the metadata URL in little-endian and then this many bytes for the URL to the metadata (<code class="docutils literal notranslate"><span class="pre">url</span></code>) followed by an optional checksum.
+The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included.
+If its value is 0, then there is no hash; if the value is 1, then 32 bytes for a SHA256 hash (<code class="docutils literal notranslate"><span class="pre">hash</span></code>) follows:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MetadataChecksum ::= (0: Byte)
+                   | (1: Byte) (hash: Byte³²)
 
-SupportResult ::= (0 : Byte)                             // Standard is not supported
-                | (1 : Byte)                             // Standard is supported by this contract
-                | (2 : Byte) (n: Byte) (address: ContractAddressⁿ)  // Standard is supported by using one of these contract addresses.
-
-SupportsResponse ::= (n : Byte²) (results: SupportResultⁿ)
+MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
 </pre></div>
 </div>
 </section>
-<section id="requirements">
-<h5>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h5>
-<ul class="simple">
-<li><p>The sequence of results in the response MUST correspond to the sequence of queries in the parameter.</p></li>
-<li><p>The contract function MAY reject if any of the queries fail to produce a result.</p></li>
-<li><p>The result for querying the support of <code class="docutils literal notranslate"><span class="pre">CIS-0</span></code> for a smart contract implementing this specification MUST NOT be “Standard is not supported”.</p></li>
-</ul>
+<section id="status">
+<span id="cis-6-status"></span><h4><code class="docutils literal notranslate"><span class="pre">Status</span></code><a class="headerlink" href="#status" title="Permalink to this headline">¶</a></h4>
+<p>The status defined by this specification is serialized using one byte to discriminate the different statuses that an item can have.
+The smart contract can have up to 255 different statuses defined for an item.</p>
+<p>It is serialized as: a byte of value (<code class="docutils literal notranslate"><span class="pre">n</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Status ::= (n: Byte)
+</pre></div>
+</div>
 </section>
+<section id="additionaldata">
+<span id="cis-6-additionaldata"></span><h4><code class="docutils literal notranslate"><span class="pre">AdditionalData</span></code><a class="headerlink" href="#additionaldata" title="Permalink to this headline">¶</a></h4>
+<p>Additional bytes to include in the event <code class="docutils literal notranslate"><span class="pre">ItemStatusChangedEvent</span></code>, which can be used to add additional use-case-specific data (e.g. temperature, longitude, latitude, …) to the event.</p>
+<p>It is serialized as: the first 2 bytes encode the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the data, followed by this many bytes for the data (<code class="docutils literal notranslate"><span class="pre">data</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AdditionalData ::= (n: Byte²) (data: Byteⁿ)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="logged-events">
+<h3>Logged events<a class="headerlink" href="#logged-events" title="Permalink to this headline">¶</a></h3>
+<p>The events defined by this specification are serialized using one byte to discriminate the different events.
+A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.</p>
+<section id="itemcreatedevent">
+<span id="cis-6-events-itemcreatedevent"></span><h4><code class="docutils literal notranslate"><span class="pre">ItemCreatedEvent</span></code><a class="headerlink" href="#itemcreatedevent" title="Permalink to this headline">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">ItemCreatedEvent</span></code> event MUST be logged when a new item is created in the smart contract.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ItemCreatedEvent</span></code> event is serialized as: first a byte with the value of 237, followed by the <a class="reference internal" href="#cis-6-itemid"><span class="std std-ref">ItemId</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), the <a class="reference internal" href="#cis-6-metadataurl"><span class="std std-ref">MetadataUrl</span></a> (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>), and then the <a class="reference internal" href="#cis-6-status"><span class="std std-ref">Status</span></a> (<code class="docutils literal notranslate"><span class="pre">initial_status</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ItemCreatedEvent ::= (237: Byte) (item_id: ItemId) (metadata: MetadataUrl) (initial_status: Status)
+</pre></div>
+</div>
+</section>
+<section id="itemstatuschangedevent">
+<span id="cis-6-events-itemstatuschangedevent"></span><h4><code class="docutils literal notranslate"><span class="pre">ItemStatusChangedEvent</span></code><a class="headerlink" href="#itemstatuschangedevent" title="Permalink to this headline">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">ItemStatusChangedEvent</span></code> event MUST be logged when an item status is updated in the smart contract state.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">ItemStatusChangedEvent</span></code> event is serialized as: first a byte with the value of 236, followed by the <a class="reference internal" href="#cis-6-itemid"><span class="std std-ref">ItemId</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), the <a class="reference internal" href="#cis-6-status"><span class="std std-ref">Status</span></a> (<code class="docutils literal notranslate"><span class="pre">new_status</span></code>), and then the <a class="reference internal" href="#cis-6-additionaldata"><span class="std std-ref">AdditionalData</span></a> (<code class="docutils literal notranslate"><span class="pre">additional_data</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ItemStatusChangedEvent ::= (236: Byte) (item_id: ItemId) (new_status: Status) (additional_data: AdditionalData)
+</pre></div>
+</div>
 </section>
 </section>
 </section>
@@ -299,23 +314,23 @@ SupportsResponse ::= (n : Byte²) (results: SupportResultⁿ)
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="cis-1.html">
+          <a class="next-page" href="../ID/concordium-did.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">CIS-1: Concordium Token Standard</div>
+                <div class="title">Concordium DID Method Version 1.0</div>
               </div>
               <svg><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../updates/P6.html">
+          <a class="prev-page" href="cis-4.html">
               <svg><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</div>
+                <div class="title">CIS-4: Credential Registry Standard</div>
                 
               </div>
             </a>
@@ -327,7 +342,7 @@ SupportsResponse ::= (n : Byte²) (results: SupportResultⁿ)
               and
               <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
               <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../_sources/CIS/cis-0.rst.txt"
+            <a class="muted-link" href="../_sources/CIS/cis-6.rst.txt"
                rel="nofollow">
               Show Source
             </a>
@@ -347,17 +362,19 @@ SupportsResponse ::= (n : Byte²) (results: SupportResultⁿ)
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">CIS-0: Standard Detection</a><ul>
+<li><a class="reference internal" href="#">CIS-6: Track-and-Trace Standard</a><ul>
 <li><a class="reference internal" href="#abstract">Abstract</a></li>
 <li><a class="reference internal" href="#specification">Specification</a><ul>
-<li><a class="reference internal" href="#standard-identifer">Standard identifer</a></li>
-<li><a class="reference internal" href="#contract-function">Contract function</a><ul>
-<li><a class="reference internal" href="#supports"><code class="docutils literal notranslate"><span class="pre">supports</span></code></a><ul>
-<li><a class="reference internal" href="#parameter">Parameter</a></li>
-<li><a class="reference internal" href="#response">Response</a></li>
-<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#general-types-and-serialization">General types and serialization</a><ul>
+<li><a class="reference internal" href="#itemid"><code class="docutils literal notranslate"><span class="pre">ItemId</span></code></a></li>
+<li><a class="reference internal" href="#metadataurl"><code class="docutils literal notranslate"><span class="pre">MetadataUrl</span></code></a></li>
+<li><a class="reference internal" href="#status"><code class="docutils literal notranslate"><span class="pre">Status</span></code></a></li>
+<li><a class="reference internal" href="#additionaldata"><code class="docutils literal notranslate"><span class="pre">AdditionalData</span></code></a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#logged-events">Logged events</a><ul>
+<li><a class="reference internal" href="#itemcreatedevent"><code class="docutils literal notranslate"><span class="pre">ItemCreatedEvent</span></code></a></li>
+<li><a class="reference internal" href="#itemstatuschangedevent"><code class="docutils literal notranslate"><span class="pre">ItemStatusChangedEvent</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -21,4 +21,5 @@ Concordium Interoperability Specifications
    CIS/cis-2
    CIS/cis-3
    CIS/cis-4
+   CIS/cis-6
    ID/concordium-did.rst
