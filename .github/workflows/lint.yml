@@ -10,7 +10,7 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    container: sphinxdoc/sphinx
+    container: sphinxdoc/sphinx:7.0.0
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
@@ -22,7 +22,7 @@ jobs:
         run: |
           apt-get update
           apt-get install -y git rsync
-          pip3 install -r requirements.txt
+          pip3 install -r requirements.txt      
 
       - name: Lint 🔍
         shell: bash
@@ -30,7 +30,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    container: sphinxdoc/sphinx
+    container: sphinxdoc/sphinx:7.0.0
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
