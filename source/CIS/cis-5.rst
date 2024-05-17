@@ -1,8 +1,8 @@
 .. _CIS-5:
 
-================================================================
-Draft: CIS-5: Smart Contract Wallet Standard (Chaperone Account)
-================================================================
+=====================================
+CIS-5: Smart Contract Wallet Standard
+=====================================
 
 .. list-table::
    :stub-columns: 1
@@ -20,16 +20,12 @@ Draft: CIS-5: Smart Contract Wallet Standard (Chaperone Account)
 Abstract
 ========
 
-A standard interface for defining a smart contract wallet that can hold and transfer native currency and CIS-2 tokens.
-Native currency/CIS-2 tokens can be deposited into the smart contract wallet by
+A standard interface for defining a smart contract wallet that can hold and transfer CCDs and CIS-2 tokens.
+CCDs/CIS-2 tokens can be deposited into the smart contract wallet by
 specifying to which public key the deposit should be assigned.
 
-The holder of the corresponding private key is the only entity that can authorize
-to transfer tokens/currency in a self-custodial manner
-from the public key balance (assigned in the smart contract) to some new accounts/smart contracts/public keys.
-
 The holder of the corresponding private key does not have to submit transactions
-on chain to transfer its native currency/CIS-2 token balance,
+on chain to transfer/withdraw its CCD/CIS-2 token balances,
 but instead, it can generate a valid signature, identify a willing third
 party to submit its signature on-chain (a service fee can be added to financially incentivize a third party to do so).
 
@@ -76,6 +72,17 @@ It is serialized using the LEB128_ variable-length unsigned integer encoding, wi
                 | (x: Byte) (m: TokenAmount)  =>  (x - 2^7) + 2^7 * m   if x >= 2^7
 
 .. _LEB128: https://en.wikipedia.org/wiki/LEB128
+
+.. _CIS-5-ExternalTokenAmount:
+
+``CIS5-ExternalTokenAmount``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A CIS-2 token amount on a blockchain defined by the amount, token id and smart contract it represents.
+
+It is serialized as a :ref:`CIS-5-TokenAmount` (``tokenAmount``), a :ref:`CIS-5-TokenId` (``tokenId``), and a :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``)::
+
+  ExternalTokenAmount ::=  (tokenAmount: TokenAmount) (tokenId: TokenId) (cis2TokenContractAddress: ContractAddress)
 
 .. _CIS-5-AccountAddress:
 
@@ -185,35 +192,14 @@ It is serialized as 64 bytes::
 .. _CIS-5-ChainContext:
 
 ``ChainContext``
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
-A short string (up to 64 characters) in hex-encoding.
-The string describes the chain context (e.g. the genesisHash is a suitable candidate) to prevent re-playing signatures across the testnet/mainnet chain.
+The chain context consists of the genesis hash and the contract address to prevent re-playing signatures across the testnet/mainnet chain and smart contracts.
 
-It is serialized as: First byte encodes the length (``n``) of the string, followed by this many bytes for the string characters::
+It is serialized as: First 32 bytes defining the genesisHash (its hex string representation converted into bytes),
+followed by 8 bytes for the index of the smart contract address and 8 bytes for the subindex of the smart contract address::
 
-  ChainContext ::= (n: Byte) (characters: Byteⁿ)
-
-.. _CIS-5-SigningData:
-
-``SigningData``
-^^^^^^^^^^^^^^^
-
-Signing data contains metadata for the signature that is used to check whether the signed message is designated for the correct chain, contract, entrypoint, and that it is not expired or has a nonce mismatch, and the serviceFee commitment is included.
-
-It is serialized as :ref:`CIS-5-ChainContext` (``chain_context``), :ref:`CIS-5-ContractAddress` (``contract_address``), :ref:`CIS-5-EntrypointName` (``entrypoint``), :ref:`CIS-5-Nonce` (``nonce``), :ref:`CIS-5-Timestamp` (``timestamp``), :ref:`CIS-5-CCDAmount`/:ref:`CIS-5-TokenAmount` (``serviceFee``), and :ref:`CIS-5-Address` (``serviceFeeRecipient``)::
-
-  SigningData ::= (chain_context: String) (contract_address: ContractAddress) (entrypoint: EntrypointName) (nonce: Nonce) (timestamp: Timestamp) (serviceFee: CCDAmount/tokenAmount) (serviceFeeRecipient: Address)
-
-For each of the signature checking endpoints the signing data is as follows::
-
-  WithdrawNativeCurrencySigningData ::= (to: Receiver) (ccdAmount: CCDAmount) (data: AdditionalData) (signingData: SigningData)
-
-  WithdrawCis2TokensSigningData ::= (to: Receiver) (tokenAmount: tokenAmount) (tokenId: tokenID) (cis2TokenContractAddress: ContractAddress) (data: AdditionalData) (signingData: SigningData)
-
-  InternalNativeCurrencyTransferSigningData ::= (from: PublicKeyEd25519) (to: PublicKeyEd25519) (ccdAmount: CCDAmount) (signingData: SigningData)
-
-  InternalCis2TokensTransferSigningData ::= (from: PublicKeyEd25519) (to: PublicKeyEd25519) (tokenAmount: tokenAmount) (tokenID: TokenID) (cis2TokenContractAddress: ContractAddress) (signingData: SigningData)
+  ChainContext ::= (genesisHash: Byte³²) (index: Byte⁸) (subindex: Byte⁸)
 
 
 Logged events
@@ -225,20 +211,20 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 ``NonceEvent``
 ^^^^^^^^^^^^^^
 
-A ``NonceEvent`` SHALL be logged for every signature checking function invoke.
+A ``NonceEvent`` SHALL be logged every time a signature is successfully processed and considered valid by the contract.
 
-The ``NonceEvent`` is serialized as: First a byte with the value of 250, followed by the :ref:`CIS-5-Nonce` (``nonce``) that is used in the SigningData, and an :ref:`CIS-5-AccountAddress` (``sponsoree``)::
+The ``NonceEvent`` is serialized as: First a byte with the value of 250, followed by the :ref:`CIS-5-Nonce` (``nonce``) that is used in the SigningData, and an :ref:`CIS-5-PublicKeyEd25519` (``sponsoree``)::
 
-  NonceEvent ::= (250: Byte) (nonce: Nonce) (sponsoree: AccountAddress)
+  NonceEvent ::= (250: Byte) (nonce: Nonce) (sponsoree: PublicKeyEd25519)
 
-``DepositNativeCurrencyEvent``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``DepositCcdEvent``
+^^^^^^^^^^^^^^^^^^^
 
-A ``DepositNativeCurrencyEvent`` SHALL be logged ever time an amount of CCD received by the contract is assigned to a public key.
+A ``DepositCcdEvent`` SHALL be logged ever time an amount of CCD received by the contract is assigned to a public key.
 
-The ``DepositNativeCurrencyEvent`` is serialized as: First a byte with the value of 249, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), the :ref:`CIS-5-Address` (``from``), and a :ref:`CIS-5-PublicKeyEd25519` (``to``)::
+The ``DepositCcdEvent`` is serialized as: First a byte with the value of 249, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), the :ref:`CIS-5-Address` (``from``), and a :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
-  DepositNativeCurrencyEvent ::= (249: Byte) (ccdAmount: CCDAmount) (from: Address) (to: PublicKeyEd25519)
+  DepositCcdEvent ::= (249: Byte) (ccdAmount: CCDAmount) (from: Address) (to: PublicKeyEd25519)
 
 ``DepositCis2TokensEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -251,14 +237,14 @@ The ``DepositCis2TokensEvent`` is serialized as: First a byte with the value of 
 
   DepositCis2TokensEvent ::= (248: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (cis2TokenContractAddress: ContractAddress) (from: Address) (to: PublicKeyEd25519)
 
-``WithdrawNativeCurrencyEvent``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``WithdrawCcdEvent``
+^^^^^^^^^^^^^^^^^^^^
 
-A ``WithdrawNativeCurrencyEvent`` SHALL be logged ever time an amount of CCD held by a public key is withdrawn to an address.
+A ``WithdrawCcdEvent`` SHALL be logged ever time an amount of CCD held by a public key is withdrawn to an address.
 
-The ``WithdrawNativeCurrencyEvent`` is serialized as: First a byte with the value of 247, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-Address` (``to``)::
+The ``WithdrawCcdEvent`` is serialized as: First a byte with the value of 247, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-Address` (``to``)::
 
-  DepositNativeCurrencyEvent ::= (247: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: Address)
+  WithdrawCcdEvent ::= (247: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: Address)
 
 ``WithdrawCis2TokensEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -271,25 +257,25 @@ The ``WithdrawCis2TokensEvent`` is serialized as: First a byte with the value of
 
   WithdrawCis2TokensEvent ::= (246: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (cis2TokenContractAddress: ContractAddress) (from: PublicKeyEd25519) (to: Address)
 
-``InternalNativeCurrencyTransferEvent``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``TransferCcdEvent``
+^^^^^^^^^^^^^^^^^^^^
 
-A ``InternalNativeCurrencyTransferEvent`` SHALL be logged ever time an amount of CCD held by a public key is transferred to another public key within the contract.
+A ``TransferCcdEvent`` SHALL be logged ever time an amount of CCD held by a public key is transferred to another public key within the contract.
 
-The ``InternalNativeCurrencyTransferEvent`` is serialized as: First a byte with the value of 245, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-PublicKeyEd25519` (``to``)::
+The ``TransferCcdEvent`` is serialized as: First a byte with the value of 245, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
-  InternalNativeCurrencyTransferEvent ::= (245: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
+  TransferCcdEvent ::= (245: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
 
-``InternalCis2TokensTransferEvent``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``TransferCis2TokensEvent``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``InternalCis2TokensTransferEvent`` SHALL be logged ever time a token amount held by a public key is transferred to another public key within the contract.
+A ``TransferCis2TokensEvent`` SHALL be logged ever time a token amount held by a public key is transferred to another public key within the contract.
 
-The ``InternalCis2TokensTransferEvent`` is serialized as: First a byte with the value of 244, followed by the
+The ``TransferCis2TokensEvent`` is serialized as: First a byte with the value of 244, followed by the
 :ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
 :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
-  InternalCis2TokensTransferEvent ::= (244: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (cis2TokenContractAddress: ContractAddress) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
+  TransferCis2TokensEvent ::= (244: Byte) (tokenAmount: TokenAmount) (tokenId: TokenID) (cis2TokenContractAddress: ContractAddress) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
 
 .. note::
 
@@ -302,22 +288,22 @@ Contract functions
 
 A smart contract implementing this standard MUST export the following functions:
 
-- :ref:`CIS-5-functions-depositNativeCurrency`
+- :ref:`CIS-5-functions-depositCcd`
 - :ref:`CIS-5-functions-depositCis2Tokens`
-- :ref:`CIS-5-functions-withdrawNativeCurrency`
+- :ref:`CIS-5-functions-withdrawCcd`
 - :ref:`CIS-5-functions-withdrawCis2Tokens`
-- :ref:`CIS-5-functions-internalNativeCurrencyTransfer`
-- :ref:`CIS-5-functions-internalCis2TokensTransfer`
-- :ref:`CIS-5-functions-balanceOfNativeCurrency`
-- :ref:`CIS-5-functions-balanceOfCis2Tokens`
+- :ref:`CIS-5-functions-transferCcd`
+- :ref:`CIS-5-functions-transferCis2Tokens`
+- :ref:`CIS-5-functions-ccdBalanceOf`
+- :ref:`CIS-5-functions-cis2BalanceOf`
 
 
-.. _CIS-5-functions-depositNativeCurrency:
+.. _CIS-5-functions-depositCcd:
 
-``depositNativeCurrency``
-^^^^^^^^^^^^^^^^^^^^^^^^^
+``depositCcd``
+^^^^^^^^^^^^^^
 
-The function is payable and deposits/assigns the send CCDAmount (native currency) to a public key (``PublicKeyEd25519``).
+The function is payable and deposits/assigns the send CCDAmount to a public key (``PublicKeyEd25519``).
 
 Parameter
 ~~~~~~~~~
@@ -356,12 +342,12 @@ Requirements
 
 - The function SHOULD check that a contract is the caller since only a contract can implement a receive hook mechanism.
 
-.. _CIS-5-functions-withdrawNativeCurrency:
+.. _CIS-5-functions-withdrawCcd:
 
-``withdrawNativeCurrency``
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+``withdrawCcd``
+^^^^^^^^^^^^^^^
 
-The function executes a list of token withdrawals of CCDs (native currency) to native accounts and/or smart contracts out of the smart contract wallet.
+The function executes a list of token withdrawals of CCDs to native accounts and/or smart contracts out of the smart contract wallet.
 When transferring CCD to a contract address, a CCD receive hook function MUST be triggered.
 
 Parameter
@@ -369,30 +355,39 @@ Parameter
 
 The parameter is a list of withdrawals.
 
-It is serialized as: 2 bytes representing the number of withdrawals (``n``) followed by the bytes for this number of withdrawals.
+It is serialized as: 2 bytes representing the number of withdrawals (``n``) followed by the bytes for this number of ``withdrawals``.
 
-Each ``NativeCurrencyWithdrawal`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
-a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simple_withdraw``).
+Each ``WithdrawBatchCcdAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``WithdrawMessageCcdAmount`` (``message``).
 
-Each ``NativeCurrencyWithdrawalBatch`` is serialized as: the receiving address :ref:`CIS-2-Receiver` (``to``), the :ref:`CIS-5-CCDAmount` (``ccdAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
+Each ``WithdrawMessageCcdAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simpleWithdraws``).
 
-  NativeCurrencyWithdrawalBatch ::=  (to: Receiver) (ccdAmount: CCDAmount) (data: AdditionalData)
+Each ``WithdrawCcdAmount`` is serialized as: the receiving address :ref:`CIS-2-Receiver` (``to``), the :ref:`CIS-5-CCDAmount` (``withdrawAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
 
-  NativeCurrencyWithdrawal ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (m: Byte²) (simple_withdraw: NativeCurrencyWithdrawalBatchᵐ)
+  WithdrawCcdAmount ::=  (to: Receiver) (withdrawAmount: CCDAmount) (data: AdditionalData)
 
-  NativeCurrencyWithdrawParameter ::= (n: Byte²) (withdrawal: NativeCurrencyWithdrawalⁿ)
+  WithdrawMessageCcdAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: CCDAmount) (m: Byte²) (simpleWithdraws: WithdrawCcdAmountᵐ)
+
+  WithdrawBatchCcdAmount ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: WithdrawMessageCcdAmount)
+
+  WithdrawParameterCcdAmount ::= (n: Byte²) (withdrawals: WithdrawBatchCcdAmountⁿ)
 
 .. _CIS-5-functions-transfer-ccd-receive-hook-parameter:
 
 CCD Receive hook parameter
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The parameter for the CCD receive hook function contains information about the transfer and some additional data bytes.
+The parameter for the CCD receive hook function contains some additional data bytes.
 
-It is serialized as: a :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
+It is serialized as: some additional data :ref:`CIS-2-AdditionalData` (``data``)::
 
-  CCDReceiveHookParameter ::= (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (data: AdditionalData)
+  CCDReceiveHookParameter ::= (data: AdditionalData)
 
+Generating a valid signature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To generate a valid signature for the entry point, the following bytes have to be signed::
+
+  WithdrawCCDSigningData ::= (chainContext: ChainContext) (param: WithdrawParameterCcdAmount)
 
 Requirements
 ~~~~~~~~~~~~
@@ -401,13 +396,13 @@ Requirements
 - The contract function MUST reject if any of the withdrawals fail to be executed.
 - The function MUST reject if the signature verification fails for any withdrawal.
 - The function MUST fail if the CCD balance of the ``signer`` is insufficient to do the withdrawal for any withdrawal.
-- A function MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any withdrawal.
-- A withdrawal back to this contract into the ``depositNativeCurrency`` entrypoint MUST be executed as a normal withdrawal.
+- A function MUST non-strictly decrease the CCD balance of the ``signer```s public key and non-strictly increase the balance of the ``to`` address or fail for any withdrawal.
+- A withdrawal back to this contract into the ``depositCcd`` entrypoint MUST be executed as a normal withdrawal.
 - A withdrawal of a CCD amount of zero MUST be executed as a normal withdrawal.
 - A withdrawal of any amount of CCD to a contract address MUST call a CCD receive hook function on the receiving smart contract with a :ref:`ccd receive hook parameter<CIS-5-functions-transfer-ccd-receive-hook-parameter>`.
 - The contract function MUST reject if the CCD receive hook function called on the contract receiving CCDs rejects for any withdrawal.
 - The balance of a public key not owning any CCD amount SHOULD be treated as having a balance of zero.
-- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every withdrawal if ``serviceFee!=0``.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for each batch withdrawal if ``serviceFee!=0``.
 
 .. warning::
 
@@ -428,15 +423,28 @@ Parameter
 
 The parameter is a list of withdrawals.
 
-It is serialized as: 2 bytes representing the number of withdrawals (``n``) followed by the bytes for this number of withdrawals.
+It is serialized as: 2 bytes representing the number of withdrawals (``n``) followed by the bytes for this number of ``withdrawals``.
 
-Each withdrawal is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
-a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-TokenAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
-a :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``), and :ref:`CIS-2-TransferParameter` (``transferParameter``)::
+Each ``WithdrawBatchTokenAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``WithdrawMessageTokenAmount`` (``message``).
 
-  Cis2TokensWithdrawal ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: TokenAmount) (serviceFeeRecipient: Address) (cis2TokenContractAddress: ContractAddress) (transferParameter: TransferParameter)
+Each ``WithdrawMessageTokenAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-ExternalTokenAmount` (``serviceFee``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simpleWithdraws``).
 
-  Cis2TokensWithdrawParameter ::= (n: Byte²) (withdrawal: Cis2TokensWithdrawalⁿ)
+Each ``WithdrawTokenAmount`` is serialized as: the receiving address :ref:`CIS-2-Receiver` (``to``), the :ref:`CIS-5-ExternalTokenAmount` (``withdrawAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
+
+  WithdrawTokenAmount ::=  (to: Receiver) (withdrawAmount: ExternalTokenAmount) (data: AdditionalData)
+
+  WithdrawMessageTokenAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: ExternalTokenAmount) (m: Byte²) (simpleWithdraws: WithdrawTokenAmountᵐ)
+
+  WithdrawBatchTokenAmount ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: WithdrawMessageTokenAmount)
+
+  WithdrawParameterTokenAmount ::= (n: Byte²) (withdrawals: WithdrawBatchTokenAmountⁿ)
+
+Generating a valid signature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To generate a valid signature for the entry point, the following bytes have to be signed::
+
+  WithdrawTokensSigningData ::= (chainContext: ChainContext) (param: WithdrawParameterTokenAmount)
 
 Requirements
 ~~~~~~~~~~~~
@@ -450,85 +458,102 @@ Requirements
 - A withdrawal back to this contract into the ``depositCis2Tokens`` entrypoint MUST be executed as a normal withdrawal.
 - A withdrawal of a token amount of zero MUST be executed as a normal withdrawal.
 - The balance of a public key not owning any tokens SHOULD be treated as having a balance of zero.
-- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every withdrawal if ``serviceFee!=0``.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for each batch withdrawal if ``serviceFee!=0``.
 
-.. _CIS-5-functions-internalNativeCurrencyTransfer:
+.. _CIS-5-functions-transferCcd:
 
-``internalNativeCurrencyTransfer``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The function executes a list of CCD internal transfers to public keys within the smart contract wallet.
+``transferCcd``
+^^^^^^^^^^^^^^^
+The function executes a list of CCD transfers to public keys within the smart contract wallet.
 
 Parameter
 ~~~~~~~~~
 
-The parameter is a list of internal transfers.
+The parameter is a list of transfers.
 
-It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of internal transfers.
+It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of ``transfers``.
 
-Each ``NativeCurrencyInternalTransfer`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
-a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
-2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transfers (``simple_transfer``).
+Each ``TransferBatchCcdAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``TransferMessageCcdAmount`` (``message``).
 
-Each ``NativeCurrencyInternalTransferBatch`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``from``), a :ref:`CIS-5-PublicKeyEd25519` (``to``), and a :ref:`CIS-5-CCDAmount` (``ccdAmount``)::
+Each ``TransferMessageCcdAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), 2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transers (``simpleTransfers``).
 
-  NativeCurrencyInternalTransferBatch ::= (from: PublicKeyEd25519) (to: PublicKeyEd25519) (ccdAmount: CCDAmount)
+Each ``TransferCcdAmount`` is serialized as: the receiving :ref:`CIS-5-PublicKeyEd25519` (``to``), and the :ref:`CIS-5-CCDAmount` (``transferAmount``)::
 
-  NativeCurrencyInternalTransfer ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: CCDAmount) (serviceFeeRecipient: Address) (m: Byte²) (simple_transfer: NativeCurrencyInternalTransferBatchᵐ)
+  TransferCcdAmount ::=  (to: PublicKeyEd25519) (transferAmount: CCDAmount)
 
-  NativeCurrencyInternalTransferParameter ::= (n: Byte²) (transfer: NativeCurrencyInternalTransfer)
+  TransferMessageCcdAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: CCDAmount) (m: Byte²) (simpleTransfers: TransferCcdAmountᵐ)
 
+  TransferBatchCcdAmount ::=  (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: TransferMessageCcdAmount)
+
+  TransferParameterCcdAmount ::= (n: Byte²) (transfers: TransferBatchCcdAmount)
+
+Generating a valid signature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To generate a valid signature for the entry point, the following bytes have to be signed::
+
+  TransferCCDSigningData ::= (chainContext: ChainContext) (param: TransferParameterCcdAmount)
 
 Requirements
 ~~~~~~~~~~~~
 
 - The function MUST reject if the signature verification fails for any transfer.
 - The function MUST fail if the CCD balance of the ``signer`` is insufficient to do the transfer for any transfer.
-- A function MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any transfer.
+- A function MUST non-strictly decrease the CCD balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` public key or fail for any transfer.
 - A transfer of a CCD amount of zero MUST be executed as a normal transfer.
 - The balance of a public key not owning any CCD amount SHOULD be treated as having a balance of zero.
-- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every transfer if ``serviceFee!=0``.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for each batch transfer if ``serviceFee!=0``.
 
-.. _CIS-5-functions-internalCis2TokensTransfer:
+.. _CIS-5-functions-transferCis2Tokens:
 
-``internalCis2TokensTransfer``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``transferCis2Tokens``
+^^^^^^^^^^^^^^^^^^^^^^
 
-The function executes a list of token internal transfers to public keys within the smart contract wallet.
+The function executes a list of token transfers to public keys within the smart contract wallet.
 
 Parameter
 ~~~~~~~~~
 
-The parameter is a list of internal transfers.
+The parameter is a list of transfers.
 
-It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of internal transfers.
+It is serialized as: 2 bytes representing the number of transfers (``n``) followed by the bytes for this number of ``transfers``.
 
-Each ``Cis2TokensInternalTransfer`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``),
-a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-TokenAmount` (``serviceFee``), an :ref:`CIS-5-Address` (``serviceFeeRecipient``),
-2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transfers (``simple_transfer``).
+Each ``TransferBatchTokenAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``TransferMessageTokenAmount`` (``message``).
 
-Each ``Cis2TokensInternalTransferBatch`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``from``), a :ref:`CIS-5-PublicKeyEd25519` (``to``), a :ref:`CIS-5-TokenAmount` (``tokenAmount``), a :ref:`CIS-5-TokenID` (``tokenID``), and a :ref:`CIS-5-ContractAddress` (``cis2TokenContractAddress``)::
+Each ``TransferMessageTokenAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-ExternalTokenAmount` (``serviceFee``), 2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transfers (``simpleTransfers``).
 
-  Cis2TokensInternalTransferBatch ::=  (from: PublicKeyEd25519) (to: PublicKeyEd25519)  (tokenAmount: tokenAmount) (tokenID: TokenID) (cis2TokenContractAddress: ContractAddress)
+Each ``TransferTokenAmount`` is serialized as: the receiving :ref:`CIS-5-PublicKeyEd25519` (``to``), the :ref:`CIS-5-ExternalTokenAmount` (``transferAmount``)::
 
-  Cis2TokensInternalTransfer ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (expiryTime: TimeStamp) (nonce: u64) (serviceFee: TokenAmount) (serviceFeeRecipient: Address) (m: Byte²) (simple_transfer: Cis2TokensInternalTransferBatchᵐ)
+  TransferTokenAmount ::=  (to: PublicKeyEd25519) (transferAmount: ExternalTokenAmount)
 
-  Cis2TokensInternalTransferParameter ::= (n: Byte²) (transfer: Cis2TokensInternalTransfer)
+  TransferMessageTokenAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: ExternalTokenAmount) (m: Byte²) (simpletransfers: TransferTokenAmountᵐ)
 
+  TransferBatchTokenAmount ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: TransferMessageTokenAmount)
+
+  TransferParameterTokenAmount ::= (n: Byte²) (transfers: TransferBatchTokenAmountⁿ)
+
+
+Generating a valid signature
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To generate a valid signature for the entry point, the following bytes have to be signed::
+
+  TransferTokensSigningData ::= (chainContext: ChainContext) (param: TransferParameterTokenAmount)
 
 Requirements
 ~~~~~~~~~~~~
 
 - The function MUST reject if the signature verification fails for any of the transfers.
 - The function MUST fail if the token balance of the ``signer`` is insufficient to do the transfer for any transfer.
-- A function MUST non-strictly decrease the token balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` address or fail for any transfer.
+- A function MUST non-strictly decrease the token balance of the ``signer`` public key and non-strictly increase the balance of the ``to`` public key or fail for any transfer.
 - A transfer of a token amount of zero MUST be executed as a normal transfer.
 - The balance of a public key not owning any tokens SHOULD be treated as having a balance of zero.
-- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for every transfer if ``serviceFee!=0``.
+- The function MUST transfer the ``serviceFee`` to the ``serviceFeeRecipient`` for each batch transfer if ``serviceFee!=0``.
 
-.. _CIS-5-functions-balanceOfNativeCurrency:
+.. _CIS-5-functions-ccdBalanceOf:
 
-``balanceOfNativeCurrency``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``ccdBalanceOf``
+^^^^^^^^^^^^^^^^
 
 The function queries the CCD balances of a list of public keys.
 
@@ -537,12 +562,9 @@ Parameter
 
 The parameter consists of a list of public keys.
 
-It is serialized as: 2 bytes for the number of queries (``n``) and then this number of queries (``queries``).
-A query is serialized as a :ref:`CIS-5-PublicKeyEd25519` (``publicKey``)::
+It is serialized as: 2 bytes for the number of public keys (``n``) and then this number of :ref:`CIS-5-PublicKeyEd25519` (``publicKeys``)::
 
-  NativeCurrencyBalanceOfQuery ::= (publicKey: PublicKeyEd25519)
-
-  NativeCurrencyBalanceOfParameter ::= (n: Byte²) (queries: NativeCurrencyBalanceOfQueryⁿ)
+  CCDBalanceOfParameter ::= (n: Byte²) (publicKeys: PublicKeyEd25519ⁿ)
 
 Response
 ~~~~~~~~
@@ -551,21 +573,21 @@ The function output response is a list of CCD amounts.
 
 It is serialized as: 2 bytes for the number of CCD amounts (``n``) and then this number of :ref:`CIS-5-CCDAmount` (``results``)::
 
-  NativeCurrencyBalanceOfResponse ::= (n: Byte²) (results: CCDAmountⁿ)
+  CCDBalanceOfResponse ::= (n: Byte²) (results: CCDAmountⁿ)
 
 
 Requirements
 ~~~~~~~~~~~~
 
 - The balance of a public key not owning any CCD  SHOULD be treated as having a balance of zero.
-- The number of results in the response MUST correspond to the number of the queries in the parameter.
-- The order of results in the response MUST correspond to the order of queries in the parameter.
+- The number of results in the response MUST correspond to the number of the public keys in the parameter.
+- The order of results in the response MUST correspond to the order of public keys in the parameter.
 - The contract function MUST NOT increase or decrease the CCD balance or token balance of any public key for any token type.
 
-.. _CIS-5-functions-balanceOfCis2Tokens:
+.. _CIS-5-functions-cis2BalanceOf:
 
-``balanceOfCis2Tokens``
-^^^^^^^^^^^^^^^^^^^^^^^
+``cis2BalanceOf``
+^^^^^^^^^^^^^^^^^
 
 The function queries the token balances of a list of public keys for given token IDs, and CIS-2 token contract addresses.
 
