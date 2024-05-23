@@ -9,6 +9,8 @@ CIS-5: Smart Contract Wallet Standard
 
    * - Created
      - Mar 17, 2024
+   * - Final
+     - May 23, 2024
    * - Supported versions
      - | Smart contract version 1 or newer
        | (Protocol version 4 or newer)
@@ -24,10 +26,10 @@ A standard interface for defining a smart contract wallet that can hold and tran
 CCDs/CIS-2 tokens can be deposited into the smart contract wallet by
 specifying to which public key the deposit should be assigned.
 
-The holder of the corresponding private key does not have to submit transactions
+The holder of the corresponding private key does not submit transactions
 on chain to transfer/withdraw its CCD/CIS-2 token balances,
 but instead, it can generate a valid signature, identify a willing third
-party to submit its signature on-chain (a service fee can be added to financially incentivize a third party to do so).
+party to submit its signature in a transaction on-chain (a service fee can be added to financially incentivize a third party to do so).
 
 The three main actions in the smart contract that can be taken:
 
@@ -37,8 +39,9 @@ The three main actions in the smart contract that can be taken:
 
 - *withdraw*: withdraws the balance out of the smart contract wallet to a native account or smart contract.
 
-The goal of this standard is to simplify the account creation onboarding flow on Concordium
-allowing for CIS-5 smart contract wallets to be supported as first-class citizens in Concordium wallets and tooling.
+The goal of this standard is to create an alternative simplified onboarding flow
+without the inconvenience of a native account creation on Concordium.
+Allowing for CIS-5 smart contract wallets to be supported as first-class citizens in Concordium wallets and tooling.
 
 Specification
 =============
@@ -57,6 +60,7 @@ General types and serialization
 ``TokenID``
 ^^^^^^^^^^^
 
+The token ID is from the CIS-2 standard :ref:`CIS-2-TokenID`.
 A token ID is serialized as 1 byte for the size (``n``) of the identifier, followed by this number of bytes for the token id (``id``)::
 
   TokenID ::= (n: Byte) (id: Byteⁿ)
@@ -66,6 +70,7 @@ A token ID is serialized as 1 byte for the size (``n``) of the identifier, follo
 ``TokenAmount``
 ^^^^^^^^^^^^^^^
 
+The token amount is from the CIS-2 standard :ref:`CIS-2-TokenAmount`.
 It is serialized using the LEB128_ variable-length unsigned integer encoding, with the additional constraint that the total number of bytes of the encoding MUST not exceed 37 bytes::
 
   TokenAmount ::= (x: Byte)                   =>  x                     if x < 2^7
@@ -220,7 +225,7 @@ The ``NonceEvent`` is serialized as: First a byte with the value of 250, followe
 ``DepositCcdEvent``
 ^^^^^^^^^^^^^^^^^^^
 
-A ``DepositCcdEvent`` SHALL be logged ever time an amount of CCD received by the contract is assigned to a public key.
+A ``DepositCcdEvent`` SHALL be logged every time an amount of CCD received by the contract is assigned to a public key.
 
 The ``DepositCcdEvent`` is serialized as: First a byte with the value of 249, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), the :ref:`CIS-5-Address` (``from``), and a :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
@@ -229,7 +234,7 @@ The ``DepositCcdEvent`` is serialized as: First a byte with the value of 249, fo
 ``DepositCis2TokensEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``DepositCis2TokensEvent`` SHALL be logged ever time a token amount received by the contract is assigned to a public key.
+A ``DepositCis2TokensEvent`` SHALL be logged every time a token amount received by the contract is assigned to a public key.
 
 The ``DepositCis2TokensEvent`` is serialized as: First a byte with the value of 248, followed by the
 :ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
@@ -240,7 +245,7 @@ The ``DepositCis2TokensEvent`` is serialized as: First a byte with the value of 
 ``WithdrawCcdEvent``
 ^^^^^^^^^^^^^^^^^^^^
 
-A ``WithdrawCcdEvent`` SHALL be logged ever time an amount of CCD held by a public key is withdrawn to an address.
+A ``WithdrawCcdEvent`` SHALL be logged every time an amount of CCD held by a public key is withdrawn to an address.
 
 The ``WithdrawCcdEvent`` is serialized as: First a byte with the value of 247, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-Address` (``to``)::
 
@@ -249,7 +254,7 @@ The ``WithdrawCcdEvent`` is serialized as: First a byte with the value of 247, f
 ``WithdrawCis2TokensEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``WithdrawCis2TokensEvent`` SHALL be logged ever time a token amount held by a public key is withdrawn to an address.
+A ``WithdrawCis2TokensEvent`` SHALL be logged every time a token amount held by a public key is withdrawn to an address.
 
 The ``WithdrawCis2TokensEvent`` is serialized as: First a byte with the value of 246, followed by the
 :ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
@@ -260,7 +265,7 @@ The ``WithdrawCis2TokensEvent`` is serialized as: First a byte with the value of
 ``TransferCcdEvent``
 ^^^^^^^^^^^^^^^^^^^^
 
-A ``TransferCcdEvent`` SHALL be logged ever time an amount of CCD held by a public key is transferred to another public key within the contract.
+A ``TransferCcdEvent`` SHALL be logged every time an amount of CCD held by a public key is transferred to another public key within the contract.
 
 The ``TransferCcdEvent`` is serialized as: First a byte with the value of 245, followed by the :ref:`CIS-5-CCDAmount` (``ccdAmount``), a :ref:`CIS-5-PublicKeyEd25519` (``from``), and the :ref:`CIS-5-PublicKeyEd25519` (``to``)::
 
@@ -269,7 +274,7 @@ The ``TransferCcdEvent`` is serialized as: First a byte with the value of 245, f
 ``TransferCis2TokensEvent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A ``TransferCis2TokensEvent`` SHALL be logged ever time a token amount held by a public key is transferred to another public key within the contract.
+A ``TransferCis2TokensEvent`` SHALL be logged every time a token amount held by a public key is transferred to another public key within the contract.
 
 The ``TransferCis2TokensEvent`` is serialized as: First a byte with the value of 244, followed by the
 :ref:`CIS-5-TokenAmount` (``tokenAmount``), :ref:`CIS-5-TokenID` (``TokenID``),
@@ -279,7 +284,7 @@ The ``TransferCis2TokensEvent`` is serialized as: First a byte with the value of
 
 .. note::
 
-  The CIS-5 events SHALL enable off-chain applications to compute off-chain all balances that the public keys are holding.
+  The collection of all CIS-5 events emitted by a smart contract instance implementing CIS-5 SHALL enable off-chain applications to compute off-chain all non-zero balances that the public keys are holding.
 
 .. _CIS-5-functions:
 
@@ -359,13 +364,13 @@ It is serialized as: 2 bytes representing the number of withdrawals (``n``) foll
 
 Each ``WithdrawBatchCcdAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``WithdrawMessageCcdAmount`` (``message``).
 
-Each ``WithdrawMessageCcdAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simpleWithdraws``).
+Each ``WithdrawMessageCcdAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-Timestamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simpleWithdraws``).
 
 Each ``WithdrawCcdAmount`` is serialized as: the receiving address :ref:`CIS-2-Receiver` (``to``), the :ref:`CIS-5-CCDAmount` (``withdrawAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
 
   WithdrawCcdAmount ::=  (to: Receiver) (withdrawAmount: CCDAmount) (data: AdditionalData)
 
-  WithdrawMessageCcdAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: CCDAmount) (m: Byte²) (simpleWithdraws: WithdrawCcdAmountᵐ)
+  WithdrawMessageCcdAmount ::= (entryPoint: EntrypointName) (expiryTime: Timestamp) (nonce: Nonce) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: CCDAmount) (m: Byte²) (simpleWithdraws: WithdrawCcdAmountᵐ)
 
   WithdrawBatchCcdAmount ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: WithdrawMessageCcdAmount)
 
@@ -406,8 +411,7 @@ Requirements
 
 .. warning::
 
-  Be aware of transferring CCDs to a non-existing account address or contract address.
-  This specification by itself does not include a standard that has to be followed.
+  Be aware of transferring CCDs to a non-existing account address or contract address which results in an error on Concordium.
   Checking the existence of an account address/ contract address would ideally be done off-chain before the message is even sent to the smart contract.
 
 .. _CIS-5-functions-withdrawCis2Tokens:
@@ -427,13 +431,13 @@ It is serialized as: 2 bytes representing the number of withdrawals (``n``) foll
 
 Each ``WithdrawBatchTokenAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``WithdrawMessageTokenAmount`` (``message``).
 
-Each ``WithdrawMessageTokenAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-ExternalTokenAmount` (``serviceFee``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simpleWithdraws``).
+Each ``WithdrawMessageTokenAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-Timestamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-ExternalTokenAmount` (``serviceFee``), 2 bytes representing the number of simple withdraws (``m``) followed by the bytes for this number of simple withdraws (``simpleWithdraws``).
 
 Each ``WithdrawTokenAmount`` is serialized as: the receiving address :ref:`CIS-2-Receiver` (``to``), the :ref:`CIS-5-ExternalTokenAmount` (``withdrawAmount``), and some additional data :ref:`CIS-2-AdditionalData` (``data``)::
 
   WithdrawTokenAmount ::=  (to: Receiver) (withdrawAmount: ExternalTokenAmount) (data: AdditionalData)
 
-  WithdrawMessageTokenAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: ExternalTokenAmount) (m: Byte²) (simpleWithdraws: WithdrawTokenAmountᵐ)
+  WithdrawMessageTokenAmount ::= (entryPoint: EntrypointName) (expiryTime: Timestamp) (nonce: Nonce) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: ExternalTokenAmount) (m: Byte²) (simpleWithdraws: WithdrawTokenAmountᵐ)
 
   WithdrawBatchTokenAmount ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: WithdrawMessageTokenAmount)
 
@@ -475,13 +479,13 @@ It is serialized as: 2 bytes representing the number of transfers (``n``) follow
 
 Each ``TransferBatchCcdAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``TransferMessageCcdAmount`` (``message``).
 
-Each ``TransferMessageCcdAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), 2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transers (``simpleTransfers``).
+Each ``TransferMessageCcdAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-Timestamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-CCDAmount` (``serviceFee``), 2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transers (``simpleTransfers``).
 
 Each ``TransferCcdAmount`` is serialized as: the receiving :ref:`CIS-5-PublicKeyEd25519` (``to``), and the :ref:`CIS-5-CCDAmount` (``transferAmount``)::
 
   TransferCcdAmount ::=  (to: PublicKeyEd25519) (transferAmount: CCDAmount)
 
-  TransferMessageCcdAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: CCDAmount) (m: Byte²) (simpleTransfers: TransferCcdAmountᵐ)
+  TransferMessageCcdAmount ::= (entryPoint: EntrypointName) (expiryTime: Timestamp) (nonce: Nonce) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: CCDAmount) (m: Byte²) (simpleTransfers: TransferCcdAmountᵐ)
 
   TransferBatchCcdAmount ::=  (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: TransferMessageCcdAmount)
 
@@ -520,13 +524,13 @@ It is serialized as: 2 bytes representing the number of transfers (``n``) follow
 
 Each ``TransferBatchTokenAmount`` is serialized as: a :ref:`CIS-5-PublicKeyEd25519` (``signer``), a :ref:`CIS-5-SignatureEd25519` (``signature``), and  a ``TransferMessageTokenAmount`` (``message``).
 
-Each ``TransferMessageTokenAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-TimeStamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-ExternalTokenAmount` (``serviceFee``), 2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transfers (``simpleTransfers``).
+Each ``TransferMessageTokenAmount`` is serialized as: an :ref:`CIS-5-EntrypointName` (``entryPoint``), a :ref:`CIS-5-Timestamp` (``expiryTime``), a :ref:`CIS-5-Nonce` (``nonce``), a :ref:`CIS-5-PublicKeyEd25519` (``serviceFeeRecipient``), a :ref:`CIS-5-ExternalTokenAmount` (``serviceFee``), 2 bytes representing the number of simple transfers (``m``) followed by the bytes for this number of simple transfers (``simpleTransfers``).
 
 Each ``TransferTokenAmount`` is serialized as: the receiving :ref:`CIS-5-PublicKeyEd25519` (``to``), the :ref:`CIS-5-ExternalTokenAmount` (``transferAmount``)::
 
   TransferTokenAmount ::=  (to: PublicKeyEd25519) (transferAmount: ExternalTokenAmount)
 
-  TransferMessageTokenAmount ::= (entryPoint: EntrypointName) (expiryTime: TimeStamp) (nonce: u64) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: ExternalTokenAmount) (m: Byte²) (simpletransfers: TransferTokenAmountᵐ)
+  TransferMessageTokenAmount ::= (entryPoint: EntrypointName) (expiryTime: Timestamp) (nonce: Nonce) (serviceFeeRecipient: PublicKeyEd25519) (serviceFee: ExternalTokenAmount) (m: Byte²) (simpletransfers: TransferTokenAmountᵐ)
 
   TransferBatchTokenAmount ::= (signer: PublicKeyEd25519) (signature: SignatureEd25519) (message: TransferMessageTokenAmount)
 
