@@ -383,9 +383,9 @@ CCD Receive hook parameter
 
 The parameter for the CCD receive hook function contains some additional data bytes.
 
-It is serialized as: some additional data :ref:`CIS-2-AdditionalData` (``data``)::
+It is serialized as several bytes::
 
-  CCDReceiveHookParameter ::= (data: AdditionalData)
+  CCDReceiveHookParameter ::= (data: Byteᵐ)
 
 Generating a valid signature
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
