@@ -174,6 +174,7 @@
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-2: Concordium Token Standard 2</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-4.html">CIS-4: Credential Registry Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-5.html">CIS-5: Smart Contract Wallet Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../ID/concordium-did.html">Concordium DID Method Version 1.0</a></li>
 </ul>
@@ -360,7 +361,7 @@ MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
 A transfer is a token ID, an amount of tokens to be transferred, and the <code class="docutils literal notranslate"><span class="pre">from</span></code> address and <code class="docutils literal notranslate"><span class="pre">to</span></code> address.</p>
 <p>When transferring tokens to a contract address, additional information for a receive function hook to trigger is required.</p>
 <section id="parameter">
-<h5>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h5>
+<span id="cis-2-transferparameter"></span><h5>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h5>
 <p>The parameter is a list of transfers.</p>
 <p>It is serialized as: 2 bytes representing the number of transfers (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by the bytes for this number of transfers (<code class="docutils literal notranslate"><span class="pre">transfers</span></code>).
 Each transfer is serialized as: a <a class="reference internal" href="#cis-2-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), a <a class="reference internal" href="#cis-2-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>), the token owner address <a class="reference internal" href="#cis-2-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>), the receiving address <a class="reference internal" href="#cis-2-receiver"><span class="std std-ref">Receiver</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>) and some additional data (<code class="docutils literal notranslate"><span class="pre">data</span></code>):</p>
@@ -909,7 +910,7 @@ The main argument is simplicity and to save energy cost on common cases, but oth
 </div>
 </section>
 <section id="receive-hook-function">
-<h3>Receive hook function<a class="headerlink" href="#receive-hook-function" title="Permalink to this headline">¶</a></h3>
+<span id="cis-2-receive-hook-function"></span><h3>Receive hook function<a class="headerlink" href="#receive-hook-function" title="Permalink to this headline">¶</a></h3>
 <p>The specification requires a token receive hook to be invoked on a smart contract receiving tokens, this will in some cases prevent mistakes such as sending tokens to smart contracts which do not define behavior for receiving tokens.
 These token could then be lost forever.</p>
 <p>The reason for this not being optional is to allow other smart contracts, which integrate with a token smart contract, to rely on this for functionality.</p>
