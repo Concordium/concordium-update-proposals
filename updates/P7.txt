@@ -15,7 +15,7 @@ The protocol change has the following main effects
 - changes cooldown behavior so that:
    * when validators and delegators reduce their stake, the reduction is
      immediately effective for future stake calculations, and the amount of the
-     reduction is looked for a cooldown period;
+     reduction is locked for a cooldown period;
    * validators and delegators can make further changes to their stake while
      they already have stake in cooldown;
 - disallows shielded (or encrypted) transfer transactions (`TransferToEncrypted`, 
@@ -60,10 +60,10 @@ to the account's stake.
 From protocol version 7, when a validator or delegator reduces its stake,
 the stake reduction takes effect straight away, but the amount of the
 reduction enters a cooldown queue. (Note that "straight away" here does
-not mean that is has an instant effect on the lottery and rewards. The
+not mean that it has an instant effect on the lottery and rewards. The
 effective stakes of bakers and delegators are sampled in the first block
 of the last epoch before each payday, with the sampled stakes being used
-from the upcoming payday. Although the change is recorded on the account
+for the upcoming payday. Although the change is recorded on the account
 immediately, it will be between 1 epoch and 1 payday plus 1 epoch until
 the change affects the proof-of-stake lottery used for consensus.)
 Stake in the cooldown queue is considered to be inactive stake, and, as
@@ -75,7 +75,7 @@ When stake is removed from a validator or delegator, it enters cooldown
 at the point that the removed stake is no longer part of the effective
 stake for lottery calculations. Specifically, when the stake is removed,
 it first enters a "pre-pre-cooldown" state. When the stake snapshot is
-taken for next payday (in the first block of the epoch before the payday)
+taken for the next payday (in the first block of the epoch before the payday)
 it is moved from "pre-pre-cooldown" to "pre-cooldown". At the subsequent
 payday, it is moved from "pre-cooldown" into "cooldown", and the cooldown
 expiry time is set based on the cooldown time chain parameter. In
@@ -100,12 +100,12 @@ for validators and for delegators: stake entering cooldown expires
 after the minimum of both times.
 
 The purpose of these changes is to maximise the flexibility of staking,
-while still ensuring that any stake must still be locked for the
-cooldown period before it can be spent.
+while ensuring that any stake must still be locked for the cooldown
+period before it can be spent.
 
                                 * * *
 
-Since the initial protocol version, the Concordium block chain has
+Since the initial protocol version, the Concordium blockchain has
 supported shielded transfers (also known as encrypted transfers).
 This mechanism allows an account to "shield" part of its balance, 
 cryptographically encrypting it so that the amount cannot be inspected
@@ -127,16 +127,16 @@ In particular, shielding (or encrypting) a public balance and
 transferring shielded funds from one account to another are
 disallowed from protocol version 7. Unshielding (i.e., transferring
 funds from an account's shielded funds to its own unshielded funds)
-remains enabled. This ensures that accounts do not simply lose any
-funds that they previously shielded.
+remains enabled. This ensures that accounts do not lose any funds that
+they previously shielded.
 
                                Changes
 
 The following behaviors are changed in protocol version 7.
 
 1. The cost metering for smart contract execution is redefined. The new
-   instruction costs of WebAssembly instructions are defined below.
-   (1 Energy = 1000 Interpreter Energy.)
+   instruction costs of WebAssembly instructions are defined below
+   (1 Energy = 1000 Interpreter Energy):
 
    Instruction      Old cost (Interpreter Energy)   New cost (Interpreter Energy)
 
@@ -150,7 +150,7 @@ The following behaviors are changed in protocol version 7.
    br_table         10 + target arity               7
    return           8 + return arity                2
    call             26 + #arg + #res                6 + #arg + #res
-   call_indirect    28 + 2*(#arg + #res)            8 + |_ 1.1*(#arg + #res) _|
+   call_indirect    28 + 2*(#arg + #res)            8 + floor(1.1*(#arg + #res))
    
    drop             2                               0
    select           3                               2
@@ -202,17 +202,19 @@ The following behaviors are changed in protocol version 7.
    label and the current activation frame respectively; #arg and
    #res are the numbers of arguments and results of the function
    being called; and #pages is the number of memory pages requested
-   by memory.grow.)
+   by memory.grow. "inn" indicates both "i32" and "i64" variants, and
+   where instructions are suffixed with *, the line applies to all variants.
+   For instance, inn.load* includes i32.load8_s, i64.load8_u, etc.)
 
    The cost (in Energy) of looking up a contract module is reduced from
-   |_ size / 50 _| to |_ size / 500 _|, where size is the size of the
+   floor(size / 50) to floor(size / 500), where size is the size of the
    module's WebAssembly source in bytes, not including custom sections.
    This cost is incurred on contract initialization, update, upgrading and
    inter-contract calls.
    
 2. The maximum nesting depth of V1 contract calls is limited to 384.
 
-3. In V1 smart contracts, the `invoke` operations allows for two
+3. In V1 smart contracts, the `invoke` host function allows for two
    additional operations:
 
    - Query smart contract module reference:
@@ -263,7 +265,7 @@ The following behaviors are changed in protocol version 7.
    - When a validator or delegator has its stake increased (including if
      an account becomes a validator or delegator when it was neither),
      the amount of the increase will be taken preferentially from
-     inactive stake in the the following order:
+     inactive stake in the following order:
      * pre-pre-cooldown
      * pre-cooldown
      * cooldown (starting from the highest expiry timestamp)
