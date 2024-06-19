@@ -20,6 +20,7 @@ The protocol change has the following main effects
      they already have stake in cooldown;
 - disallows shielded (or encrypted) transfer transactions (`TransferToEncrypted`, 
   `EncryptedAmountTransfer` and `EncryptedAmountTransferWithMemo`).
+- redefines the block hashing scheme to better support light clients.
 
                               Background
 
@@ -110,6 +111,12 @@ supported shielded transfers (also known as encrypted transfers).
 This mechanism allows an account to "shield" part of its balance, 
 cryptographically encrypting it so that the amount cannot be inspected
 except by the owner of the account (using its secret encryption key).
+(It is possible for a sufficient combination of identity disclosure
+authorities (e.g. 2 of 3) to act in concert with the identity provider
+for an account to recover the secret encryption key (for instance, if
+compelled to do so by legal authorities) and thus decrypt the shielded
+balance and transfers on that account.)
+
 An account can transfer an amount from its shielded balance to another
 account. While the sender and receiver are publicly visible, the exact
 amount transferred (in CCD) is not. An account can also decrypt funds from
@@ -129,6 +136,25 @@ disallowed from protocol version 7. Unshielding (i.e., transferring
 funds from an account's shielded funds to its own unshielded funds)
 remains enabled. This ensures that accounts do not lose any funds that
 they previously shielded.
+
+                                * * *
+
+A block hash is a cryptographic hash of the contents of a block, and serves
+as a unique identifier for the block. The block hash is not only derived from
+the header fields of a block, but also the state of the chain after executing
+the block, including the current state of each account and smart contract.
+The block hashing scheme determines how the block hash is derived from this
+data. In particular, individual elements are hashed and their hashes are
+combined and hashed again into a Merkle tree structure. This structure makes
+it possible to prove that a block (whose hash is known to the verifier)
+contains some specific data (such as the balance of a particular
+account) without providing the entirety of the data comprising the block.
+
+In protocol version 7, the block hashing scheme is redefined. The revised
+definition makes certain Merkle proofs shorter and simpler. The purpose of
+this is to support "light clients": light-weight verifiers that can check
+properties of the chain without running the full consensus, by making use of
+Merkle proofs.
 
                                Changes
 
@@ -294,6 +320,56 @@ The following behaviors are changed in protocol version 7.
    `EncryptedAmountTransfer` and `EncryptedAmountTransferWithMemo` are
    considered invalid. Transactions of these types will be rejected with
    a `SerializationFailure` result.
+
+6. The block hashing for a (non-genesis) block in protocol version 7 follows
+   the structure below:
+
+   [BlockHash]
+   |- protocol version
+   |- [...]
+      |- [BlockHeaderHash]
+      |  |- round
+      |  |- epoch
+      |  |- [parent BlockHash]
+      |
+      |- [BlockQuasiHash]
+         |- [metaHash]
+         |  |- [bakerInfoHash]
+         |  |  |- [timestampBakerHash]
+         |  |  |  |- timestamp
+         |  |  |  |- baker ID
+         |  |  |
+         |  |  |- [nonceHash]
+         |  |     |- block nonce
+         |  |
+         |  |- [certificatesHash]
+         |     |- [QuorumCertificate hash]
+         |     |  |- [parent BlockHash]
+         |     |  |- QC round
+         |     |  |- QC epoch
+         |     |  |- aggregate signature
+         |     |  |- signatories
+         |     |
+         |     |- [timeoutFinalizationHash]
+         |        |- [Option TimeoutCertificate hash]
+         |        |- [Option FinalizationEntry hash]
+         |
+         |- [dataHash]
+            |- [transactions hash]
+            |- [BlockResultHash]
+               |- [...]
+               |  |- [BlockStateHash]
+               |  |- [TransactionOutcomesHash]
+               |
+               |- [...]
+                  |- [block height info hash]
+                  |  |- absolute block height
+                  |  |- genesis index
+                  |  |- relative block height
+                  |
+                  |- [...]
+                     |- [current FinalizationCommitteeHash]
+                     |- [next FinalizationCommitteeHash]
 
                                Effects
 
