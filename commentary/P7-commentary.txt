@@ -16,7 +16,7 @@ the rationale for each.
     1. Smart Contract Costs
 
 The cost of a smart contract transaction (such as a contract init or update)
-is a function of the WebAssembly instructions that are execute in computing
+is a function of the WebAssembly instructions that are executed in computing
 the outcome of the transaction. Each instruction is associated with a cost
 (measured in "interpreter energy"). When a smart contract module is deployed
 on the Concordium blockchain, the nodes apply a transformation on the
@@ -29,10 +29,10 @@ by the sender of the transaction in a proportional amount of CCD, and these
 fees are used to recompense validators.
 
 The purpose of all of this is to limit the demands that individual
-transactions can place on the resources of nodes in the concordium blockchain,
+transactions can place on the resources of nodes in the Concordium blockchain,
 specifically, execution time. Accordingly, the costs associated with
 instructions are intended to be a close proxy for the actual execution time.
-The costs are assigned based on benchmarking so that 1000000 energy
+The costs are assigned based on benchmarking so that 1,000,000 energy
 corresponds to roughly 1 second of execution time. (Note that the actual
 execution time cannot be used to determine the cost of smart contract
 transactions, since it will vary from node to node and consensus requires
@@ -53,7 +53,14 @@ memory, potentially exhausting the resources of nodes. Previously, the
 energy limits were deemed sufficient to limit the resource usage. However,
 in light of reduced energy costs, it was decided to impose a limit on the
 depth of nested inter-contract calls to 384, to guard against resource
-exhaustion.
+exhaustion. Since each live execution frame can be up to 32 MB in size,
+this limits the total size of live execution frames to 12 GB. This limit
+was chosen given the minimum RAM requirement for a node of 16 GB.
+
+Further reading:
+  In the Concordium node implementation, the metering transformation can be
+  found at https://github.com/Concordium/concordium-base/blob/main/smart-contracts/wasm-transform/src/metering_transformation.rs
+    
 
     2. New Smart Contract Queries
 
@@ -134,4 +141,39 @@ automatically. Therefore, the ability to unshield balances remains, and
 existing shielded balances on accounts will remain.
 
     5. Redefined Block Hashing
+
+The revision of the block hashing scheme in protocol version 7 is designed
+to simplify Merkle proofs of various properties of blocks, such as:
+
+  - The outcome of a particular transaction in a block.
+  - Which finalization committee certifies blocks in the next epoch.
+  - That the (partial) state of a specific smart contract has a particular
+    value.
+
+These proofs support and provide utility for light clients. A light client
+knows the current block height and the finalization committees for the current
+and next epochs. The client can update its state given a finalization proof
+(signed by one of the finalization committees) for a block, and a Merkle
+proof that establishes the new block height and finalization committees.
+
+Implementing light clients as smart contracts allows trustless bridging
+between suitable blockchains. Such a bridge uses light clients to validate
+messages sent between chains, eliminating the need to trust third-party
+relayers. Instead, the consensus protocol itself guarantees the integrity
+of the messages. A Concordium light client would verify cryptographically
+that the finalization committee saw the message being sent from the Concordium
+chain. These changes to block hashing are thus a step towards connecting
+Concordium to the wider blockchain ecosystem, for instance using the
+Inter-Blockchain Communication (IBC) protocol (https://www.ibcprotocol.dev).
+
+The same technology behind light clients can also support lightweight nodes.
+Currently, Concordium nodes maintain the entire state history of the
+blockchain, which is a significant and ever-growing quantity of data.
+(As of writing, this amounts to approximately 115 GB of data for mainnet.)
+Moreover, starting a new node from scratch is extremely time-consuming,
+since the node executes every one of the millions of blocks in sequence.
+A lightweight node would only store the recent state and an abbreviated
+summary of historical blocks, sufficient to prove the correctness of the
+current state. This would allow for for faster node catch-up and reduced
+storage requirements.
 
