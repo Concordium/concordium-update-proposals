@@ -174,6 +174,5 @@ Moreover, starting a new node from scratch is extremely time-consuming,
 since the node executes every one of the millions of blocks in sequence.
 A lightweight node would only store the recent state and an abbreviated
 summary of historical blocks, sufficient to prove the correctness of the
-current state. This would allow for for faster node catch-up and reduced
+current state. This would allow for faster node catch-up and reduced
 storage requirements.
-
