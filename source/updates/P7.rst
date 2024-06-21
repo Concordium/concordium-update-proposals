@@ -1,0 +1,25 @@
+=====================================================================================================================================
+Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing
+=====================================================================================================================================
+
+.. list-table::
+   :stub-columns: 1
+
+   * - Effective on Testnet
+     - TBD
+   * - Effective on Mainnet
+     - TBD
+   * - Specification hash
+     - ``b2b5d200c532143a586b1c68cfc0ea77a2f253038855aab35d6be72877c954d6``
+
+Specification
+=============
+
+.. include:: ../../updates/P6.txt
+   :literal:
+
+Commentary
+==========
+
+.. include:: ../../commentary/P6-commentary.txt
+   :literal:
