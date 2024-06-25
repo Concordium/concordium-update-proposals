@@ -23,7 +23,7 @@ The table lists already effective as well as *planned/draft* protocol updates.
 | Sirius (P4) | Delegation and new contract state | Jun 13, 2022 | Jun 23, 2022 | [P4.txt](../main/updates/P4.txt) | [P4-commentary.txt](../main/commentary/P4-commentary.txt) | `20c6f246713e573fb5bfdf1e59c0a6f1a37cded34ff68fda4a60aa2ed9b151aa` | `4c135293c661cc57890aab1889e8263db70e3a857983e6aa7ffa5ea6806b9338` | `476093e74014d9c735de0173a653f094f15ee1a4d2693f24bddd184672723d98` |
 | P5 | Smart contract upgradability, performance improvements | Nov 22, 2022 | Dec 13, 2022 | [P5.txt](../main/updates/P5.txt) | [P5-commentary.txt](../main/commentary/P5-commentary.txt) | `af5684e70c1438e442066d017e4410af6da2b53bfa651a07d81efa2aa668db20` | `6ca196c7fa2f3e0e64b7fa9b6c7299c5196ff38122768b799fab612db31b2114` | `5443ee296c0a87af8631998e5e7edd80ac4edec5c64255bdf8415af6e4bd0f43` |
 | P6 | Concordium BFT consensus protocol, changes in Wasm validation and execution | Aug 21, 2023 | Sep 25, 2023 | [P6.txt](../main/updates/P6.txt) | [P6-commentary.txt](../main/commentary/P6-commentary.txt) | `ede9cf0b2185e9e8657f5c3fd8b6f30cef2f1ef4d9692aa4f6ef6a9fb4a762cd` | `358633697957ac1c3f91adc40f75d1ff951a11bc89826567a4118ce0371c17bf` | `5406c159c36841803d7eecba4aa5c21c6a72693a854ea88851218cfe8b31465c` |
-
+| P7 | Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing | - | - | [P7.txt](../main/updates/P7.txt) | [P7-commentary.txt](../main/commentary/P7-commentary.txt) | `e68ea0b16bbadfa5e5da768ed9afe0880bd572e29337fe6fb584f293ed7699d6` | - | - |
 
 ## Website
 

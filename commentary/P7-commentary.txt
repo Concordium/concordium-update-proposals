@@ -1,0 +1,178 @@
+                      Protocol update commentary
+
+Protocol Version: 7
+Builds on Protocol Version: 6
+
+Protocol version 7 introduces protocol changes in the following key areas:
+- smart contract costs
+- new smart contract queries
+- modified stake cooldown behavior
+- removal of shielded transactions
+- redefined block hashing
+
+This document provides commentary on each of these changes, elaborating on
+the rationale for each.
+
+    1. Smart Contract Costs
+
+The cost of a smart contract transaction (such as a contract init or update)
+is a function of the WebAssembly instructions that are executed in computing
+the outcome of the transaction. Each instruction is associated with a cost
+(measured in "interpreter energy"). When a smart contract module is deployed
+on the Concordium blockchain, the nodes apply a transformation on the
+WebAssembly code that instruments it with metering instructions, which track
+the interpreter energy usage during program execution. A smart contract
+transaction (as with other transactions) has an energy limit associated with
+it. If the energy usage during execution exceeds this limit, the transaction
+will simply fail. The energy used by the transaction is ultimately paid for
+by the sender of the transaction in a proportional amount of CCD, and these
+fees are used to recompense validators.
+
+The purpose of all of this is to limit the demands that individual
+transactions can place on the resources of nodes in the Concordium blockchain,
+specifically, execution time. Accordingly, the costs associated with
+instructions are intended to be a close proxy for the actual execution time.
+The costs are assigned based on benchmarking so that 1,000,000 energy
+corresponds to roughly 1 second of execution time. (Note that the actual
+execution time cannot be used to determine the cost of smart contract
+transactions, since it will vary from node to node and consensus requires
+that nodes agree on all details.)
+
+Concordium node version 7 improves smart contract execution by employing a
+compilation phase that transforms the stack-machine based WebAssembly into
+a register-based intermediate representation. This representation can be
+interpreted more efficiently, as operations are performed directly on their
+operands, eliminating stack manipulation. The result of this is that
+execution times are typically around 3 times faster. Accordingly the cost
+of WebAssembly instructions is redefined to reflect this.
+
+When a smart contract makes a call to another smart contract, the calling
+contract's state remains in memory, while the callee's state is also
+loaded. In the case of a long chain of such calls, this can use a lot of
+memory, potentially exhausting the resources of nodes. Previously, the
+energy limits were deemed sufficient to limit the resource usage. However,
+in light of reduced energy costs, it was decided to impose a limit on the
+depth of nested inter-contract calls to 384, to guard against resource
+exhaustion. Since each live execution frame can be up to 32 MB in size,
+this limits the total size of live execution frames to 12 GB. This limit
+was chosen given the minimum RAM requirement for a node of 16 GB.
+
+Further reading:
+  In the Concordium node implementation, the metering transformation can be
+  found at https://github.com/Concordium/concordium-base/blob/main/smart-contracts/wasm-transform/src/metering_transformation.rs
+    
+
+    2. New Smart Contract Queries
+
+Protocol version 7 introduces new query operations that are available to
+smart contracts. These operations get the module reference and smart
+contract name associated with a smart contract instance. This can be used
+to check if a smart contract instance is an instance of a particular known
+smart contract, for example, or to check if a smart contract has been
+upgraded (in which case, its module reference will change). These kind of
+checks can be useful when designing smart contracts to interact in a
+partial-trust situation: a smart contract can authenticate the other
+contracts it interacts with before determining whether to trust them.
+
+A common question from smart contract developers (particularly those
+coming from Ethereum) is how to implement a factory pattern on Concordium.
+The architecture of Concordium's contracts (separating module deployment
+from contract initialization) means that typically a factory pattern is
+not required. However, these new contract inspection operations provide
+a way of emulating the factory pattern in the cases where it is needed.
+For details, see:
+https://developer.concordium.software/en/mainnet/smart-contracts/guides/factory-pattern.html
+
+    3. Stake Cooldown Changes
+
+The changes to stake cooldown have two main effects. First, when validators
+and delegators reduce (or remove) stake, the amount of the reduction no
+longer contributes to the calculations that determine lottery power and
+rewards (after the following payday), but is held in a cooldown state
+where it cannot be spent. Second, while stake is in cooldown, further
+changes to the stake can be made, such as increasing it, decreasing it
+further, removing it, or even changing between validator and delegator.
+
+The first change brings Concordium closer in line with common industry
+practice, while also strengthening a buffer against nothing-at-stake
+attacks, since a malicious validator cannot sell their stake for a
+certain time after they no longer have any effective power in the
+proof-of-stake consensus.
+
+The second change gives validators and delegators much more flexibility.
+Previously, while stake was in cooldown, the stake could not be changed
+(neither up nor down) and it was impossible to transition directly between
+being a validator or a delegator. In protocol version 7, both of these
+are possible. This change is of particular benefit to custodial staking
+providers, who may hold stake for multiple customers on a single (validator)
+account. The new arrangement allows them to withdraw funds for different
+customers independently. For instance, under the old scheme, if the staking
+provider unstaked customer A's funds, and then wished to also unstake
+customer B's funds, then they would have to wait two full cooldown periods
+before B's funds were unstaked, no matter how soon they requested them after
+A's funds were already being unstaked. In the new scheme, the fact that
+A's funds are in cooldown does nothing to prevent B's funds also moving to
+cooldown.
+
+    4. Removal of Shielded Transactions
+
+Shielded transactions allow accounts to send funds to each other while
+obscuring the exact amount of the transfer. Part of the rationale for
+supporting such transfers was to enhance the privacy for users, since the
+blockchain is an entirely public record.
+
+This feature has not seen wide adoption (at time of writing, less than
+200000 CCD is shielded) and has generally been more confusing than
+beneficial for users, who may have mistakenly shielded their balances
+unnecessarily, without properly understanding the use of shielded transfers.
+
+Furthermore, financial institutions with obligations under
+anti-money-laundering laws may be hesitant to adopt Concordium under the
+impression that such a feature could possibly enable money laundering.
+In fact, the identity disclosure authorities and identity providers can,
+if necessary, unmask the shielded transfers on an account, providing a
+deterrent against and remedy for any use of shielded transfers for money
+laundering.
+
+For these reasons, it was decided to remove shielded transfers, disabling
+the ability to shield balances and to transfer shielded amounts. However, as
+shielded balances are encrypted, there is no way to simply unshield balances
+automatically. Therefore, the ability to unshield balances remains, and
+existing shielded balances on accounts will remain.
+
+    5. Redefined Block Hashing
+
+The revision of the block hashing scheme in protocol version 7 is designed
+to simplify Merkle proofs of various properties of blocks, such as:
+
+  - The outcome of a particular transaction in a block.
+  - Which finalization committee certifies blocks in the next epoch.
+  - That the (partial) state of a specific smart contract has a particular
+    value.
+
+These proofs support and provide utility for light clients. A light client
+knows the current block height and the finalization committees for the current
+and next epochs. The client can update its state given a finalization proof
+(signed by one of the finalization committees) for a block, and a Merkle
+proof that establishes the new block height and finalization committees.
+
+Implementing light clients as smart contracts allows trustless bridging
+between suitable blockchains. Such a bridge uses light clients to validate
+messages sent between chains, eliminating the need to trust third-party
+relayers. Instead, the consensus protocol itself guarantees the integrity
+of the messages. A Concordium light client would verify cryptographically
+that the finalization committee saw the message being sent from the Concordium
+chain. These changes to block hashing are thus a step towards connecting
+Concordium to the wider blockchain ecosystem, for instance using the
+Inter-Blockchain Communication (IBC) protocol (https://www.ibcprotocol.dev).
+
+The same technology behind light clients can also support lightweight nodes.
+Currently, Concordium nodes maintain the entire state history of the
+blockchain, which is a significant and ever-growing quantity of data.
+(As of writing, this amounts to approximately 115 GB of data for mainnet.)
+Moreover, starting a new node from scratch is extremely time-consuming,
+since the node executes every one of the millions of blocks in sequence.
+A lightweight node would only store the recent state and an abbreviated
+summary of historical blocks, sufficient to prove the correctness of the
+current state. This would allow for faster node catch-up and reduced
+storage requirements.
