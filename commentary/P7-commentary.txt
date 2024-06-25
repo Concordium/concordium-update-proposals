@@ -123,7 +123,7 @@ blockchain is an entirely public record.
 
 This feature has not seen wide adoption (at time of writing, less than
 200000 CCD is shielded) and has generally been more confusing than
-beneficial for users, who may have mistakenly shieled their balances
+beneficial for users, who may have mistakenly shielded their balances
 unnecessarily, without properly understanding the use of shielded transfers.
 
 Furthermore, financial institutions with obligations under

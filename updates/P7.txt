@@ -54,7 +54,7 @@ removes its stake, the amount of the stake reduction is held in a cooldown
 state. During the cooldown period, the stake cannot be spent, and remains
 part of the effective stake (used for lottery and reward calculation). Once
 the cooldown period has elapsed, the stake is available to be spent, and
-no longer contributes to the effective stake of the baker or delegator.
+no longer contributes to the effective stake of the validator or delegator.
 While the cooldown is in effect on an account, no other changes can be made
 to the account's stake.
 
@@ -62,7 +62,7 @@ From protocol version 7, when a validator or delegator reduces its stake,
 the stake reduction takes effect straight away, but the amount of the
 reduction enters a cooldown queue. (Note that "straight away" here does
 not mean that it has an instant effect on the lottery and rewards. The
-effective stakes of bakers and delegators are sampled in the first block
+effective stakes of validators and delegators are sampled in the first block
 of the last epoch before each payday, with the sampled stakes being used
 for the upcoming payday. Although the change is recorded on the account
 immediately, it will be between 1 epoch and 1 payday plus 1 epoch until
@@ -270,7 +270,7 @@ The following behaviors are changed in protocol version 7.
 
 4. The following changes apply to staking:
    - The stake of an account is divided into
-     * Active stake: this determines the baker or validator's
+     * Active stake: this determines the validator or delegator's
        stake for future snapshots that determine the stake
        distribution for the purposes of lottery calculation and
        reward distribution.

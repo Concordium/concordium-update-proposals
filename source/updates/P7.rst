@@ -10,7 +10,7 @@ Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes
    * - Effective on Mainnet
      - TBD
    * - Specification hash
-     - ``b2b5d200c532143a586b1c68cfc0ea77a2f253038855aab35d6be72877c954d6``
+     - ``e68ea0b16bbadfa5e5da768ed9afe0880bd572e29337fe6fb584f293ed7699d6``
 
 Specification
 =============
