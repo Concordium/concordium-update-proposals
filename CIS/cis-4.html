@@ -166,6 +166,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../updates/P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../updates/P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul class="current">
@@ -708,8 +709,8 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 <span id="cis-4-register-credential-transfer"></span><h4><code class="docutils literal notranslate"><span class="pre">RegisterCredentialEvent</span></code><a class="headerlink" href="#registercredentialevent" title="Permalink to this headline">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">RegisterCredentialEvent</span></code> event MUST be logged when a new credential is registered.
 The event records the credential identifier, the credential type, and the corresponding schema reference.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">RegisterCredentialEvent</span></code> event is serialized as: first a byte with the value of 249, followed by <a class="reference internal" href="#cis-4-credentialholderid"><span class="std std-ref">CredentialHolderId</span></a> (<code class="docutils literal notranslate"><span class="pre">crednetial_id</span></code>), a reference to the credential schema <a class="reference internal" href="#cis-4-schemaref"><span class="std std-ref">SchemaRef</span></a> (<code class="docutils literal notranslate"><span class="pre">schema_ref</span></code>), and a credential type <a class="reference internal" href="#cis-4-credentialtype"><span class="std std-ref">CredentialType</span></a> (<code class="docutils literal notranslate"><span class="pre">credential_type</span></code>)</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CredentialEventData ::= (credential_id: CredentialHolderId) (schema_ref: SchemaRef) (credential_type: CredentialType)
+<p>The <code class="docutils literal notranslate"><span class="pre">RegisterCredentialEvent</span></code> event is serialized as: first a byte with the value of 249, followed by <a class="reference internal" href="#cis-4-credentialholderid"><span class="std std-ref">CredentialHolderId</span></a> (<code class="docutils literal notranslate"><span class="pre">crednetial_id</span></code>), a reference to the credential schema <a class="reference internal" href="#cis-4-schemaref"><span class="std std-ref">SchemaRef</span></a> (<code class="docutils literal notranslate"><span class="pre">schema_ref</span></code>), a credential type <a class="reference internal" href="#cis-4-credentialtype"><span class="std std-ref">CredentialType</span></a> (<code class="docutils literal notranslate"><span class="pre">credential_type</span></code>), and a reference to the credential metadata <a class="reference internal" href="#cis-4-metadataurl"><span class="std std-ref">MetadataUrl</span></a> (<code class="docutils literal notranslate"><span class="pre">metadata_url</span></code>)</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CredentialEventData ::= (credential_id: CredentialHolderId) (schema_ref: SchemaRef) (credential_type: CredentialType) (metadata_url: MetadataUrl)
 RegisterCredentialEvent ::= (249: Byte) (data: CredentialEventData)
 </pre></div>
 </div>
@@ -760,7 +761,7 @@ It consists of the key and the action performed with the key (registration or re
 <p>The <code class="docutils literal notranslate"><span class="pre">RevocationKeyEvent</span></code> event is serialized as: first a byte with the value of 244, followed by the key bytes <a class="reference internal" href="#cis-4-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> and 1 byte encoding the action (0 for <code class="docutils literal notranslate"><span class="pre">Register</span></code>, 1 for <code class="docutils literal notranslate"><span class="pre">Remove</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RevocationKeyAction ::= (0: Byte)    // Register
                       | (1: Byte)    // Remove
-RevocationKeyEvent ::= (244: Byte) (action: RevocationKeyAction)
+RevocationKeyEvent ::= (244: Byte) (public_key: PublicKeyEd25519) (action: RevocationKeyAction)
 </pre></div>
 </div>
 </section>

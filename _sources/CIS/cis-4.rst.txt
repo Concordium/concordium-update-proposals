@@ -578,9 +578,9 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 A ``RegisterCredentialEvent`` event MUST be logged when a new credential is registered.
 The event records the credential identifier, the credential type, and the corresponding schema reference.
 
-The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 249, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), and a credential type :ref:`CIS-4-CredentialType` (``credential_type``) ::
+The ``RegisterCredentialEvent`` event is serialized as: first a byte with the value of 249, followed by :ref:`CIS-4-CredentialHolderId` (``crednetial_id``), a reference to the credential schema :ref:`CIS-4-SchemaRef` (``schema_ref``), a credential type :ref:`CIS-4-CredentialType` (``credential_type``), and a reference to the credential metadata :ref:`CIS-4-MetadataUrl` (``metadata_url``) ::
 
-  CredentialEventData ::= (credential_id: CredentialHolderId) (schema_ref: SchemaRef) (credential_type: CredentialType)
+  CredentialEventData ::= (credential_id: CredentialHolderId) (schema_ref: SchemaRef) (credential_type: CredentialType) (metadata_url: MetadataUrl)
   RegisterCredentialEvent ::= (249: Byte) (data: CredentialEventData)
 
 ``RevokeCredentialEvent``
@@ -643,8 +643,7 @@ The ``RevocationKeyEvent`` event is serialized as: first a byte with the value o
 
   RevocationKeyAction ::= (0: Byte)    // Register
                         | (1: Byte)    // Remove
-  RevocationKeyEvent ::= (244: Byte) (action: RevocationKeyAction)
-
+  RevocationKeyEvent ::= (244: Byte) (public_key: PublicKeyEd25519) (action: RevocationKeyAction)
 
 .. _CIS-4-issuer-metadata-json:
 
