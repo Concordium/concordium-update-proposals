@@ -15,11 +15,11 @@ Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes
 Specification
 =============
 
-.. include:: ../../updates/P6.txt
+.. include:: ../../updates/P7.txt
    :literal:
 
 Commentary
 ==========
 
-.. include:: ../../commentary/P6-commentary.txt
+.. include:: ../../commentary/P7-commentary.txt
    :literal:
