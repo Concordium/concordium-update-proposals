@@ -1,0 +1,135 @@
+                           Protocol update
+
+Protocol Version: 8
+Builds on Protocol Version: 7
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 8 compared to
+protocol version 7.
+
+The protocol change supports suspending inactive validators automatically when they
+consistently fail to participate in the consensus protocol. Suspended validators
+can be reactivated manually by a transaction from the validator's account.
+
+                              Background
+
+Validators in the Concordium consensus protocol play two related roles. First, they
+propose blocks to add to the chain when they are chosen as the leader of a round.
+The round leader is determined by a lottery weighted by the validator's effective
+stake. If a validator fails to produce a block in its round, the round will
+eventually time-out, progressing to the next round with no block produced.
+Time-outs increase the confirmation time (that is, the time until a transaction is
+finalized on the chain) and decrease the throughput (that is, the maximum number
+of transactions the chain can incorporate in a given period of time).
+
+The second role of validators is to sign off on rounds by either attesting to a
+valid block in the round, or to the fact that the round timed-out. To progress to
+the next round, two thirds of the finalization committee (weighted by stake) must
+agree. If more than one third of the committee does not sign off on a round, then
+the block chain will simply stop producing blocks, unless and until two thirds of
+the committee eventually signs off on the round.
+
+Inactive validators are therefore detrimental to the operation of the consensus
+protocol. Protocol version 8 introduces a mechanism to automatically suspend
+validators that consistently fail to participate in the protocol. Suspended
+validators are excluded from the committee of validators, and will therefore
+not be selected to propose blocks nor be required to sign off on round.
+Consequently, suspended validators do not earn rewards for themselves or their
+pool.
+
+The account associated with a suspended validator can lift the suspension by
+sending a simple transaction. The validator will then be included in the
+committee the next time it is determined. (The committee is determined one
+epoch before each pay day.)
+
+The procedure for automatically suspending a validator is as follows:
+
+- For each current validator, continuously track the number of rounds in
+  which the validator was the round leader, but no block was produced.
+
+- At each payday, if the number of missed rounds for a validator exceeds a
+  threshold (determined by the "maximum missed rounds" chain parameter)
+  then mark the validator as "primed for suspension".
+
+- At each snapshot (that is, the start of an epoch prior to a payday), if
+  a validator is primed for suspension, then it is marked as suspended.
+  Suspended validators are not included in the calculation of the validator
+  committee.
+
+- Whenever a validator produces a block or signs a quorum or time-out
+  message, its missed rounds counter is reset and it is no longer marked as
+  primed for suspension.
+
+                               Changes
+
+The following behaviours are changed in protocol version 8.
+
+1. A new chain parameter, `maximum_missed_rounds`, is added. This is updated
+   by a level 2 update instruction (payload `ValidatorScoreParametersCPV3`)
+   that is authorized by the pool parameters keys.
+
+2. The validator record on accounts includes a new boolean flag indicating if
+   the validator is currently suspended.
+
+3. The validator pool reward details add a counter of the number of missed rounds
+   and whether the validator is primed for suspension.
+
+4. On executing each block:
+
+    (a) Validators that signed the quorum certificate for the parent block
+        have their missed-round counter reset to zero and have their primed-
+        for-suspension flag cleared.
+
+    (b) If the previous round timed out, for each missed round, the missed round
+        counter is incremented for the validator that was the leader of that
+        round (in the present epoch).
+    
+    (c) The validator that produced the block has its missed-round counter reset
+        to zero and its primed-for-suspension flag cleared.
+ 
+5. When executing a snapshot block (i.e. the first block of an epoch before a
+   pay day, in which the committee is determined for the upcoming pay day):
+
+    (a) Validators that are suspended or were primed for suspension at the
+        start of the block are not included in the calculation of the
+        committee for the next payday.
+    
+    (b) Validators that were primed for suspension at the start of the block
+        are marked as suspended at the end of the block.
+
+6. When executing a pay day block (i.e. the first block of a new pay day,
+   in which rewards are paid out):
+
+    (a) Validators with a missed-round counter that exceeds
+        `maximum_missed_rounds` are marked as primed for suspension.
+
+    (b) Validators for the new pay day that were not validators for the
+        previous pay day begin with their missed-round counter at 0 and
+        their primed-for-suspension flag cleared.
+
+7. The `ConfigureValidator` (also known as `ConfigureBaker`) transaction
+   is extended with an optional boolean indicating whether the validator is
+   suspended. If present, this updates the suspended flag on the account's
+   validator record. When first configuring a validator, the field is not
+   required and the validator will not be suspended by default.
+
+                               Effects
+
+1. The `ConfigureValidator` transaction will produce a `BakerSuspended` or
+   `BakerResumed` event if it sets or clears the suspended flag,
+   respectively.
+
+2. Whenever a validator is marked as primed for suspension, a
+   `ValidatorPrimedForSuspension` event is added to the special events for
+   the block.
+
+3. Whenever a validator is automatically marked as suspended, a
+   `ValidatorSuspended` event is added to the special events for the block.
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of this
+file. The instruction needs the following auxiliary data:
+
+- The initial value of the `maximum_missed_rounds` parameter.
