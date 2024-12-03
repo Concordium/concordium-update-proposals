@@ -6,9 +6,9 @@ Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes
    :stub-columns: 1
 
    * - Effective on Testnet
-     - planned Sep 30, 2024
+     - Sep 30, 2024
    * - Effective on Mainnet
-     - planned Oct 30, 2024
+     - Oct 30, 2024
    * - Specification hash
      - ``e68ea0b16bbadfa5e5da768ed9afe0880bd572e29337fe6fb584f293ed7699d6``
 
