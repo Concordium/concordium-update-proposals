@@ -1,0 +1,29 @@
+                      Protocol update commentary
+
+Protocol Version: 8
+Builds on Protocol Version: 7
+
+Protocol version 8 adds support for suspending inactive validators. Inactive
+validators degrade the performance and reliability of the blockchain, and
+it is therefore desirable to exclude them where possible.
+
+The protocol for suspending validators requires them to miss producing blocks
+multiple times in succession. This avoids overly penalising low-stakes
+validators that may seldom have chances to produce blocks and may not be
+included in the finalization committee. Such validators have few opportunities
+to redeem themselves in the event of accidentally missing a single round, so
+requiring multiple missed rounds should prevent unfairly suspending them.
+
+A suspended validator can be resumed manually by sending a transaction to do
+so. A suspended validator will always be suspended for at least one epoch, but
+otherwise incurs no specific penalty. Any accounts that delegate stake to a
+suspended validator will remain delegating to it (unless they update their
+delegation).
+
+Suspending inactive validators is intended to protect against validators that
+are inactive as a result of accident or carelessness; it does not protect
+against malicious validators.
+
+Note that it is impossible for more than one third of the stake to be
+automatically suspended simultaneously. This is because if more than one third
+of the stake was inactive, then the blockchain would halt.
