@@ -27,19 +27,18 @@ The second role of validators is to sign off on rounds by either attesting to a
 valid block in the round, or to the fact that the round timed-out. To progress to
 the next round, two thirds of the finalization committee (weighted by stake) must
 agree. If more than one third of the committee does not sign off on a round, then
-the block chain will simply stop producing blocks, unless and until two thirds of
-the committee eventually signs off on the round.
+the blockchain halts until two thirds of the committee eventually agrees.
 
 Inactive validators are therefore detrimental to the operation of the consensus
 protocol. Protocol version 8 introduces a mechanism to automatically suspend
 validators that consistently fail to participate in the protocol. Suspended
 validators are excluded from the committee of validators, and will therefore
-not be selected to propose blocks nor be required to sign off on round.
+not be selected to propose blocks nor be required to sign off on rounds.
 Consequently, suspended validators do not earn rewards for themselves or their
 pool.
 
 The account associated with a suspended validator can lift the suspension by
-sending a simple transaction. The validator will then be included in the
+sending a transaction to do so. The validator will then be included in the
 committee the next time it is determined. (The committee is determined one
 epoch before each pay day.)
 
@@ -106,7 +105,9 @@ The following behaviours are changed in protocol version 8.
 
     (b) Validators for the new pay day that were not validators for the
         previous pay day begin with their missed-round counter at 0 and
-        their primed-for-suspension flag cleared.
+        their primed-for-suspension flag cleared. Validators that
+        continue from the previous pay day maintain their missed-round
+        counter and primed-for-suspension flag.
 
 7. The `ConfigureValidator` (also known as `ConfigureBaker`) transaction
    is extended with an optional boolean indicating whether the validator is
