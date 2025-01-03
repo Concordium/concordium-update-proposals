@@ -44,8 +44,9 @@ epoch before each pay day.)
 
 The procedure for automatically suspending a validator is as follows:
 
-- For each current validator, continuously track the number of rounds in
-  which the validator was the round leader, but no block was produced.
+- For each current validator, continuously track the number of missed rounds
+  since the validator last successfully produced a block. A missed round is a
+  round in which the validator was the round leader, but no block was produced.
 
 - At each payday, if the number of missed rounds for a validator exceeds a
   threshold (determined by the "maximum missed rounds" chain parameter)
@@ -56,9 +57,9 @@ The procedure for automatically suspending a validator is as follows:
   Suspended validators are not included in the calculation of the validator
   committee.
 
-- Whenever a validator produces a block or signs a quorum or time-out
-  message, its missed rounds counter is reset and it is no longer marked as
-  primed for suspension.
+- Whenever a validator produces a block, or is a signatory of a quorum
+  certificate that is in a block, its missed rounds counter is reset and it is
+  no longer marked as primed for suspension.
 
                                Changes
 

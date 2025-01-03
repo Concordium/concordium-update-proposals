@@ -8,11 +8,33 @@ validators degrade the performance and reliability of the blockchain, and
 it is therefore desirable to exclude them where possible.
 
 The protocol for suspending validators requires them to miss producing blocks
-multiple times in succession. This avoids overly penalising low-stakes
-validators that may seldom have chances to produce blocks and may not be
-included in the finalization committee. Such validators have few opportunities
-to redeem themselves in the event of accidentally missing a single round, so
-requiring multiple missed rounds should prevent unfairly suspending them.
+multiple times in succession. A validator with a low stake has a
+correspondingly low chance of being the leader in any particular round, and so
+it may take many days of inactivity before it reaches the threshold for being
+suspended. On the other hand, a validator with a high stake may reach the
+threshold in minutes or hours of inactivity.
+
+In any case, if the validator reaches the threshold by a payday, it is
+considered "primed for suspension". This means that, if it remains inactive
+until the next snapshot epoch, it will be suspended from the validator
+committee, as determined at the snapshot epoch and effective from the
+following (payday) epoch. If the validator becomes active before the snapshot,
+as evidenced by producing a block or having its signature included in a quorum
+certificate in a block, then it will no longer be considered primed for
+suspension, and thus not be suspended. For a validator with a low stake that
+is not included in the finalization committee, even if the node is brought
+back on-line, it may not be round leader in that time, and so cannot prove
+that it is active and thus avoid suspension. For a validator with a high
+stake, especially if it is in the finalization committee, there will be ample
+opportunities to prove itself to be active, and thus avoid suspension.
+
+In summary, a validator with a high stake could be suspended with a little
+more than 23 hours of inactivity, while validators with lower stakes will
+require longer. High-stake validators effectively have a grace period of
+23 hours after hitting the threshold for missed blocks. Low-stake validators
+may not be able to take advantage of the grace period after hitting the
+threshold, but have to be inactive for a longer period of time to reach the
+threshold in the first place.
 
 A suspended validator can be resumed manually by sending a transaction to do
 so. A suspended validator will always be suspended for at least one epoch, but
