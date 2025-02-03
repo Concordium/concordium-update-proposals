@@ -6,9 +6,9 @@ Protocol Update 8 - Suspension of inactive validators
    :stub-columns: 1
 
    * - Effective on Testnet
-     - planned Q1, 2025
+     - planned Feb 24, 2025
    * - Effective on Mainnet
-     - planned Q1, 2025
+     - planned Mar 17, 2025
    * - Specification hash
      - ``f12e20b6936a6b1b736e95715e1654b92adb4226ef7601b4183895bee563f9da``
 
