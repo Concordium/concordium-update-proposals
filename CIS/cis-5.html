@@ -1,16 +1,16 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-6: Track-and-Trace Standard" href="cis-6.html" /><link rel="prev" title="CIS-4: Credential Registry Standard" href="cis-4.html" />
 
-    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>CIS-5: Smart Contract Wallet Standard - Interoperability Specifications</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=8806b39e" />
     
     
 
@@ -21,38 +21,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -61,15 +61,15 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -83,23 +83,64 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -112,6 +153,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -130,7 +173,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -154,7 +198,7 @@
   <span class="sidebar-brand-text">Interoperability Specifications</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -167,6 +211,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../updates/P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../updates/P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul class="current">
@@ -182,6 +227,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -189,11 +235,24 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/CIS/cis-5.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -203,14 +262,11 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="cis-5-smart-contract-wallet-standard">
-<span id="cis-5"></span><h1>CIS-5: Smart Contract Wallet Standard<a class="headerlink" href="#cis-5-smart-contract-wallet-standard" title="Permalink to this headline">¶</a></h1>
-<div class="table-wrapper"><table class="docutils align-default">
-<colgroup>
-<col style="width: 50%"/>
-<col style="width: 50%"/>
-</colgroup>
+<span id="cis-5"></span><h1>CIS-5: Smart Contract Wallet Standard<a class="headerlink" href="#cis-5-smart-contract-wallet-standard" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><th class="stub"><p>Created</p></th>
 <td><p>Mar 17, 2024</p></td>
@@ -232,9 +288,10 @@
 <td><p><a class="reference internal" href="cis-0.html#cis-0"><span class="std std-ref">CIS-0</span></a></p></td>
 </tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <section id="abstract">
-<h2>Abstract<a class="headerlink" href="#abstract" title="Permalink to this headline">¶</a></h2>
+<h2>Abstract<a class="headerlink" href="#abstract" title="Link to this heading">¶</a></h2>
 <p>A standard interface for defining a smart contract wallet that can hold and transfer CCDs and CIS-2 tokens.
 CCDs/CIS-2 tokens can be deposited into the smart contract wallet by
 specifying to which public key the deposit should be assigned.</p>
@@ -253,16 +310,16 @@ without the inconvenience of a native account creation on Concordium.
 Allowing for CIS-5 smart contract wallets to be supported as first-class citizens in Concordium wallets and tooling.</p>
 </section>
 <section id="specification">
-<h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
-<p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
+<h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
+<p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
 <section id="general-types-and-serialization">
-<h3>General types and serialization<a class="headerlink" href="#general-types-and-serialization" title="Permalink to this headline">¶</a></h3>
+<h3>General types and serialization<a class="headerlink" href="#general-types-and-serialization" title="Link to this heading">¶</a></h3>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Integers are encoded in little-endian unless stated otherwise.</p>
 </div>
 <section id="tokenid">
-<span id="cis-5-tokenid"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenID</span></code><a class="headerlink" href="#tokenid" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-tokenid"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenID</span></code><a class="headerlink" href="#tokenid" title="Link to this heading">¶</a></h4>
 <p>The token ID is from the CIS-2 standard <a class="reference internal" href="cis-2.html#cis-2-tokenid"><span class="std std-ref">TokenID</span></a>.
 A token ID is serialized as 1 byte for the size (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the identifier, followed by this number of bytes for the token id (<code class="docutils literal notranslate"><span class="pre">id</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenID ::= (n: Byte) (id: Byteⁿ)
@@ -270,7 +327,7 @@ A token ID is serialized as 1 byte for the size (<code class="docutils literal n
 </div>
 </section>
 <section id="tokenamount">
-<span id="cis-5-tokenamount"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenAmount</span></code><a class="headerlink" href="#tokenamount" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-tokenamount"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenAmount</span></code><a class="headerlink" href="#tokenamount" title="Link to this heading">¶</a></h4>
 <p>The token amount is from the CIS-2 standard <a class="reference internal" href="cis-2.html#cis-2-tokenamount"><span class="std std-ref">TokenAmount</span></a>.
 It is serialized using the <a class="reference external" href="https://en.wikipedia.org/wiki/LEB128">LEB128</a> variable-length unsigned integer encoding, with the additional constraint that the total number of bytes of the encoding MUST not exceed 37 bytes:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenAmount ::= (x: Byte)                   =&gt;  x                     if x &lt; 2^7
@@ -279,7 +336,7 @@ It is serialized using the <a class="reference external" href="https://en.wikipe
 </div>
 </section>
 <section id="cis5-externaltokenamount">
-<span id="cis-5-externaltokenamount"></span><h4><code class="docutils literal notranslate"><span class="pre">CIS5-ExternalTokenAmount</span></code><a class="headerlink" href="#cis5-externaltokenamount" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-externaltokenamount"></span><h4><code class="docutils literal notranslate"><span class="pre">CIS5-ExternalTokenAmount</span></code><a class="headerlink" href="#cis5-externaltokenamount" title="Link to this heading">¶</a></h4>
 <p>A CIS-2 token amount on a blockchain defined by the amount, token id and smart contract it represents.</p>
 <p>It is serialized as a <a class="reference internal" href="#cis-5-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">tokenAmount</span></code>), a <a class="reference internal" href="#cis-5-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">tokenId</span></code>), and a <a class="reference internal" href="#cis-5-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">cis2TokenContractAddress</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ExternalTokenAmount ::=  (tokenAmount: TokenAmount) (tokenId: TokenId) (cis2TokenContractAddress: ContractAddress)
@@ -287,7 +344,7 @@ It is serialized using the <a class="reference external" href="https://en.wikipe
 </div>
 </section>
 <section id="accountaddress">
-<span id="cis-5-accountaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code><a class="headerlink" href="#accountaddress" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-accountaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code><a class="headerlink" href="#accountaddress" title="Link to this heading">¶</a></h4>
 <p>An address of an account.</p>
 <p>It is serialized as 32 bytes:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AccountAddress ::= (address: Byte³²)
@@ -295,7 +352,7 @@ It is serialized using the <a class="reference external" href="https://en.wikipe
 </div>
 </section>
 <section id="contractaddress">
-<span id="cis-5-contractaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">ContractAddress</span></code><a class="headerlink" href="#contractaddress" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-contractaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">ContractAddress</span></code><a class="headerlink" href="#contractaddress" title="Link to this heading">¶</a></h4>
 <p>An address of a contract instance.
 It consists of an index and a subindex, both unsigned 64-bit integers.</p>
 <p>It is serialized as: First 8 bytes for the index (<code class="docutils literal notranslate"><span class="pre">index</span></code>) followed by 8 bytes for the subindex (<code class="docutils literal notranslate"><span class="pre">subindex</span></code>), both little-endian:</p>
@@ -304,7 +361,7 @@ It consists of an index and a subindex, both unsigned 64-bit integers.</p>
 </div>
 </section>
 <section id="address">
-<span id="cis-5-address"></span><h4><code class="docutils literal notranslate"><span class="pre">Address</span></code><a class="headerlink" href="#address" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-address"></span><h4><code class="docutils literal notranslate"><span class="pre">Address</span></code><a class="headerlink" href="#address" title="Link to this heading">¶</a></h4>
 <p>Is either an <a class="reference internal" href="#cis-5-accountaddress"><span class="std std-ref">AccountAddress</span></a> or a <a class="reference internal" href="#cis-5-contractaddress"><span class="std std-ref">ContractAddress</span></a>.</p>
 <p>It is serialized as: The first byte indicates whether it is an account address or a contract address.
 In case the first byte is 0 then an <a class="reference internal" href="#cis-5-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">address</span></code>) follows.
@@ -315,7 +372,7 @@ In case the first byte is 1 then a <a class="reference internal" href="#cis-5-co
 </div>
 </section>
 <section id="entrypointname">
-<span id="cis-5-entrypointname"></span><h4><code class="docutils literal notranslate"><span class="pre">EntrypointName</span></code><a class="headerlink" href="#entrypointname" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-entrypointname"></span><h4><code class="docutils literal notranslate"><span class="pre">EntrypointName</span></code><a class="headerlink" href="#entrypointname" title="Link to this heading">¶</a></h4>
 <p>A name for a smart contract function entrypoint.</p>
 <p>It is serialized as: First 2 bytes encode the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the entrypoint name in little-endian, followed by this many bytes for the entrypoint name (<code class="docutils literal notranslate"><span class="pre">entrypoint</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>EntrypointName ::= (n: Byte²) (entrypoint: Byteⁿ)
@@ -323,7 +380,7 @@ In case the first byte is 1 then a <a class="reference internal" href="#cis-5-co
 </div>
 </section>
 <section id="timestamp">
-<span id="cis-5-timestamp"></span><h4><code class="docutils literal notranslate"><span class="pre">Timestamp</span></code><a class="headerlink" href="#timestamp" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-timestamp"></span><h4><code class="docutils literal notranslate"><span class="pre">Timestamp</span></code><a class="headerlink" href="#timestamp" title="Link to this heading">¶</a></h4>
 <p>A timestamp given in milliseconds since Unix epoch.
 It consists of an unsigned 64-bit integer.</p>
 <p>It is serialized as 8 bytes in little-endian:</p>
@@ -332,7 +389,7 @@ It consists of an unsigned 64-bit integer.</p>
 </div>
 </section>
 <section id="nonce">
-<span id="cis-5-nonce"></span><h4><code class="docutils literal notranslate"><span class="pre">Nonce</span></code><a class="headerlink" href="#nonce" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-nonce"></span><h4><code class="docutils literal notranslate"><span class="pre">Nonce</span></code><a class="headerlink" href="#nonce" title="Link to this heading">¶</a></h4>
 <p>An unsigned 64-bit integer number that increases sequentially to protect against replay attacks.</p>
 <p>It is serialized as 8 bytes in little-endian:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Nonce ::= (nonce: Byte⁸)
@@ -340,7 +397,7 @@ It consists of an unsigned 64-bit integer.</p>
 </div>
 </section>
 <section id="ccdamount">
-<span id="cis-5-ccdamount"></span><h4><code class="docutils literal notranslate"><span class="pre">CCDAmount</span></code><a class="headerlink" href="#ccdamount" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-ccdamount"></span><h4><code class="docutils literal notranslate"><span class="pre">CCDAmount</span></code><a class="headerlink" href="#ccdamount" title="Link to this heading">¶</a></h4>
 <p>An unsigned 64-bit integer number.</p>
 <p>It is serialized as 8 bytes in little-endian:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CCDAmount ::= (ccdAmount: Byte⁸)
@@ -348,7 +405,7 @@ It consists of an unsigned 64-bit integer.</p>
 </div>
 </section>
 <section id="publickeyed25519">
-<span id="cis-5-publickeyed25519"></span><h4><code class="docutils literal notranslate"><span class="pre">PublicKeyEd25519</span></code><a class="headerlink" href="#publickeyed25519" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-publickeyed25519"></span><h4><code class="docutils literal notranslate"><span class="pre">PublicKeyEd25519</span></code><a class="headerlink" href="#publickeyed25519" title="Link to this heading">¶</a></h4>
 <p>An Ed25519 public key is represented as a 32-byte array.</p>
 <p>It is serialized as 32 bytes:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>PublicKeyEd25519 ::= (key: Byte³²)
@@ -356,7 +413,7 @@ It consists of an unsigned 64-bit integer.</p>
 </div>
 </section>
 <section id="signatureed25519">
-<span id="cis-5-signatureed25519"></span><h4><code class="docutils literal notranslate"><span class="pre">SignatureEd25519</span></code><a class="headerlink" href="#signatureed25519" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-signatureed25519"></span><h4><code class="docutils literal notranslate"><span class="pre">SignatureEd25519</span></code><a class="headerlink" href="#signatureed25519" title="Link to this heading">¶</a></h4>
 <p>Signature for an Ed25519 message.</p>
 <p>It is serialized as 64 bytes:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SignatureEd25519 ::= (signature: Byte⁶⁴)
@@ -364,7 +421,7 @@ It consists of an unsigned 64-bit integer.</p>
 </div>
 </section>
 <section id="chaincontext">
-<span id="cis-5-chaincontext"></span><h4><code class="docutils literal notranslate"><span class="pre">ChainContext</span></code><a class="headerlink" href="#chaincontext" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-chaincontext"></span><h4><code class="docutils literal notranslate"><span class="pre">ChainContext</span></code><a class="headerlink" href="#chaincontext" title="Link to this heading">¶</a></h4>
 <p>The chain context consists of the genesis hash and the contract address to prevent re-playing signatures across the testnet/mainnet chain and smart contracts.</p>
 <p>It is serialized as: First 32 bytes defining the genesisHash (its hex string representation converted into bytes),
 followed by 8 bytes for the index of the smart contract address and 8 bytes for the subindex of the smart contract address:</p>
@@ -374,11 +431,11 @@ followed by 8 bytes for the index of the smart contract address and 8 bytes for 
 </section>
 </section>
 <section id="logged-events">
-<h3>Logged events<a class="headerlink" href="#logged-events" title="Permalink to this headline">¶</a></h3>
+<h3>Logged events<a class="headerlink" href="#logged-events" title="Link to this heading">¶</a></h3>
 <p>The event defined by this specification is serialized using one byte to discriminate it from other events logged by the smart contract.
 Other events logged by the smart contract SHOULD NOT have a first byte colliding with the event defined by this specification.</p>
 <section id="nonceevent">
-<h4><code class="docutils literal notranslate"><span class="pre">NonceEvent</span></code><a class="headerlink" href="#nonceevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">NonceEvent</span></code><a class="headerlink" href="#nonceevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">NonceEvent</span></code> SHALL be logged every time a signature is successfully processed and considered valid by the contract.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">NonceEvent</span></code> is serialized as: First a byte with the value of 250, followed by the <a class="reference internal" href="#cis-5-nonce"><span class="std std-ref">Nonce</span></a> (<code class="docutils literal notranslate"><span class="pre">nonce</span></code>) that is used in the SigningData, and an <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">sponsoree</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>NonceEvent ::= (250: Byte) (nonce: Nonce) (sponsoree: PublicKeyEd25519)
@@ -386,7 +443,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </div>
 </section>
 <section id="depositccdevent">
-<h4><code class="docutils literal notranslate"><span class="pre">DepositCcdEvent</span></code><a class="headerlink" href="#depositccdevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">DepositCcdEvent</span></code><a class="headerlink" href="#depositccdevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">DepositCcdEvent</span></code> SHALL be logged every time an amount of CCD received by the contract is assigned to a public key.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">DepositCcdEvent</span></code> is serialized as: First a byte with the value of 249, followed by the <a class="reference internal" href="#cis-5-ccdamount"><span class="std std-ref">CCDAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">ccdAmount</span></code>), the <a class="reference internal" href="#cis-5-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>), and a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>DepositCcdEvent ::= (249: Byte) (ccdAmount: CCDAmount) (from: Address) (to: PublicKeyEd25519)
@@ -394,7 +451,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </div>
 </section>
 <section id="depositcis2tokensevent">
-<h4><code class="docutils literal notranslate"><span class="pre">DepositCis2TokensEvent</span></code><a class="headerlink" href="#depositcis2tokensevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">DepositCis2TokensEvent</span></code><a class="headerlink" href="#depositcis2tokensevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">DepositCis2TokensEvent</span></code> SHALL be logged every time a token amount received by the contract is assigned to a public key.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">DepositCis2TokensEvent</span></code> is serialized as: First a byte with the value of 248, followed by the
 <a class="reference internal" href="#cis-5-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">tokenAmount</span></code>), <a class="reference internal" href="#cis-5-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">TokenID</span></code>),
@@ -404,7 +461,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </div>
 </section>
 <section id="withdrawccdevent">
-<h4><code class="docutils literal notranslate"><span class="pre">WithdrawCcdEvent</span></code><a class="headerlink" href="#withdrawccdevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">WithdrawCcdEvent</span></code><a class="headerlink" href="#withdrawccdevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">WithdrawCcdEvent</span></code> SHALL be logged every time an amount of CCD held by a public key is withdrawn to an address.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">WithdrawCcdEvent</span></code> is serialized as: First a byte with the value of 247, followed by the <a class="reference internal" href="#cis-5-ccdamount"><span class="std std-ref">CCDAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">ccdAmount</span></code>), a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>), and the <a class="reference internal" href="#cis-5-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>WithdrawCcdEvent ::= (247: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: Address)
@@ -412,7 +469,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </div>
 </section>
 <section id="withdrawcis2tokensevent">
-<h4><code class="docutils literal notranslate"><span class="pre">WithdrawCis2TokensEvent</span></code><a class="headerlink" href="#withdrawcis2tokensevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">WithdrawCis2TokensEvent</span></code><a class="headerlink" href="#withdrawcis2tokensevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">WithdrawCis2TokensEvent</span></code> SHALL be logged every time a token amount held by a public key is withdrawn to an address.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">WithdrawCis2TokensEvent</span></code> is serialized as: First a byte with the value of 246, followed by the
 <a class="reference internal" href="#cis-5-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">tokenAmount</span></code>), <a class="reference internal" href="#cis-5-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">TokenID</span></code>),
@@ -422,7 +479,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </div>
 </section>
 <section id="transferccdevent">
-<h4><code class="docutils literal notranslate"><span class="pre">TransferCcdEvent</span></code><a class="headerlink" href="#transferccdevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">TransferCcdEvent</span></code><a class="headerlink" href="#transferccdevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">TransferCcdEvent</span></code> SHALL be logged every time an amount of CCD held by a public key is transferred to another public key within the contract.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">TransferCcdEvent</span></code> is serialized as: First a byte with the value of 245, followed by the <a class="reference internal" href="#cis-5-ccdamount"><span class="std std-ref">CCDAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">ccdAmount</span></code>), a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>), and the <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TransferCcdEvent ::= (245: Byte) (ccdAmount: CCDAmount) (from: PublicKeyEd25519) (to: PublicKeyEd25519)
@@ -430,7 +487,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </div>
 </section>
 <section id="transfercis2tokensevent">
-<h4><code class="docutils literal notranslate"><span class="pre">TransferCis2TokensEvent</span></code><a class="headerlink" href="#transfercis2tokensevent" title="Permalink to this headline">¶</a></h4>
+<h4><code class="docutils literal notranslate"><span class="pre">TransferCis2TokensEvent</span></code><a class="headerlink" href="#transfercis2tokensevent" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">TransferCis2TokensEvent</span></code> SHALL be logged every time a token amount held by a public key is transferred to another public key within the contract.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">TransferCis2TokensEvent</span></code> is serialized as: First a byte with the value of 244, followed by the
 <a class="reference internal" href="#cis-5-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">tokenAmount</span></code>), <a class="reference internal" href="#cis-5-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">TokenID</span></code>),
@@ -445,7 +502,7 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 </section>
 </section>
 <section id="contract-functions">
-<span id="cis-5-functions"></span><h3>Contract functions<a class="headerlink" href="#contract-functions" title="Permalink to this headline">¶</a></h3>
+<span id="cis-5-functions"></span><h3>Contract functions<a class="headerlink" href="#contract-functions" title="Link to this heading">¶</a></h3>
 <p>A smart contract implementing this standard MUST export the following functions:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#cis-5-functions-depositccd"><span class="std std-ref">depositCcd</span></a></p></li>
@@ -458,16 +515,16 @@ Other events logged by the smart contract SHOULD NOT have a first byte colliding
 <li><p><a class="reference internal" href="#cis-5-functions-cis2balanceof"><span class="std std-ref">cis2BalanceOf</span></a></p></li>
 </ul>
 <section id="depositccd">
-<span id="cis-5-functions-depositccd"></span><h4><code class="docutils literal notranslate"><span class="pre">depositCcd</span></code><a class="headerlink" href="#depositccd" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-depositccd"></span><h4><code class="docutils literal notranslate"><span class="pre">depositCcd</span></code><a class="headerlink" href="#depositccd" title="Link to this heading">¶</a></h4>
 <p>The function is payable and deposits/assigns the send CCDAmount to a public key (<code class="docutils literal notranslate"><span class="pre">PublicKeyEd25519</span></code>).</p>
 <section id="parameter">
-<h5>Parameter<a class="headerlink" href="#parameter" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#parameter" title="Link to this heading">¶</a></h5>
 <p>The parameter is a <code class="docutils literal notranslate"><span class="pre">PublicKeyEd25519</span></code>.</p>
 <p>See the serialization rules in <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a>.</p>
 </section>
 </section>
 <section id="depositcis2tokens">
-<span id="cis-5-functions-depositcis2tokens"></span><h4><code class="docutils literal notranslate"><span class="pre">depositCis2Tokens</span></code><a class="headerlink" href="#depositcis2tokens" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-depositcis2tokens"></span><h4><code class="docutils literal notranslate"><span class="pre">depositCis2Tokens</span></code><a class="headerlink" href="#depositcis2tokens" title="Link to this heading">¶</a></h4>
 <p>This function SHOULD be called through the receive hook mechanism (<a class="reference internal" href="cis-2.html#cis-2-receive-hook-function"><span class="std std-ref">Receive hook function</span></a>)
 of a CIS-2 token contract. The function deposits/assigns the send CIS-2 token amount to a public key (<code class="docutils literal notranslate"><span class="pre">PublicKeyEd25519</span></code>).</p>
 <div class="admonition note">
@@ -479,25 +536,25 @@ Only interact with a CIS-2 token contract or value its recorded token balance if
 contract logic or reasonable social reputation is given to the project/CIS-2 token contract.</p>
 </div>
 <section id="id1">
-<h5>Parameter<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h5>
 <p>The parameter is the <a class="reference internal" href="cis-2.html#cis-2-functions-transfer-receive-hook-parameter"><span class="std std-ref">Receive hook parameter</span></a> (<code class="docutils literal notranslate"><span class="pre">OnReceivingCis2Params</span></code>) and the
 <code class="docutils literal notranslate"><span class="pre">data</span></code> field of the <code class="docutils literal notranslate"><span class="pre">OnReceivingCis2Params</span></code> SHALL encode a <code class="docutils literal notranslate"><span class="pre">PublicKeyEd25519</span></code>.</p>
 <p>See the serialization rules in <a class="reference internal" href="cis-2.html#cis-2-functions-transfer-receive-hook-parameter"><span class="std std-ref">Receive hook parameter</span></a>
 and the serialization rules in <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a>.</p>
 </section>
 <section id="requirements">
-<h5>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The function SHOULD check that a contract is the caller since only a contract can implement a receive hook mechanism.</p></li>
 </ul>
 </section>
 </section>
 <section id="withdrawccd">
-<span id="cis-5-functions-withdrawccd"></span><h4><code class="docutils literal notranslate"><span class="pre">withdrawCcd</span></code><a class="headerlink" href="#withdrawccd" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-withdrawccd"></span><h4><code class="docutils literal notranslate"><span class="pre">withdrawCcd</span></code><a class="headerlink" href="#withdrawccd" title="Link to this heading">¶</a></h4>
 <p>The function executes a list of token withdrawals of CCDs to native accounts and/or smart contracts out of the smart contract wallet.
 When transferring CCD to a contract address, a CCD receive hook function MUST be triggered.</p>
 <section id="id2">
-<h5>Parameter<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h5>
 <p>The parameter is a list of withdrawals.</p>
 <p>It is serialized as: 2 bytes representing the number of withdrawals (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by the bytes for this number of <code class="docutils literal notranslate"><span class="pre">withdrawals</span></code>.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">WithdrawBatchCcdAmount</span></code> is serialized as: a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signer</span></code>), a <a class="reference internal" href="#cis-5-signatureed25519"><span class="std std-ref">SignatureEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signature</span></code>), and  a <code class="docutils literal notranslate"><span class="pre">WithdrawMessageCcdAmount</span></code> (<code class="docutils literal notranslate"><span class="pre">message</span></code>).</p>
@@ -514,7 +571,7 @@ WithdrawParameterCcdAmount ::= (n: Byte²) (withdrawals: WithdrawBatchCcdAmount�
 </div>
 </section>
 <section id="ccd-receive-hook-parameter">
-<span id="cis-5-functions-transfer-ccd-receive-hook-parameter"></span><h5>CCD Receive hook parameter<a class="headerlink" href="#ccd-receive-hook-parameter" title="Permalink to this headline">¶</a></h5>
+<span id="cis-5-functions-transfer-ccd-receive-hook-parameter"></span><h5>CCD Receive hook parameter<a class="headerlink" href="#ccd-receive-hook-parameter" title="Link to this heading">¶</a></h5>
 <p>The parameter for the CCD receive hook function contains some additional data bytes.</p>
 <p>It is serialized as several bytes:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CCDReceiveHookParameter ::= (data: Byteᵐ)
@@ -522,14 +579,14 @@ WithdrawParameterCcdAmount ::= (n: Byte²) (withdrawals: WithdrawBatchCcdAmount�
 </div>
 </section>
 <section id="generating-a-valid-signature">
-<h5>Generating a valid signature<a class="headerlink" href="#generating-a-valid-signature" title="Permalink to this headline">¶</a></h5>
+<h5>Generating a valid signature<a class="headerlink" href="#generating-a-valid-signature" title="Link to this heading">¶</a></h5>
 <p>To generate a valid signature for the entry point, the following bytes have to be signed:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>WithdrawCCDSigningData ::= (chainContext: ChainContext) (param: WithdrawParameterCcdAmount)
 </pre></div>
 </div>
 </section>
 <section id="id3">
-<h5>Requirements<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The list of withdrawals MUST be executed in order.</p></li>
 <li><p>The contract function MUST reject if any of the withdrawals fail to be executed.</p></li>
@@ -551,11 +608,11 @@ Checking the existence of an account address/ contract address would ideally be 
 </section>
 </section>
 <section id="withdrawcis2tokens">
-<span id="cis-5-functions-withdrawcis2tokens"></span><h4><code class="docutils literal notranslate"><span class="pre">withdrawCis2Tokens</span></code><a class="headerlink" href="#withdrawcis2tokens" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-withdrawcis2tokens"></span><h4><code class="docutils literal notranslate"><span class="pre">withdrawCis2Tokens</span></code><a class="headerlink" href="#withdrawcis2tokens" title="Link to this heading">¶</a></h4>
 <p>The function executes a list of token withdrawals to native accounts and/or smart contracts out of the smart contract wallet.
 This function MUST call the <code class="docutils literal notranslate"><span class="pre">transfer</span></code> function on the CIS-2 token contract for every withdrawal.</p>
 <section id="id4">
-<h5>Parameter<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h5>
 <p>The parameter is a list of withdrawals.</p>
 <p>It is serialized as: 2 bytes representing the number of withdrawals (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by the bytes for this number of <code class="docutils literal notranslate"><span class="pre">withdrawals</span></code>.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">WithdrawBatchTokenAmount</span></code> is serialized as: a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signer</span></code>), a <a class="reference internal" href="#cis-5-signatureed25519"><span class="std std-ref">SignatureEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signature</span></code>), and  a <code class="docutils literal notranslate"><span class="pre">WithdrawMessageTokenAmount</span></code> (<code class="docutils literal notranslate"><span class="pre">message</span></code>).</p>
@@ -572,14 +629,14 @@ WithdrawParameterTokenAmount ::= (n: Byte²) (withdrawals: WithdrawBatchTokenAmo
 </div>
 </section>
 <section id="id5">
-<h5>Generating a valid signature<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h5>
+<h5>Generating a valid signature<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h5>
 <p>To generate a valid signature for the entry point, the following bytes have to be signed:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>WithdrawTokensSigningData ::= (chainContext: ChainContext) (param: WithdrawParameterTokenAmount)
 </pre></div>
 </div>
 </section>
 <section id="id6">
-<h5>Requirements<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The list of withdrawals MUST be executed in order.</p></li>
 <li><p>The contract function MUST reject if any of the withdrawals fail to be executed.</p></li>
@@ -595,10 +652,10 @@ WithdrawParameterTokenAmount ::= (n: Byte²) (withdrawals: WithdrawBatchTokenAmo
 </section>
 </section>
 <section id="transferccd">
-<span id="cis-5-functions-transferccd"></span><h4><code class="docutils literal notranslate"><span class="pre">transferCcd</span></code><a class="headerlink" href="#transferccd" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-transferccd"></span><h4><code class="docutils literal notranslate"><span class="pre">transferCcd</span></code><a class="headerlink" href="#transferccd" title="Link to this heading">¶</a></h4>
 <p>The function executes a list of CCD transfers to public keys within the smart contract wallet.</p>
 <section id="id7">
-<h5>Parameter<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h5>
 <p>The parameter is a list of transfers.</p>
 <p>It is serialized as: 2 bytes representing the number of transfers (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by the bytes for this number of <code class="docutils literal notranslate"><span class="pre">transfers</span></code>.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">TransferBatchCcdAmount</span></code> is serialized as: a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signer</span></code>), a <a class="reference internal" href="#cis-5-signatureed25519"><span class="std std-ref">SignatureEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signature</span></code>), and  a <code class="docutils literal notranslate"><span class="pre">TransferMessageCcdAmount</span></code> (<code class="docutils literal notranslate"><span class="pre">message</span></code>).</p>
@@ -615,14 +672,14 @@ TransferParameterCcdAmount ::= (n: Byte²) (transfers: TransferBatchCcdAmount)
 </div>
 </section>
 <section id="id8">
-<h5>Generating a valid signature<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h5>
+<h5>Generating a valid signature<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h5>
 <p>To generate a valid signature for the entry point, the following bytes have to be signed:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TransferCCDSigningData ::= (chainContext: ChainContext) (param: TransferParameterCcdAmount)
 </pre></div>
 </div>
 </section>
 <section id="id9">
-<h5>Requirements<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The function MUST reject if the signature verification fails for any transfer.</p></li>
 <li><p>The function MUST fail if the CCD balance of the <code class="docutils literal notranslate"><span class="pre">signer</span></code> is insufficient to do the transfer for any transfer.</p></li>
@@ -634,10 +691,10 @@ TransferParameterCcdAmount ::= (n: Byte²) (transfers: TransferBatchCcdAmount)
 </section>
 </section>
 <section id="transfercis2tokens">
-<span id="cis-5-functions-transfercis2tokens"></span><h4><code class="docutils literal notranslate"><span class="pre">transferCis2Tokens</span></code><a class="headerlink" href="#transfercis2tokens" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-transfercis2tokens"></span><h4><code class="docutils literal notranslate"><span class="pre">transferCis2Tokens</span></code><a class="headerlink" href="#transfercis2tokens" title="Link to this heading">¶</a></h4>
 <p>The function executes a list of token transfers to public keys within the smart contract wallet.</p>
 <section id="id10">
-<h5>Parameter<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h5>
 <p>The parameter is a list of transfers.</p>
 <p>It is serialized as: 2 bytes representing the number of transfers (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by the bytes for this number of <code class="docutils literal notranslate"><span class="pre">transfers</span></code>.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">TransferBatchTokenAmount</span></code> is serialized as: a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signer</span></code>), a <a class="reference internal" href="#cis-5-signatureed25519"><span class="std std-ref">SignatureEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">signature</span></code>), and  a <code class="docutils literal notranslate"><span class="pre">TransferMessageTokenAmount</span></code> (<code class="docutils literal notranslate"><span class="pre">message</span></code>).</p>
@@ -654,14 +711,14 @@ TransferParameterTokenAmount ::= (n: Byte²) (transfers: TransferBatchTokenAmoun
 </div>
 </section>
 <section id="id11">
-<h5>Generating a valid signature<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h5>
+<h5>Generating a valid signature<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h5>
 <p>To generate a valid signature for the entry point, the following bytes have to be signed:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TransferTokensSigningData ::= (chainContext: ChainContext) (param: TransferParameterTokenAmount)
 </pre></div>
 </div>
 </section>
 <section id="id12">
-<h5>Requirements<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The function MUST reject if the signature verification fails for any of the transfers.</p></li>
 <li><p>The function MUST fail if the token balance of the <code class="docutils literal notranslate"><span class="pre">signer</span></code> is insufficient to do the transfer for any transfer.</p></li>
@@ -673,10 +730,10 @@ TransferParameterTokenAmount ::= (n: Byte²) (transfers: TransferBatchTokenAmoun
 </section>
 </section>
 <section id="ccdbalanceof">
-<span id="cis-5-functions-ccdbalanceof"></span><h4><code class="docutils literal notranslate"><span class="pre">ccdBalanceOf</span></code><a class="headerlink" href="#ccdbalanceof" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-ccdbalanceof"></span><h4><code class="docutils literal notranslate"><span class="pre">ccdBalanceOf</span></code><a class="headerlink" href="#ccdbalanceof" title="Link to this heading">¶</a></h4>
 <p>The function queries the CCD balances of a list of public keys.</p>
 <section id="id13">
-<h5>Parameter<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of a list of public keys.</p>
 <p>It is serialized as: 2 bytes for the number of public keys (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">publicKeys</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CCDBalanceOfParameter ::= (n: Byte²) (publicKeys: PublicKeyEd25519ⁿ)
@@ -684,7 +741,7 @@ TransferParameterTokenAmount ::= (n: Byte²) (transfers: TransferBatchTokenAmoun
 </div>
 </section>
 <section id="response">
-<h5>Response<a class="headerlink" href="#response" title="Permalink to this headline">¶</a></h5>
+<h5>Response<a class="headerlink" href="#response" title="Link to this heading">¶</a></h5>
 <p>The function output response is a list of CCD amounts.</p>
 <p>It is serialized as: 2 bytes for the number of CCD amounts (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of <a class="reference internal" href="#cis-5-ccdamount"><span class="std std-ref">CCDAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">results</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CCDBalanceOfResponse ::= (n: Byte²) (results: CCDAmountⁿ)
@@ -692,7 +749,7 @@ TransferParameterTokenAmount ::= (n: Byte²) (transfers: TransferBatchTokenAmoun
 </div>
 </section>
 <section id="id14">
-<h5>Requirements<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The balance of a public key not owning any CCD  SHOULD be treated as having a balance of zero.</p></li>
 <li><p>The number of results in the response MUST correspond to the number of the public keys in the parameter.</p></li>
@@ -702,10 +759,10 @@ TransferParameterTokenAmount ::= (n: Byte²) (transfers: TransferBatchTokenAmoun
 </section>
 </section>
 <section id="cis2balanceof">
-<span id="cis-5-functions-cis2balanceof"></span><h4><code class="docutils literal notranslate"><span class="pre">cis2BalanceOf</span></code><a class="headerlink" href="#cis2balanceof" title="Permalink to this headline">¶</a></h4>
+<span id="cis-5-functions-cis2balanceof"></span><h4><code class="docutils literal notranslate"><span class="pre">cis2BalanceOf</span></code><a class="headerlink" href="#cis2balanceof" title="Link to this heading">¶</a></h4>
 <p>The function queries the token balances of a list of public keys for given token IDs, and CIS-2 token contract addresses.</p>
 <section id="id15">
-<h5>Parameter<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h5>
+<h5>Parameter<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of a list of token ID, CIS-2 token contract address, and public key triplets.</p>
 <p>It is serialized as: 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of queries (<code class="docutils literal notranslate"><span class="pre">queries</span></code>).
 A query is serialized as a <a class="reference internal" href="#cis-5-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">tokenID</span></code>), a <a class="reference internal" href="#cis-5-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">cis2TokenContractAddress</span></code>), and a <a class="reference internal" href="#cis-5-publickeyed25519"><span class="std std-ref">PublicKeyEd25519</span></a> (<code class="docutils literal notranslate"><span class="pre">publicKey</span></code>):</p>
@@ -716,7 +773,7 @@ Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQuery�
 </div>
 </section>
 <section id="id16">
-<h5>Response<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h5>
+<h5>Response<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h5>
 <p>The function output response is a list of token amounts.</p>
 <p>It is serialized as: 2 bytes for the number of token amounts (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of <a class="reference internal" href="#cis-5-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">results</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Cis2TokensBalanceOfResponse ::= (n: Byte²) (results: TokenAmountⁿ)
@@ -724,7 +781,7 @@ Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQuery�
 </div>
 </section>
 <section id="id17">
-<h5>Requirements<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h5>
+<h5>Requirements<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The balance of a public key not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
 <li><p>The number of results in the response MUST correspond to the number of the queries in the parameter.</p></li>
@@ -749,10 +806,10 @@ Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQuery�
                 </div>
                 <div class="title">CIS-6: Track-and-Trace Standard</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="cis-4.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -763,17 +820,19 @@ Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQuery�
               </div>
             </a>
         </div>
-
-        <div class="related-information">
-              Copyright &#169; 2021, Concordium |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../_sources/CIS/cis-5.rst.txt"
-               rel="nofollow">
-              Show Source
-            </a>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Concordium
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -784,7 +843,7 @@ Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQuery�
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
-            Contents
+            On this page
           </span>
         </div>
         <div class="toc-tree-container">
@@ -881,10 +940,9 @@ Cis2TokensBalanceOfParameter ::= (n: Byte²) (queries: Cis2TokensBalanceOfQuery�
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/scripts/main.js"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
 </html>

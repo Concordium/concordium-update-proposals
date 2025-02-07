@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing" href="P7.html" /><link rel="prev" title="Protocol Update 5 - Smart contract upgradability, performance improvements" href="P5.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-0: Standard Detection" href="../CIS/cis-0.html" /><link rel="prev" title="Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing" href="P7.html" />
 
     <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution - Interoperability Specifications</title>
+        <title>Protocol Update 8 - Suspension of inactive validators - Interoperability Specifications</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -209,9 +209,9 @@
 <li class="toctree-l1"><a class="reference internal" href="P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
 <li class="toctree-l1"><a class="reference internal" href="P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
 <li class="toctree-l1"><a class="reference internal" href="P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
 <li class="toctree-l1"><a class="reference internal" href="P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
-<li class="toctree-l1"><a class="reference internal" href="P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Update 8 - Suspension of inactive validators</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul>
@@ -243,7 +243,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/updates/P6.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/updates/P8.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -263,19 +263,19 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="protocol-update-6-concordium-bft-consensus-protocol-changes-in-wasm-validation-and-execution">
-<h1>Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution<a class="headerlink" href="#protocol-update-6-concordium-bft-consensus-protocol-changes-in-wasm-validation-and-execution" title="Link to this heading">¶</a></h1>
+          <section id="protocol-update-8-suspension-of-inactive-validators">
+<h1>Protocol Update 8 - Suspension of inactive validators<a class="headerlink" href="#protocol-update-8-suspension-of-inactive-validators" title="Link to this heading">¶</a></h1>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><th class="stub"><p>Effective on Testnet</p></th>
-<td><p>Aug 21, 2023</p></td>
+<td><p>planned Feb 24, 2025</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Effective on Mainnet</p></th>
-<td><p>Sep 25, 2023</p></td>
+<td><p>planned Mar 17, 2025</p></td>
 </tr>
 <tr class="row-odd"><th class="stub"><p>Specification hash</p></th>
-<td><p><code class="docutils literal notranslate"><span class="pre">ede9cf0b2185e9e8657f5c3fd8b6f30cef2f1ef4d9692aa4f6ef6a9fb4a762cd</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">f12e20b6936a6b1b736e95715e1654b92adb4226ef7601b4183895bee563f9da</span></code></p></td>
 </tr>
 </tbody>
 </table>
@@ -284,169 +284,141 @@
 <h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                           Protocol update
 
-Protocol Version: 6
-Builds on Protocol Version: 5
+Protocol Version: 8
+Builds on Protocol Version: 7
 
                                Abstract
 
-This document describes the changes in Concordium protocol version 6
-compared to protocol version 5.
+This document describes the changes in Concordium protocol version 8 compared to
+protocol version 7.
 
-The protocol change has the following main effects
-- it changes the consensus protocol from an existing two-layer design
-  to a new ConcordiumBFT consensus
-- fixes the behavior of state rollbacks in specific scenarios with
-  version 1 contracts.
-- extends the list of supported Wasm instructions for version 1
-  contracts, and fixes an incompatibility with the Wasm standard
-- adds better support for sponsored transactions
+The protocol change supports suspending inactive validators automatically when they
+consistently fail to participate in the consensus protocol. Suspended validators
+can be reactivated manually by a transaction from the validator&#39;s account.
 
                               Background
 
-Protocol version 6 changes protocol version 5 in two main areas.
-The first area is a relatively modest extension of smart contract
-functionality, with the main effect being better support for
-sponsored transactions.
-The major update in protocol 6 however, is the new consensus protocol,
-ConcordiumBFT.
+Validators in the Concordium consensus protocol play two related roles. First, they
+propose blocks to add to the chain when they are chosen as the leader of a round.
+The round leader is determined by a lottery weighted by the validator&#39;s effective
+stake. If a validator fails to produce a block in its round, the round will
+eventually time-out, progressing to the next round with no block produced.
+Time-outs increase the confirmation time (that is, the time until a transaction is
+finalized on the chain) and decrease the throughput (that is, the maximum number
+of transactions the chain can incorporate in a given period of time).
 
-Before this protocol update, the Concordium chain uses a two-layer
-consensus protocol following [1]. The first layer is a Nakomoto-style
-consensus where &quot;bakers&quot; propose blocks extending the best chain. The
-bakers are chosen by a distributed lottery, with their chance of winning
-weighted by their effective stake. The lottery takes place at regular
-time intervals (&quot;slots&quot;) and there can be zero or more winners in any
-given slot. At this layer, branching and roll-backs can occur.
+The second role of validators is to sign off on rounds by either attesting to a
+valid block in the round, or to the fact that the round timed-out. To progress to
+the next round, two thirds of the finalization committee (weighted by stake) must
+agree. If more than one third of the committee does not sign off on a round, then
+the blockchain halts until two thirds of the committee eventually agrees.
 
-The second layer is a Byzantine fault tolerant (BFT) protocol that
-recurrently declares blocks as finalized. Finalized blocks cannot be
-rolled back. The participants in the finalization protocol (the
-&quot;finalization committee&quot;, or just &quot;finalizers&quot;) are a subset of the
-bakers with the highest effective stakes.
+Inactive validators are therefore detrimental to the operation of the consensus
+protocol. Protocol version 8 introduces a mechanism to automatically suspend
+validators that consistently fail to participate in the protocol. Suspended
+validators are excluded from the committee of validators, and will therefore
+not be selected to propose blocks nor be required to sign off on rounds.
+Consequently, suspended validators do not earn rewards for themselves or their
+pool.
 
-In protocol 6, the consensus protocol is replaced with ConcordiumBFT, a
-new protocol based on Jolteon [2]. In ConcordiumBFT, bakers are still
-selected by lottery to bake blocks. However, the lottery is no longer
-attached to time slots, but instead takes place in &quot;rounds&quot;. A round
-does not correspond to a particular time, but is advanced once the
-finalization committee determines which block (if any) is to be
-certified in the round.
+The account associated with a suspended validator can lift the suspension by
+sending a transaction to do so. The validator will then be included in the
+committee the next time it is determined. (The committee is determined one
+epoch before each pay day.)
 
-When the winning baker for a round produces a block, it is distributed.
-The finalizers sign the block, sending out their signatures. Once
-signatures from 2/3 of the committee (weighted by stake) for the same
-block are collected, these form a quorum certificate (QC). This quorum
-certificate allows the bakers to advance to the next round. The baker
-for the next round includes the QC in its block.
+The procedure for automatically suspending a validator is as follows:
 
-If a QC cannot be produced in a certain amount of time (for instance,
-because the baker did not produce a block), then the finalizers instead
-sign timeout messages. When 2/3 of the committee agree that the round
-has timed out, these messages are aggregated into a timeout certificate
-(TC). The timeout certificate allows the round to advance, and a baker can
-produce a block for the next round by including a TC for the previous
-round, and a QC for an earlier round.
+- For each current validator, continuously track the number of missed rounds
+  since the validator last successfully produced a block. A missed round is a
+  round in which the validator was the round leader, but no block was produced.
 
-When blocks on a common chain in two consecutive rounds have quorum
-certificates, the block in the first of these rounds (together with its
-ancestors) is considered finalized. At this point, the protocol ensures
-that it cannot be rolled back. The two consecutive blocks must also be
-within the same epoch.
+- At each payday, if the number of missed rounds for a validator exceeds a
+  threshold (determined by the &quot;maximum missed rounds&quot; chain parameter)
+  then mark the validator as &quot;primed for suspension&quot;.
 
-Leaders are determined per epoch, and are known to everybody for the epoch.
-The notion of a payday, as it exists in protocols 4 and 5, remains largely
-unchanged, although payday transitions are slightly changed due to the
-technicalities of how epoch transitions occur in ConcordiumBFT.
-However in normal conditions there should be little observable effect on
-users of the chain.
+- At each snapshot (that is, the start of an epoch prior to a payday), if
+  a validator is primed for suspension, then it is marked as suspended.
+  Suspended validators are not included in the calculation of the validator
+  committee.
+
+- Whenever a validator produces a block, or is a signatory of a quorum
+  certificate that is in a block, its missed rounds counter is reset and it is
+  no longer marked as primed for suspension.
 
                                Changes
 
-The following behaviors are changed in protocol version 6.
+The following behaviours are changed in protocol version 8.
 
-1. ConcordiumBFT takes effect. In particular this changes the format of
-   blocks, and the messages exchanged by the nodes.
-2. The election difficulty chain parameter is removed.
-3. There are new chain parameters
-   - the minimum timeout, and factors for increasing and decreasing round
-     timeout duration on successive round timeouts and finalizations,
-     respectively
-   - minimum block time, controlling the minimum time between blocks in two
-     successive rounds
-   - minimum number of finalizers and maximum number of finalizers. These,
-     together with the existing finalizer relative stake threshold
-     parameter, revise the condition on being a finalizer. The relative
-     stake threshold is not interpreted relative to the total effective
-     stake of bakers. The minimum number of finalizers must be reached
-     before the relative stake threshold applies. Analogously, the number
-     of finalizers are capped.
-4. Block energy limit becomes an updatable parameter.
-5. Smart contract validation has the following changes
-   - Version 1 smart contracts can now use sign extension Wasm
-     instructions (i32.extend8_s, i32.extend16_s, i64.extend8_s,
-     i64.extend16_s, i64.extend32_s), see
-     https://webassembly.github.io/spec/core/exec/instructions.html
-     for their meaning.
-   - In version 1 smart contracts, the contract schema, and other custom
-     sections, no longer count towards the cost when executing contracts
-     for modules that were deployed in protocol 6.
-   - The behavior of rollbacks in certain cases of reentrant contract
-     calls is corrected to conform to the intended semantics. In protocols
-     4 and 5 state changes might not be rolled back in case of failure of
-     nested, reentrant contract calls.
-6. In V1 smart contracts, the `invoke` operation allows for two additional
-   operations, querying account keys, and checking a signature with respect
-   to the account keys.
+1. A new chain parameter, `maximum_missed_rounds`, is added. This is updated
+   by a level 2 update instruction (payload `ValidatorScoreParametersCPV3`)
+   that is authorized by the pool parameters keys.
+
+2. The validator record on accounts includes a new boolean flag indicating if
+   the validator is currently suspended.
+
+3. The validator pool reward details add a counter of the number of missed rounds
+   and whether the validator is primed for suspension.
+
+4. On executing each block:
+
+    (a) Validators that signed the quorum certificate for the parent block
+        have their missed-round counter reset to zero and have their primed-
+        for-suspension flag cleared.
+
+    (b) If the previous round timed out, for each missed round, the missed round
+        counter is incremented for the validator that was the leader of that
+        round (in the present epoch).
+    
+    (c) The validator that produced the block has its missed-round counter reset
+        to zero and its primed-for-suspension flag cleared.
+ 
+5. When executing a snapshot block (i.e. the first block of an epoch before a
+   pay day, in which the committee is determined for the upcoming pay day):
+
+    (a) Validators that are suspended or were primed for suspension at the
+        start of the block are not included in the calculation of the
+        committee for the next payday.
+    
+    (b) Validators that were primed for suspension at the start of the block
+        are marked as suspended at the end of the block.
+
+6. When executing a pay day block (i.e. the first block of a new pay day,
+   in which rewards are paid out):
+
+    (a) Validators with a missed-round counter that exceeds
+        `maximum_missed_rounds` are marked as primed for suspension.
+
+    (b) Validators for the new pay day that were not validators for the
+        previous pay day begin with their missed-round counter at 0 and
+        their primed-for-suspension flag cleared. Validators that
+        continue from the previous pay day maintain their missed-round
+        counter and primed-for-suspension flag.
+
+7. The `ConfigureValidator` (also known as `ConfigureBaker`) transaction
+   is extended with an optional boolean indicating whether the validator is
+   suspended. If present, this updates the suspended flag on the account&#39;s
+   validator record. When first configuring a validator, the field is not
+   required and the validator will not be suspended by default.
 
                                Effects
 
-1. The consensus change has no direct effects on the state of accounts and
-   contracts. The overall immediate effect of the new consensus will be, in
-   normal network conditions, that transaction confirmation times will have
-   much less variance.
+1. The `ConfigureValidator` transaction will produce a `BakerSuspended` or
+   `BakerResumed` event if it sets or clears the suspended flag,
+   respectively.
 
-2. The change of the condition on a baker being a finalizer can result in some
-   bakers that were not a finalizer before the protocol update becoming a
-   finalizer after, or vice-versa, depending on the update parameters and the
-   state of the chain at the time of the update.
+2. Whenever a validator is marked as primed for suspension, a
+   `ValidatorPrimedForSuspension` event is added to the special events for
+   the block.
 
-3. Behavior of existing V1 contract instances may be affected in the
-   following scenarios
-   - if the contract attempted to perform an operation with tags (operation
-     identifiers) 5 or 6 the execution would have triggered a runtime error. In
-     protocol 6 the response can either be a runtime error, or a response code
-     indicating the result of the operation, depending on the parameters
-     supplied to the operation.
-   - if the contract interaction triggered the incorrect rollback behavior
-     then the semantics of those contract executions will change.
-   - the cost of some smart contract executions may change slightly as a
-     result of fixes to address the incorrect behavior of rollbacks.
+3. Whenever a validator is automatically marked as suspended, a
+   `ValidatorSuspended` event is added to the special events for the block.
 
                      Protocol update instruction
 
-The protocol update instruction is identified by the SHA256 hash of
-this file. The instruction needs the following auxiliary data
+The protocol update instruction is identified by the SHA256 hash of this
+file. The instruction needs the following auxiliary data:
 
-- minimum round timeout in milliseconds
-- timeout increase factor
-- timeout decrease factor
-- minimum time between blocks in milliseconds
-– block energy limit
-- finalization relative stake threshold, minimum and maximum number of finalizers
-
-                     References
-
-  [1] Thomas Dinsdale-Young, Bernardo Magri, Christian Matt, Jesper Buus
-      Nielsen, and Daniel Tschudi: &quot;Afgjort: A Partially Synchronous
-      Finality Layer for Blockchains&quot;. Cryptology ePrint Archive, Paper
-      2019/504. DOI 10.1007/978-3-030-57990-6_2
-      &lt;https://eprint.iacr.org/2019/504&gt;
-
-  [2] Rati Gelashvili, Lefteris Kokoris-Kogias, Alberto Sonnino,
-      Alexander Spiegelman, and Zhuolun Xiang: &quot;Jolteon and Ditto:
-      Network-Adaptive Efficient Consensus with Asynchronous Fallback&quot;.
-      arXiv:2106.10362. DOI 10.48550/arXiv.2106.10362
-      &lt;https://arxiv.org/abs/2106.10362&gt;
+- The initial value of the `maximum_missed_rounds` parameter.
 </pre></div>
 </div>
 </section>
@@ -454,55 +426,55 @@ this file. The instruction needs the following auxiliary data
 <h2>Commentary<a class="headerlink" href="#commentary" title="Link to this heading">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                      Protocol update commentary
 
-Protocol Version: 6
-Builds on Protocol Version: 5
+Protocol Version: 8
+Builds on Protocol Version: 7
 
-Protocol version 6 changes protocol version 5 in two main areas. The
-first area is a relatively modest extension of smart contract
-functionality, with the main effect being better support for sponsored
-transactions. The major update in protocol 6 however, is the new
-consensus protocol, Concordium BFT.
+Protocol version 8 adds support for suspending inactive validators. Inactive
+validators degrade the performance and reliability of the blockchain, and
+it is therefore desirable to exclude them where possible.
 
-Up to and including protocol 5, Concordium used a two-layer consensus
-design, with a proof of stake Nakamoto style consensus at the base
-layer with finalization on top which marked certain blocks as finalized.
-The idea being that the base Nakamoto layer works as long as more than
-1/2 of stake adheres to the protocol over long periods of time, but
-the finalization layer ensures speedy, explicit, finalization, in good
-conditions when there is more than 2/3 liveness and adherence to protocol.
+The protocol for suspending validators requires them to miss producing blocks
+multiple times in succession. A validator with a low stake has a
+correspondingly low chance of being the leader in any particular round, and so
+it may take many days of inactivity before it reaches the threshold for being
+suspended. On the other hand, a validator with a high stake may reach the
+threshold in minutes or hours of inactivity.
 
-While this two-layer design did serve Concordium well during the initial
-phase, and is in theory robust, the two layer design is rather complex,
-and makes it challenging to optimize the consensus for both throughput and
-confirmation latency while maintaining security.
+In any case, if the validator reaches the threshold by a payday, it is
+considered &quot;primed for suspension&quot;. This means that, if it remains inactive
+until the next snapshot epoch, it will be suspended from the validator
+committee, as determined at the snapshot epoch and effective from the
+following (payday) epoch. If the validator becomes active before the snapshot,
+as evidenced by producing a block or having its signature included in a quorum
+certificate in a block, then it will no longer be considered primed for
+suspension, and thus not be suspended. For a validator with a low stake that
+is not included in the finalization committee, even if the node is brought
+back on-line, it may not be round leader in that time, and so cannot prove
+that it is active and thus avoid suspension. For a validator with a high
+stake, especially if it is in the finalization committee, there will be ample
+opportunities to prove itself to be active, and thus avoid suspension.
 
-In protocol 6 a new consensus protocol Concordium Byzantine Fault Tolerance
-(BFT) will be used instead. The protocol offers high transaction throughput
-and lower confirmation time because a block can be produced as soon as the
-previous block has been certified. The overall architecture remains the same.
-There are still bakers and a subset of them, the finalizers. In contrast to
-how time was split into slots in existing consensus, Concordium BFT no
-longer has a notion of slots. Instead it advances by rounds. In each round,
-a predetermined leader among the bakers should produce a block. The members
-of the finalization committee then sign this block, and their collective
-signatures are aggregated to form a quorum certificate (QC). This quorum
-certificate is then included in the next block. If the leader fails to
-produce a block in the round, or not enough signatures were gathered for a
-QC, then the finalizers will instead send timeout messages, which are
-aggregated to form a timeout certificate. Each block always contains a
-quorum certificate and may contain a timeout certificate for the previous
-round if and only if the previous round timed out. When blocks on a common
-chain in two consecutive rounds have quorum certificates, the block in the
-first of these rounds (together with its ancestors) is considered
-finalized. At this point, the protocol ensures that it cannot be rolled back.
+In summary, a validator with a high stake could be suspended with a little
+more than 23 hours of inactivity, while validators with lower stakes will
+require longer. High-stake validators effectively have a grace period of
+23 hours after hitting the threshold for missed blocks. Low-stake validators
+may not be able to take advantage of the grace period after hitting the
+threshold, but have to be inactive for a longer period of time to reach the
+threshold in the first place.
 
-Regarding smart contracts, the main usability improvement is better
-support for sponsored transactions. Account&#39;s public keys are now
-exposed to smart contracts, so signatures by sponsorees can be verified
-without first registering public keys. Other improvements to smart
-contracts are compatibility with recent Wasm changes, and revision of
-execution costs to better reflect the actual costs involved in
-execution.
+A suspended validator can be resumed manually by sending a transaction to do
+so. A suspended validator will always be suspended for at least one epoch, but
+otherwise incurs no specific penalty. Any accounts that delegate stake to a
+suspended validator will remain delegating to it (unless they update their
+delegation).
+
+Suspending inactive validators is intended to protect against validators that
+are inactive as a result of accident or carelessness; it does not protect
+against malicious validators.
+
+Note that it is impossible for more than one third of the stake to be
+automatically suspended simultaneously. This is because if more than one third
+of the stake was inactive, then the blockchain would halt.
 </pre></div>
 </div>
 </section>
@@ -513,23 +485,23 @@ execution.
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="P7.html">
+          <a class="next-page" href="../CIS/cis-0.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</div>
+                <div class="title">CIS-0: Standard Detection</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="P5.html">
+          <a class="prev-page" href="P7.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Protocol Update 5 - Smart contract upgradability, performance improvements</div>
+                <div class="title">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</div>
                 
               </div>
             </a>
@@ -563,7 +535,7 @@ execution.
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a><ul>
+<li><a class="reference internal" href="#">Protocol Update 8 - Suspension of inactive validators</a><ul>
 <li><a class="reference internal" href="#specification">Specification</a></li>
 <li><a class="reference internal" href="#commentary">Commentary</a></li>
 </ul>

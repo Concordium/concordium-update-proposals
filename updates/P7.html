@@ -1,16 +1,16 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-0: Standard Detection" href="../CIS/cis-0.html" /><link rel="prev" title="Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution" href="P6.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Protocol Update 8 - Suspension of inactive validators" href="P8.html" /><link rel="prev" title="Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution" href="P6.html" />
 
-    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><meta name="generator" content="sphinx-4.2.0, furo 2021.09.08"/>
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
         <title>Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing - Interoperability Specifications</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=c7c65a82b42f6b978e58466c1e9ef2509836d916" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=16fb25fabf47304eee183a5e9af80b1ba98259b1" />
-    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=8806b39e" />
     
     
 
@@ -21,38 +21,38 @@
   --color-code-foreground: black;
   
   }
-  body[data-theme="dark"] {
-    --color-code-background: #202020;
-  --color-code-foreground: #d0d0d0;
-  
-  }
-  @media (prefers-color-scheme: dark) {
-    body:not([data-theme="light"]) {
+  @media not print {
+    body[data-theme="dark"] {
       --color-code-background: #202020;
   --color-code-foreground: #d0d0d0;
   
     }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
   }
 </style></head>
   <body>
+    
     <script>
       document.body.dataset.theme = localStorage.getItem("theme") || "auto";
     </script>
     
+
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
   <symbol id="svg-toc" viewBox="0 0 24 24">
     <title>Contents</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path stroke="none" d="M0 0h24v24H0z" />
-      <line x1="4" y1="6" x2="20" y2="6" />
-      <line x1="10" y1="12" x2="20" y2="12" />
-      <line x1="6" y1="18" x2="20" y2="18" />
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
     </svg>
   </symbol>
   <symbol id="svg-menu" viewBox="0 0 24 24">
     <title>Menu</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
       <line x1="3" y1="12" x2="21" y2="12"></line>
       <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -61,15 +61,15 @@
   </symbol>
   <symbol id="svg-arrow-right" viewBox="0 0 24 24">
     <title>Expand</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
       <polyline points="9 18 15 12 9 6"></polyline>
     </svg>
   </symbol>
   <symbol id="svg-sun" viewBox="0 0 24 24">
     <title>Light mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
       <circle cx="12" cy="12" r="5"></circle>
       <line x1="12" y1="1" x2="12" y2="3"></line>
       <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -83,23 +83,64 @@
   </symbol>
   <symbol id="svg-moon" viewBox="0 0 24 24">
     <title>Dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
       <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
     </svg>
   </symbol>
-  <symbol id="svg-sun-half" viewBox="0 0 24 24">
-    <title>Auto light/dark mode</title>
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M13 12h5" />
-      <path d="M13 15h4" />
-      <path d="M13 18h1" />
-      <path d="M13 9h4" />
-      <path d="M13 6h1" />
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
     </svg>
   </symbol>
 </svg>
@@ -112,6 +153,8 @@
 <label class="overlay toc-overlay" for="__toc">
   <div class="visually-hidden">Hide table of contents sidebar</div>
 </label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
 
 
 
@@ -130,7 +173,8 @@
       <div class="theme-toggle-container theme-toggle-header">
         <button class="theme-toggle">
           <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
           <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
@@ -154,7 +198,7 @@
   <span class="sidebar-brand-text">Interoperability Specifications</span>
   
 </a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
-  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
   <input type="hidden" name="check_keywords" value="yes">
   <input type="hidden" name="area" value="default">
 </form>
@@ -167,6 +211,7 @@
 <li class="toctree-l1"><a class="reference internal" href="P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
 <li class="toctree-l1"><a class="reference internal" href="P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
 <li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Standards</span></p>
 <ul>
@@ -182,6 +227,7 @@
 
 </div>
 </div>
+
       </div>
       
     </div>
@@ -189,11 +235,24 @@
   <div class="main">
     <div class="content">
       <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/updates/P7.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
-              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
               <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
@@ -203,28 +262,26 @@
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
-        <article role="main">
+        <article role="main" id="furo-main-content">
           <section id="protocol-update-7-smart-contract-costs-and-new-queries-stake-cooldown-changes-disabling-shielded-transfers-revised-block-hashing">
-<h1>Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing<a class="headerlink" href="#protocol-update-7-smart-contract-costs-and-new-queries-stake-cooldown-changes-disabling-shielded-transfers-revised-block-hashing" title="Permalink to this headline">¶</a></h1>
-<div class="table-wrapper"><table class="docutils align-default">
-<colgroup>
-<col style="width: 50%"/>
-<col style="width: 50%"/>
-</colgroup>
+<h1>Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing<a class="headerlink" href="#protocol-update-7-smart-contract-costs-and-new-queries-stake-cooldown-changes-disabling-shielded-transfers-revised-block-hashing" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
 <tbody>
 <tr class="row-odd"><th class="stub"><p>Effective on Testnet</p></th>
-<td><p>planned Sep 30, 2024</p></td>
+<td><p>Sep 30, 2024</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Effective on Mainnet</p></th>
-<td><p>planned Oct 30, 2024</p></td>
+<td><p>Oct 30, 2024</p></td>
 </tr>
 <tr class="row-odd"><th class="stub"><p>Specification hash</p></th>
 <td><p><code class="docutils literal notranslate"><span class="pre">e68ea0b16bbadfa5e5da768ed9afe0880bd572e29337fe6fb584f293ed7699d6</span></code></p></td>
 </tr>
 </tbody>
-</table></div>
+</table>
+</div>
 <section id="specification">
-<h2>Specification<a class="headerlink" href="#specification" title="Permalink to this headline">¶</a></h2>
+<h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                           Protocol update
 
 Protocol Version: 7
@@ -283,11 +340,11 @@ part of the effective stake (used for lottery and reward calculation). Once
 the cooldown period has elapsed, the stake is available to be spent, and
 no longer contributes to the effective stake of the validator or delegator.
 While the cooldown is in effect on an account, no other changes can be made
-to the account's stake.
+to the account&#39;s stake.
 
 From protocol version 7, when a validator or delegator reduces its stake,
 the stake reduction takes effect straight away, but the amount of the
-reduction enters a cooldown queue. (Note that "straight away" here does
+reduction enters a cooldown queue. (Note that &quot;straight away&quot; here does
 not mean that it has an instant effect on the lottery and rewards. The
 effective stakes of validators and delegators are sampled in the first block
 of the last epoch before each payday, with the sampled stakes being used
@@ -302,22 +359,22 @@ it back to active stake.
 When stake is removed from a validator or delegator, it enters cooldown
 at the point that the removed stake is no longer part of the effective
 stake for lottery calculations. Specifically, when the stake is removed,
-it first enters a "pre-pre-cooldown" state. When the stake snapshot is
+it first enters a &quot;pre-pre-cooldown&quot; state. When the stake snapshot is
 taken for the next payday (in the first block of the epoch before the payday)
-it is moved from "pre-pre-cooldown" to "pre-cooldown". At the subsequent
-payday, it is moved from "pre-cooldown" into "cooldown", and the cooldown
+it is moved from &quot;pre-pre-cooldown&quot; to &quot;pre-cooldown&quot;. At the subsequent
+payday, it is moved from &quot;pre-cooldown&quot; into &quot;cooldown&quot;, and the cooldown
 expiry time is set based on the cooldown time chain parameter. In
 particular, the cooldown officially starts at this payday. At the first
 payday at or after the cooldown expiry time, the stake finally exits
-"cooldown" and becomes available to spend. An account's active stake
+&quot;cooldown&quot; and becomes available to spend. An account&#39;s active stake
 can be reduced while there is still inactive stake in cooldown, leading
 to multiple amounts in cooldown (or pre-cooldown or pre-pre-cooldown)
 that expire at different times.
 
 If the active stake on an account is increased, the increase is first
 transferred from the inactive stake in preference to taking from the
-unstaked balance. Specifically, it is taken first from "pre-pre-cooldown",
-then "pre-cooldown", and then from the "cooldown" stakes in decreasing
+unstaked balance. Specifically, it is taken first from &quot;pre-pre-cooldown&quot;,
+then &quot;pre-cooldown&quot;, and then from the &quot;cooldown&quot; stakes in decreasing
 order of expiry time. An account can also switch freely between being
 a validator and being a delegator without its stake entering cooldown.
 (Prior to protocol version 7, it was necessary to remove the validator
@@ -335,7 +392,7 @@ period before it can be spent.
 
 Since the initial protocol version, the Concordium blockchain has
 supported shielded transfers (also known as encrypted transfers).
-This mechanism allows an account to "shield" part of its balance, 
+This mechanism allows an account to &quot;shield&quot; part of its balance, 
 cryptographically encrypting it so that the amount cannot be inspected
 except by the owner of the account (using its secret encryption key).
 (It is possible for a sufficient combination of identity disclosure
@@ -360,7 +417,7 @@ no longer supported as of protocol version 7.
 In particular, shielding (or encrypting) a public balance and
 transferring shielded funds from one account to another are
 disallowed from protocol version 7. Unshielding (i.e., transferring
-funds from an account's shielded funds to its own unshielded funds)
+funds from an account&#39;s shielded funds to its own unshielded funds)
 remains enabled. This ensures that accounts do not lose any funds that
 they previously shielded.
 
@@ -379,7 +436,7 @@ account) without providing the entirety of the data comprising the block.
 
 In protocol version 7, the block hashing scheme is redefined. The revised
 definition makes certain Merkle proofs shorter and simpler. The purpose of
-this is to support "light clients": light-weight verifiers that can check
+this is to support &quot;light clients&quot;: light-weight verifiers that can check
 properties of the chain without running the full consensus, by making use of
 Merkle proofs.
 
@@ -455,13 +512,13 @@ The following behaviors are changed in protocol version 7.
    label and the current activation frame respectively; #arg and
    #res are the numbers of arguments and results of the function
    being called; and #pages is the number of memory pages requested
-   by memory.grow. "inn" indicates both "i32" and "i64" variants, and
+   by memory.grow. &quot;inn&quot; indicates both &quot;i32&quot; and &quot;i64&quot; variants, and
    where instructions are suffixed with *, the line applies to all variants.
    For instance, inn.load* includes i32.load8_s, i64.load8_u, etc.)
 
    The cost (in Energy) of looking up a contract module is reduced from
    floor(size / 50) to floor(size / 500), where size is the size of the
-   module's WebAssembly source in bytes, not including custom sections.
+   module&#39;s WebAssembly source in bytes, not including custom sections.
    This cost is incurred on contract initialization, update, upgrading and
    inter-contract calls.
    
@@ -490,14 +547,14 @@ The following behaviors are changed in protocol version 7.
       * Return codes:
         - 0: success
            the return value is the name of the `init` method used to
-           create the contract instance (including the "init_" prefix)
+           create the contract instance (including the &quot;init_&quot; prefix)
         - 3: missing contract
            there is no contract instance with the given address
       * Cost: 200 Energy
 
 4. The following changes apply to staking:
    - The stake of an account is divided into
-     * Active stake: this determines the validator or delegator's
+     * Active stake: this determines the validator or delegator&#39;s
        stake for future snapshots that determine the stake
        distribution for the purposes of lottery calculation and
        reward distribution.
@@ -627,7 +684,7 @@ this file. There is no auxiliary data for the update instruction.
 </div>
 </section>
 <section id="commentary">
-<h2>Commentary<a class="headerlink" href="#commentary" title="Permalink to this headline">¶</a></h2>
+<h2>Commentary<a class="headerlink" href="#commentary" title="Link to this heading">¶</a></h2>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                      Protocol update commentary
 
 Protocol Version: 7
@@ -648,7 +705,7 @@ the rationale for each.
 The cost of a smart contract transaction (such as a contract init or update)
 is a function of the WebAssembly instructions that are executed in computing
 the outcome of the transaction. Each instruction is associated with a cost
-(measured in "interpreter energy"). When a smart contract module is deployed
+(measured in &quot;interpreter energy&quot;). When a smart contract module is deployed
 on the Concordium blockchain, the nodes apply a transformation on the
 WebAssembly code that instruments it with metering instructions, which track
 the interpreter energy usage during program execution. A smart contract
@@ -677,7 +734,7 @@ execution times are typically around 3 times faster. Accordingly the cost
 of WebAssembly instructions is redefined to reflect this.
 
 When a smart contract makes a call to another smart contract, the calling
-contract's state remains in memory, while the callee's state is also
+contract&#39;s state remains in memory, while the callee&#39;s state is also
 loaded. In the case of a long chain of such calls, this can use a lot of
 memory, potentially exhausting the resources of nodes. Previously, the
 energy limits were deemed sufficient to limit the resource usage. However,
@@ -706,7 +763,7 @@ contracts it interacts with before determining whether to trust them.
 
 A common question from smart contract developers (particularly those
 coming from Ethereum) is how to implement a factory pattern on Concordium.
-The architecture of Concordium's contracts (separating module deployment
+The architecture of Concordium&#39;s contracts (separating module deployment
 from contract initialization) means that typically a factory pattern is
 not required. However, these new contract inspection operations provide
 a way of emulating the factory pattern in the cases where it is needed.
@@ -737,11 +794,11 @@ are possible. This change is of particular benefit to custodial staking
 providers, who may hold stake for multiple customers on a single (validator)
 account. The new arrangement allows them to withdraw funds for different
 customers independently. For instance, under the old scheme, if the staking
-provider unstaked customer A's funds, and then wished to also unstake
-customer B's funds, then they would have to wait two full cooldown periods
-before B's funds were unstaked, no matter how soon they requested them after
-A's funds were already being unstaked. In the new scheme, the fact that
-A's funds are in cooldown does nothing to prevent B's funds also moving to
+provider unstaked customer A&#39;s funds, and then wished to also unstake
+customer B&#39;s funds, then they would have to wait two full cooldown periods
+before B&#39;s funds were unstaked, no matter how soon they requested them after
+A&#39;s funds were already being unstaked. In the new scheme, the fact that
+A&#39;s funds are in cooldown does nothing to prevent B&#39;s funds also moving to
 cooldown.
 
     4. Removal of Shielded Transactions
@@ -816,17 +873,17 @@ storage requirements.
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../CIS/cis-0.html">
+          <a class="next-page" href="P8.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">CIS-0: Standard Detection</div>
+                <div class="title">Protocol Update 8 - Suspension of inactive validators</div>
               </div>
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
           <a class="prev-page" href="P6.html">
-              <svg><use href="#svg-arrow-right"></use></svg>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
@@ -837,17 +894,19 @@ storage requirements.
               </div>
             </a>
         </div>
-
-        <div class="related-information">
-              Copyright &#169; 2021, Concordium |
-            Built with <a href="https://www.sphinx-doc.org/">Sphinx</a>
-              and
-              <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
-              <a href="https://github.com/pradyunsg/furo">Furo theme</a>. |
-            <a class="muted-link" href="../_sources/updates/P7.rst.txt"
-               rel="nofollow">
-              Show Source
-            </a>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Concordium
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
         </div>
         
       </footer>
@@ -858,7 +917,7 @@ storage requirements.
       <div class="toc-sticky toc-scroll">
         <div class="toc-title-container">
           <span class="toc-title">
-            Contents
+            On this page
           </span>
         </div>
         <div class="toc-tree-container">
@@ -878,10 +937,9 @@ storage requirements.
       
     </aside>
   </div>
-</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/scripts/main.js"></script>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
     </body>
 </html>
