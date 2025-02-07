@@ -4,7 +4,7 @@ on:
 jobs:
   linkcheck:
     runs-on: ubuntu-latest
-    container: sphinxdoc/sphinx
+    container: sphinxdoc/sphinx:8.1.3
     steps:
       - name: Checkout 🛎️
         uses: actions/checkout@v2.3.1
