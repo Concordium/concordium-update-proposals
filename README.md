@@ -26,6 +26,10 @@ The table lists already effective as well as *planned/draft* protocol updates.
 | P7 | Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing | Sep 30, 2024 | Oct 30, 2024 | [P7.txt](../main/updates/P7.txt) | [P7-commentary.txt](../main/commentary/P7-commentary.txt) | `e68ea0b16bbadfa5e5da768ed9afe0880bd572e29337fe6fb584f293ed7699d6` | 8a3495a1b24d30f239ed9ab52ed6ba26f26f52039d7b740c968882732f3d0baa | 11bb339c85b02d16c07984deeadb1c338871a49dd1527e129561b8c5b2fb1fb3 |
 | P8 | Suspension of inactive validators | Feb 24, 2025 (planned) | Mar 17, 2025 (planned) | [P8.txt](../main/updates/P8.txt) | [P8-commentary.txt](../main/commentary/P8-commentary.txt) | `f12e20b6936a6b1b736e95715e1654b92adb4226ef7601b4183895bee563f9da` | - | - |
 
+## Hosted front-end
+
+[Concordium proposals](https://proposals.concordium.software/)
+
 ## Website
 
 The website is build using [Sphinx](https://www.sphinx-doc.org/en/master/index.html) and reStructuredText ([Link to the basics](https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html)).
