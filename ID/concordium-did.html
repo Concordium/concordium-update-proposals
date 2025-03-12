@@ -606,7 +606,7 @@ Identity provider DIDs can represent an issuer of a verifiable credential.</p>
 <h3>Create<a class="headerlink" href="#create" title="Link to this heading">¶</a></h3>
 <section id="id1">
 <h4>Account DID<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h4>
-<p>An account DID can be created by <a class="reference external" href="https://developer.concordium.software/en/mainnet/net/references/manage-accounts.html">opening an account</a> on the <code class="docutils literal notranslate"><span class="pre">NET</span></code> blockchain.
+<p>An account DID can be created by <a class="reference external" href="https://docs.concordium.com/en/mainnet/docs/protocol/manage-accounts.html">opening an account</a> on the <code class="docutils literal notranslate"><span class="pre">NET</span></code> blockchain.
 The resulting DID is <code class="docutils literal notranslate"><span class="pre">did:ccd:NET:acc:ADDR</span></code> where <code class="docutils literal notranslate"><span class="pre">ADDR</span></code> is the base58 encoded account address.</p>
 </section>
 <section id="id2">
@@ -615,7 +615,7 @@ The resulting DID is <code class="docutils literal notranslate"><span class="pre
 </section>
 <section id="id3">
 <h4>Smart Contract Instance DID<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h4>
-<p>A smart contract instance DID can be created by <a class="reference external" href="https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html">deploying a smart contract module</a> and <a class="reference external" href="https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html">initializing a smart contract instance</a> on the <code class="docutils literal notranslate"><span class="pre">NET</span></code> blockchain.
+<p>A smart contract instance DID can be created by <a class="reference external" href="https://docs.concordium.com/en/mainnet/docs/smart-contracts/guides/deploy-module.html">deploying a smart contract module</a> and <a class="reference external" href="https://docs.concordium.com/en/mainnet/docs/smart-contracts/guides/initialize-contract.html">initializing a smart contract instance</a> on the <code class="docutils literal notranslate"><span class="pre">NET</span></code> blockchain.
 The resulting DID is <code class="docutils literal notranslate"><span class="pre">did:ccd:NET:sci:IND:SUBIND</span></code> where <code class="docutils literal notranslate"><span class="pre">IND</span></code>, <code class="docutils literal notranslate"><span class="pre">SUBIND</span></code> are the index and the subindex of the instance.</p>
 </section>
 <section id="id4">
@@ -637,7 +637,7 @@ These DIDs are not registered on the blockchain.</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:acc:ADDR</span></code></p>
 <p>can be resolved by looking up an account with address <code class="docutils literal notranslate"><span class="pre">ADDR</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
 <p>Data required to construct the DID document can be acquired by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetAccountInfo</span></code>.</p>
-<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>See the details in the <a class="reference external" href="https://docs.concordium.com/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
 <p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows retrieving the data in the following way:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>concordium-client<span class="w"> </span>raw<span class="w"> </span>GetAccountInfo<span class="w"> </span>ADDR
 </pre></div>
@@ -657,7 +657,7 @@ These DIDs are not registered on the blockchain.</p>
 <p>can be resolved by looking up a smart contract instance with indices <code class="docutils literal notranslate"><span class="pre">IND</span></code>, <code class="docutils literal notranslate"><span class="pre">SUBIND</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.
 This includes a lookup of the owner’s account.</p>
 <p>Data required to construct the DID document can be acquired by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetInstanceInfo</span></code>.</p>
-<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>See the details in the <a class="reference external" href="https://docs.concordium.com/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
 <p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows retrieving the data in the following way:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>concordium-client<span class="w"> </span>contract<span class="w"> </span>show<span class="w"> </span>IND
 </pre></div>
@@ -693,7 +693,7 @@ The parameter <code class="docutils literal notranslate"><span class="pre">PAR</
 </pre></div>
 </div>
 <p>The base16 encoding of the <code class="docutils literal notranslate"><span class="pre">param.bin</span></code> file corresponds to <code class="docutils literal notranslate"><span class="pre">PAR</span></code>.</p>
-<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>See the details in the <a class="reference external" href="https://docs.concordium.com/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><a class="reference external" href="https://w3c-ccg.github.io/did-resolution/#dereferencing">Dereferencing a DID URL</a> in the W3C Credentials Community Group draft report.</p>
@@ -716,7 +716,7 @@ In the future, however, the <code class="docutils literal notranslate"><span cla
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:idp:INDEX</span></code></p>
 <p>can be resolved by looking up an identity provider <code class="docutils literal notranslate"><span class="pre">INDEX</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
 <p>Data required to construct the DID document can be acquired by using the gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetIdentityProviders</span></code>.</p>
-<p>See the details in the <a class="reference external" href="https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
+<p>See the details in the <a class="reference external" href="https://docs.concordium.com/concordium-grpc-api/#v2%2fconcordium%2fservice.proto">gRPC v2 documentation</a>.</p>
 <p>From the command line, <code class="docutils literal notranslate"><span class="pre">concordium-client</span></code> allows retrieving the data in the following way:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$</span>concordium-client<span class="w"> </span>raw<span class="w"> </span>GetIdentityProviders
 </pre></div>
