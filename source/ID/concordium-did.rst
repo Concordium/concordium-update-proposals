@@ -668,9 +668,9 @@ The document that uses the ``2-out-of-3`` method is valid if it has at least two
 .. _DID fragment: https://w3c.github.io/did-core/#dfn-did-fragments
 .. _did-vefication-method: https://w3c.github.io/did-core/#verification-methods
 .. _ABNF: https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form
-.. _concordium-accounts: https://developer.concordium.software/en/mainnet/net/references/manage-accounts.html
-.. _gRPC v2 documentation: https://developer.concordium.software/concordium-grpc-api/#v2%2fconcordium%2fservice.proto
-.. _deploy-module: https://developer.concordium.software/en/mainnet/smart-contracts/guides/deploy-module.html
-.. _initialize-contract-instance: https://developer.concordium.software/en/mainnet/smart-contracts/guides/initialize-contract.html
+.. _concordium-accounts: https://docs.concordium.com/en/mainnet/docs/protocol/manage-accounts.html
+.. _gRPC v2 documentation: https://docs.concordium.com/concordium-grpc-api/#v2%2fconcordium%2fservice.proto
+.. _deploy-module: https://docs.concordium.com/en/mainnet/docs/smart-contracts/guides/deploy-module.html
+.. _initialize-contract-instance: https://docs.concordium.com/en/mainnet/docs/smart-contracts/guides/initialize-contract.html
 .. _Dereferencing a DID URL: https://w3c-ccg.github.io/did-resolution/#dereferencing
 .. _The Multibase Encoding Scheme: https://datatracker.ietf.org/doc/html/draft-multiformats-multibase-03
