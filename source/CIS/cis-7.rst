@@ -40,7 +40,7 @@ Each PLT is governed by a Token Module, which manages the token's lifecycle, inc
 There may be a single Token Module that manages all PLTs, or there may be multiple Token Modules, each managing one or more PLTs.
 
 The Token Module defines a number of interfaces for interaction with PLTs.
-At each interface, data is exchanged in in Concise Binary Object Representation (CBOR) format.
+At each interface, data is exchanged in Concise Binary Object Representation (CBOR) format.
 The CBOR format is defined in :rfc:`8949`.
 This document defines schemas for the data exchanged at each interface, including initialization parameters, transactions, events, reject reasons, token state, and account state.
 
