@@ -180,7 +180,7 @@ The format presented here is that used by the TokenModuleV0 implementation.
         ; A URL pointing to the token metadata
         "metadata": metadata-url,
         ; The governance account of the token
-        "governanceAccount": token-holder
+        "governanceAccount": tagged-account-address
         ; Whether the token supports an allow list
         ? "allowList": bool .default false,
         ; Whether the token supports a deny list
@@ -422,12 +422,12 @@ The following reject reason types are defined by TokenModuleV0:
 ^^^^^^^^^^^^^^^^^^^
 ::
 
-    ; "addressNotFound": a token holder address was not valid.
+    ; "addressNotFound": an account address was not valid.
     reject-details-address-not-found = {
         ; The index in the list of operations of the failing operation.
         "index": uint,
         ; The address that could not be resolved.
-        "address": token-holder
+        "address": tagged-account-address
     }
 
 ``tokenBalanceInsufficient``
@@ -484,7 +484,7 @@ The following reject reason types are defined by TokenModuleV0:
         "index": uint,
         ; (Optionally) the address that does not have the necessary permissions to perform the
         ; operation.
-        ? "address": token-holder,
+        ? "address": tagged-account-address,
         ; The reason why the operation is not permitted.
         ? "reason": text
     }
@@ -522,7 +522,7 @@ The Token Module state is represented as a CBOR map conforming to the following 
         ; A URL pointing to the token metadata
         "metadata": metadata-url,
         ; The governance account of the token
-        "governanceAccount": token-holder
+        "governanceAccount": tagged-account-address
         ; Whether the token supports an allow list.
         ? "allowList": bool,
         ; Whether the token supports a deny list.
