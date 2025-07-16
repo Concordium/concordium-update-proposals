@@ -81,9 +81,10 @@ From the CDDL prelude (:rfc:`8610`)::
 For ``token-amount``, as of protocol version 9, the exponent (``e10``) must be between 0 and -255 (inclusive).
 The significand (``m``) must be between 0 and 18446744073709551615 (inclusive).
 
+
 Each PLT defines the number of decimal places in its representation.
 A ``token-amount`` for a given PLT MUST be expressed with the exponent ``e10`` being the negation of the number of decimals.
-Thus, the following ``token-amount``s are not equivalent::
+Thus, the following ``token-amount``\s are not equivalent::
 
   4([2, 100])      -- 1.00
   4([6, 1000000])  -- 1.000000
@@ -147,6 +148,7 @@ When rendering a ``tagged-account-address`` in a human-readable format, it SHOUL
 ``metadata-url``
 
 ::
+
     metadata-url = {
         ; A string field representing the URL
         "url": text,
@@ -202,6 +204,7 @@ Transactions
 
 A Token Update transaction identifies a PLT by its Token ID and carries a CBOR-encoded payload that consists of a list of token operations (``token-update-transaction``).
 ::
+
     token-update-transaction = [ * token-operation ]
 
     token-operation = token-transfer
@@ -221,6 +224,7 @@ Implementation MUST NOT use the operation types ``transfer``, ``mint``, ``burn``
 ``transfer``
 ^^^^^^^^^^^^
 ::
+
     ; A token transfer operation. This transfers a specified amount of tokens from the sender account
     ; (implicit) to the recipient account.
     token-transfer = {
@@ -257,8 +261,8 @@ Implementation MUST NOT use the operation types ``transfer``, ``mint``, ``burn``
         "amount": token-amount
     }
 
-``addAllowList``, ``removeAllowList``, ``addDenyList``, ``removeDenyList``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``addAllowList``, ``removeAllowList``, ``addDenyList``, and ``removeDenyList``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
     ; Update an allow or a deny list by adding or removing an account from it.
@@ -304,6 +308,7 @@ Forward Compatibility
 Token Modules MAY implement additional token operations that are not defined in this specification.
 In order for tools such as hardware wallets to be able to handle such operations, these operations SHOULD conform to the following schema:
 ::
+
     generic-token-operation = {
         short-text => generic-token-operation-details
     }
@@ -522,7 +527,7 @@ The Token Module state is represented as a CBOR map conforming to the following 
         ; A URL pointing to the token metadata
         "metadata": metadata-url,
         ; The governance account of the token
-        "governanceAccount": tagged-account-address
+        ? "governanceAccount": tagged-account-address
         ; Whether the token supports an allow list.
         ? "allowList": bool,
         ; Whether the token supports a deny list.
