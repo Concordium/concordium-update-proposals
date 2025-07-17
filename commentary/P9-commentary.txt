@@ -1,0 +1,7 @@
+                      Protocol update commentary
+
+Protocol Version: 9
+Builds on Protocol Version: 8
+
+Protocol version 9 introduces Protocol-Level Tokens (PLTs), which enable chain-native support for
+tokens other than CCD, without reliance on smart contracts.
