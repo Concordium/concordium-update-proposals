@@ -1,0 +1,1155 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="CIS-2: Concordium Token Standard 2" href="cis-2.html" /><link rel="prev" title="CIS-0: Standard Detection" href="cis-0.html" />
+
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>CIS-1: Concordium Token Standard - Interoperability Specifications</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=8806b39e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Interoperability Specifications</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/concordium-logo-black.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/concordium-logo-white.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Interoperability Specifications</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Protocol Updates</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P9.html">Protocol Update 9 - Protocol-Level Tokens</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Standards</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cis-0.html">CIS-0: Standard Detection</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-1: Concordium Token Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-2.html">CIS-2: Concordium Token Standard 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-4.html">CIS-4: Credential Registry Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-5.html">CIS-5: Smart Contract Wallet Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ID/concordium-did.html">Concordium DID Method Version 1.0</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/CIS/cis-1.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="cis-1-concordium-token-standard">
+<span id="cis-1"></span><h1>CIS-1: Concordium Token Standard<a class="headerlink" href="#cis-1-concordium-token-standard" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><th class="stub"><p>Created</p></th>
+<td><p>Sep 22, 2021</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Final</p></th>
+<td><p>Nov 1, 2021</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Supported versions</p></th>
+<td><div class="line-block">
+<div class="line">Smart contract version 0 or newer</div>
+<div class="line">(Protocol version 1 or newer)</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Standard identifier</p></th>
+<td><p><code class="docutils literal notranslate"><span class="pre">CIS-1</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This standard is deprecated by <a class="reference internal" href="cis-2.html#cis-2"><span class="std std-ref">CIS-2: Concordium Token Standard 2</span></a>.</p>
+</div>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Link to this heading">¶</a></h2>
+<p>A standard interface for both fungible and non-fungible tokens implemented in a smart contract.
+The interface provides functions for transferring token ownership, allowing other addresses to transfer tokens and for querying token balances and token metadata.
+It allows for off-chain applications to track token balances and the location of token metadata using logged events.</p>
+</section>
+<section id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
+<p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
+<section id="general-types-and-serialization">
+<h3>General types and serialization<a class="headerlink" href="#general-types-and-serialization" title="Link to this heading">¶</a></h3>
+<section id="tokenid">
+<span id="cis-1-tokenid"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenID</span></code><a class="headerlink" href="#tokenid" title="Link to this heading">¶</a></h4>
+<p>Token Identifier, which combined with the address of the smart contract instance implementing CIS1, forms the globally unique identifier of a token type.</p>
+<ul class="simple">
+<li><p>A token ID for a token type SHALL NOT change after a token type have been minted.</p></li>
+<li><p>A token ID for a token type SHALL NOT be reused for another token type within the same smart contract.</p></li>
+</ul>
+<p>It is serialized as 1 byte for the size (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the identifier, followed by this number of bytes for the token id (<code class="docutils literal notranslate"><span class="pre">id</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenID ::= (n: Byte) (id: Byteⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Token IDs can be as small as a single byte (by setting the first byte to the value 0) or as big as 256 bytes leaving more than 10^614 possible token IDs.
+The token ID could be an encoding of a small text string or some checksum hash, but to save energy it is still recommended to use small token IDs if possible.</p>
+</div>
+</section>
+<section id="tokenamount">
+<span id="cis-1-tokenamount"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenAmount</span></code><a class="headerlink" href="#tokenamount" title="Link to this heading">¶</a></h4>
+<p>An amount of a token type is an unsigned 64 bit integer.</p>
+<p>It is serialized using 8 bytes little endian:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenAmount ::= (amount: Byte⁸)
+</pre></div>
+</div>
+</section>
+<section id="receivehookname">
+<span id="cis-1-receivehookname"></span><h4><code class="docutils literal notranslate"><span class="pre">ReceiveHookName</span></code><a class="headerlink" href="#receivehookname" title="Link to this heading">¶</a></h4>
+<p>A smart contract receive function name.
+A receive function name is prefixed with the contract name, followed by a <code class="docutils literal notranslate"><span class="pre">.</span></code> and a name for the function.
+It MUST consist only of ASCII alphanumeric or punctuation characters.
+The contract name is not allowed to contain <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p>
+<p>It is serialized as: the function name byte length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) is represented by the first 2 bytes, followed by this many bytes for the function name (<code class="docutils literal notranslate"><span class="pre">name</span></code>).
+The receive function name MUST be 100 bytes or less:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ReceiveHookName ::= (n: Byte²) (name: Byteⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This type is passed in a parameter for smart contract function calls, be aware of the parameter size limit of 1024 bytes.</p>
+</div>
+</section>
+<section id="contractname">
+<span id="cis-1-contractname"></span><h4><code class="docutils literal notranslate"><span class="pre">ContractName</span></code><a class="headerlink" href="#contractname" title="Link to this heading">¶</a></h4>
+<p>A name of a smart contract.
+It must be prefixed with <code class="docutils literal notranslate"><span class="pre">init_</span></code> and MUST consist only of ASCII alphanumeric or punctuation characters.
+The contract name is not allowed to contain <code class="docutils literal notranslate"><span class="pre">.</span></code>.</p>
+<p>It is serialized as: the contract name byte length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) is represented by the first 2 bytes, followed by this many bytes for the contract name (<code class="docutils literal notranslate"><span class="pre">name</span></code>).
+The contract name MUST be 100 bytes or less:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ContractName ::= (n: Byte²) (name: Byteⁿ)
+</pre></div>
+</div>
+</section>
+<section id="accountaddress">
+<span id="cis-1-accountaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code><a class="headerlink" href="#accountaddress" title="Link to this heading">¶</a></h4>
+<p>An address of an account.</p>
+<p>It is serialized as 32 bytes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AccountAddress ::= (address: Byte³²)
+</pre></div>
+</div>
+</section>
+<section id="contractaddress">
+<span id="cis-1-contractaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">ContractAddress</span></code><a class="headerlink" href="#contractaddress" title="Link to this heading">¶</a></h4>
+<p>An address of a contract instance.
+It consists of an index and a subindex both unsigned 64 bit integers.</p>
+<p>It is serialized as: first 8 bytes for the index (<code class="docutils literal notranslate"><span class="pre">index</span></code>) followed by 8 bytes for the subindex (<code class="docutils literal notranslate"><span class="pre">subindex</span></code>) both little endian:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
+</pre></div>
+</div>
+</section>
+<section id="address">
+<span id="cis-1-address"></span><h4><code class="docutils literal notranslate"><span class="pre">Address</span></code><a class="headerlink" href="#address" title="Link to this heading">¶</a></h4>
+<p>Is either an account address or a contract address.</p>
+<p>It is serialized as: First byte indicates whether it is an account address or a contract address.
+In case the first byte is 0 then <code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code> (<code class="docutils literal notranslate"><span class="pre">address</span></code>) is followed.
+In case the first byte is 1 then <code class="docutils literal notranslate"><span class="pre">ContractAddress</span></code> (<code class="docutils literal notranslate"><span class="pre">address</span></code>) is followed:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Address ::= (0: Byte) (address: AccountAddress)
+          | (1: Byte) (address: ContractAddress)
+</pre></div>
+</div>
+</section>
+<section id="receiver">
+<span id="cis-1-receiver"></span><h4><code class="docutils literal notranslate"><span class="pre">Receiver</span></code><a class="headerlink" href="#receiver" title="Link to this heading">¶</a></h4>
+<p>The receiving address of a transfer, which is either an account address or a contract address.
+In the case of a contract address: a name of the hook receive function to invoke is also needed.</p>
+<p>It is serialized as: First byte indicates whether it is an account address or a contract address.
+In case the first byte is 0 then <code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code> (<code class="docutils literal notranslate"><span class="pre">address</span></code>) is followed.
+In case the first byte is 1 then <code class="docutils literal notranslate"><span class="pre">ContractAddress</span></code> (<code class="docutils literal notranslate"><span class="pre">address</span></code>), bytes for <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">hook</span></code>) is followed:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Receiver ::= (0: Byte) (address: AccountAddress)
+           | (1: Byte) (address: ContractAddress) (hook: ReceiveHookName)
+</pre></div>
+</div>
+</section>
+<section id="additionaldata">
+<span id="cis-1-additionaldata"></span><h4><code class="docutils literal notranslate"><span class="pre">AdditionalData</span></code><a class="headerlink" href="#additionaldata" title="Link to this heading">¶</a></h4>
+<p>Additional bytes to include in a transfer, which can be used to add additional parameters for the transfer function call.</p>
+<p>It is serialized as: the first 2 bytes encode the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the data, followed by this many bytes for the data (<code class="docutils literal notranslate"><span class="pre">data</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AdditionalData ::= (n: Byte²) (data: Byteⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This type is passed in a parameter for smart contract function calls.
+Be aware of the parameter size limit of 1024 bytes.</p>
+</div>
+</section>
+<section id="metadataurl">
+<span id="cis-1-metadataurl"></span><h4><code class="docutils literal notranslate"><span class="pre">MetadataUrl</span></code><a class="headerlink" href="#metadataurl" title="Link to this heading">¶</a></h4>
+<p>A URL and optional checksum for metadata stored outside of this contract.</p>
+<p>It is serialized as: 2 bytes for the length of the metadata url (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this many bytes for the url to the metadata (<code class="docutils literal notranslate"><span class="pre">url</span></code>) followed by an optional checksum.
+The checksum is serialized by 1 byte to indicate whether a hash of the metadata is included, if its value is 0, then no content hash, if the value is 1 then 32 bytes for a SHA256 hash (<code class="docutils literal notranslate"><span class="pre">hash</span></code>) is followed:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MetadataChecksum ::= (0: Byte)
+                   | (1: Byte) (hash: Byte³²)
+
+MetadataUrl ::= (n: Byte²) (url: Byteⁿ) (checksum: MetadataChecksum)
+</pre></div>
+</div>
+</section>
+</section>
+<section id="contract-functions">
+<span id="cis-1-functions"></span><h3>Contract functions<a class="headerlink" href="#contract-functions" title="Link to this heading">¶</a></h3>
+<p>A smart contract implementing CIS1 MUST export three functions <a class="reference internal" href="#cis-1-functions-transfer"><span class="std std-ref">transfer</span></a>, <a class="reference internal" href="#cis-1-functions-updateoperator"><span class="std std-ref">updateOperator</span></a> and <a class="reference internal" href="#cis-1-functions-balanceof"><span class="std std-ref">balanceOf</span></a> according to the following description:</p>
+<section id="transfer">
+<span id="cis-1-functions-transfer"></span><h4><code class="docutils literal notranslate"><span class="pre">transfer</span></code><a class="headerlink" href="#transfer" title="Link to this heading">¶</a></h4>
+<p>Executes a list of token transfers.
+A transfer is a token ID, an amount of tokens to be transferred, and the <code class="docutils literal notranslate"><span class="pre">from</span></code> address and <code class="docutils literal notranslate"><span class="pre">to</span></code> address.</p>
+<p>When transferring tokens to a contract address additional information for a receive function hook to trigger is required.</p>
+<section id="parameter">
+<h5>Parameter<a class="headerlink" href="#parameter" title="Link to this heading">¶</a></h5>
+<p>The parameter is a list of transfers.</p>
+<p>It is serialized as: 2 bytes representing the number of transfers (<code class="docutils literal notranslate"><span class="pre">n</span></code>) followed by the bytes for this number of transfers (<code class="docutils literal notranslate"><span class="pre">transfers</span></code>).
+Each transfer is serialized as: a <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), a <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>), the token owner address <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>), the receiving address <a class="reference internal" href="#cis-1-receiver"><span class="std std-ref">Receiver</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>) and some additional data (<code class="docutils literal notranslate"><span class="pre">data</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Transfer ::= (id: TokenID) (amount: TokenAmount) (from: Address) (to: Receiver) (data: AdditionalData)
+
+TransferParameter ::= (n: Byte²) (transfers: Transferⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the smart contract parameter size limit of 1024 bytes.
+Since the byte size of a single transfer can vary in size, this will limit the number of transfers that can be included in the same function call.
+Currently, with the smallest possible transfers, the parameter can contain 21 transfers and with the biggest possible transfer, it will take the whole parameter.</p>
+</div>
+</section>
+<section id="receive-hook-parameter">
+<span id="cis-1-functions-transfer-receive-hook-parameter"></span><h5>Receive hook parameter<a class="headerlink" href="#receive-hook-parameter" title="Link to this heading">¶</a></h5>
+<p>The parameter for the receive function hook contains information about the transfer, the name of the token contract and some additional data bytes.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), a <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>), the token owner address <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>), the name of the token contract <a class="reference internal" href="#cis-1-contractname"><span class="std std-ref">ContractName</span></a> (<code class="docutils literal notranslate"><span class="pre">contract</span></code>) and <a class="reference internal" href="#cis-1-additionaldata"><span class="std std-ref">AdditionalData</span></a> (<code class="docutils literal notranslate"><span class="pre">data</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ReceiveHookParameter ::= (id: TokenID) (amount: TokenAmount) (from: Address) (contract: ContractName) (data: AdditionalData)
+</pre></div>
+</div>
+</section>
+<section id="requirements">
+<h5>Requirements<a class="headerlink" href="#requirements" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The list of transfers MUST be executed in order.</p></li>
+<li><p>The contract function MUST reject if any of the transfers fails to be executed.</p></li>
+<li><p>A transfer MUST fail if:</p>
+<ul>
+<li><p>The token balance of the <code class="docutils literal notranslate"><span class="pre">from</span></code> address is insufficient to do the transfer with error <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">INSUFFICIENT_FUNDS</span></a>.</p></li>
+<li><p>TokenID is unknown with error: <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">INVALID_TOKEN_ID</span></a>.</p></li>
+</ul>
+</li>
+<li><p>A transfer MUST non-strictly decrease the balance of the <code class="docutils literal notranslate"><span class="pre">from</span></code> address and non-strictly increase the balance of the <code class="docutils literal notranslate"><span class="pre">to</span></code> address or fail.</p></li>
+<li><p>A transfer with the same address as <code class="docutils literal notranslate"><span class="pre">from</span></code> and <code class="docutils literal notranslate"><span class="pre">to</span></code> MUST be executed as a normal transfer.</p></li>
+<li><p>A transfer of a token amount zero MUST be executed as a normal transfer.</p></li>
+<li><p>A transfer of some amount of a token type MUST only transfer the exact amount of the given token type between balances.</p></li>
+<li><p>A transfer of any amount of a token type to a contract address MUST call receive hook function on the receiving smart contract with a <a class="reference internal" href="#cis-1-functions-transfer-receive-hook-parameter"><span class="std std-ref">receive hook parameter</span></a>.</p></li>
+<li><p>Let <code class="docutils literal notranslate"><span class="pre">operator</span></code> be an operator of the address <code class="docutils literal notranslate"><span class="pre">owner</span></code>. A transfer of any amount of a token type from an address <code class="docutils literal notranslate"><span class="pre">owner</span></code> sent by an address <code class="docutils literal notranslate"><span class="pre">operator</span></code> MUST be executed as if the transfer was sent by <code class="docutils literal notranslate"><span class="pre">owner</span></code>.</p></li>
+<li><p>The contract function MUST reject if a receive hook function called on the contract receiving tokens rejects.</p></li>
+<li><p>The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Be aware of transferring tokens to a non-existing account address.
+This specification by itself does not include a mechanism to recover these tokens.
+Checking the existence of an account address would ideally be done off-chain before the message is even sent to the token smart contract.</p>
+</div>
+</section>
+</section>
+<section id="updateoperator">
+<span id="cis-1-functions-updateoperator"></span><h4><code class="docutils literal notranslate"><span class="pre">updateOperator</span></code><a class="headerlink" href="#updateoperator" title="Link to this heading">¶</a></h4>
+<p>Add or remove a number of addresses as operators of the address sending this message.</p>
+<section id="id1">
+<h5>Parameter<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h5>
+<p>The parameter contains a list of operator updates. An operator update contains information whether to add or remove an operator and the address to add/remove as operator.
+It does not contain the address which is adding/removing the operator as this will be the sender of the message invoking this function.</p>
+<p>The parameter is serialized as: first 2 bytes (<code class="docutils literal notranslate"><span class="pre">n</span></code>) for the number of updates followed by this number of operator updates (<code class="docutils literal notranslate"><span class="pre">updates</span></code>).
+An operator update is serialized as: 1 byte (<code class="docutils literal notranslate"><span class="pre">update</span></code>) indicating whether to remove or add an operator, where if the byte value is 0 the sender is removing an operator, if the byte value is 1 the sender is adding an operator.
+The is followed by the operator address (<code class="docutils literal notranslate"><span class="pre">operator</span></code>) <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> to add or remove as operator for the sender:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OperatorUpdate ::= (0: Byte) // Remove operator
+                 | (1: Byte) // Add operator
+
+UpdateOperator ::= (update: OperatorUpdate) (operator: Address)
+
+UpdateOperatorParameter ::= (n: Byte²) (updates: UpdateOperatorⁿ)
+</pre></div>
+</div>
+</section>
+<section id="id2">
+<h5>Requirements<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The list of updates MUST be executed in order.</p></li>
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
+<li><p>The contract function MUST reject if any of the updates fails to be executed.</p></li>
+</ul>
+</section>
+</section>
+<section id="balanceof">
+<span id="cis-1-functions-balanceof"></span><h4><code class="docutils literal notranslate"><span class="pre">balanceOf</span></code><a class="headerlink" href="#balanceof" title="Link to this heading">¶</a></h4>
+<p>Query balances of a list of addresses and token IDs, the result is then sent to a provided contract address.</p>
+<section id="id3">
+<h5>Parameter<a class="headerlink" href="#id3" title="Link to this heading">¶</a></h5>
+<p>The parameter consists of a name of the contract address and receive function to callback with the result and a list of token ID and address pairs.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">resultContract</span></code>) then a <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">resultHook</span></code>) followed by 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of queries (<code class="docutils literal notranslate"><span class="pre">queries</span></code>).
+A query is serialized as <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>) followed by <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">address</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BalanceOfQuery ::= (id: TokenID) (address: Address)
+
+BalanceOfParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (queries: BalanceOfQueryⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.</p>
+</div>
+</section>
+<section id="result-parameter">
+<h5>Result parameter<a class="headerlink" href="#result-parameter" title="Link to this heading">¶</a></h5>
+<p>The parameter for the callback receive function is a list of pairs, where each pair is a query and an amount of tokens.</p>
+<p>It is serialized as: 2 bytes for the number of query-amount pairs (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of pairs (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
+A query-amount pair is serialized as a query (<code class="docutils literal notranslate"><span class="pre">query</span></code>) and then a <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BalanceOfQueryResult ::= (query: BalanceOfQuery) (balance: TokenAmount)
+
+BalanceOfResultParameter ::= (n: Byte²) (results: BalanceOfQueryResultⁿ)
+</pre></div>
+</div>
+</section>
+<section id="id4">
+<h5>Requirements<a class="headerlink" href="#id4" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The balance of an address not owning any amount of a token type SHOULD be treated as having a balance of zero.</p></li>
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The contract function MUST NOT add or remove any operator for any address.</p></li>
+<li><p>The contract function MUST reject if any of the queries fail:</p>
+<ul>
+<li><p>A query MUST fail if the token ID is unknown with error: <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">INVALID_TOKEN_ID</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="operatorof">
+<span id="cis-1-functions-operatorof"></span><h4><code class="docutils literal notranslate"><span class="pre">operatorOf</span></code><a class="headerlink" href="#operatorof" title="Link to this heading">¶</a></h4>
+<p>Query operators with a list of pairs, an owner address and a potential operator address, to check whether the potential operator address is an operator for the owner address.</p>
+<section id="id5">
+<h5>Parameter<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h5>
+<p>The parameter consists of a name of the contract address and receive function to callback with the result and a list of address pairs.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">resultContract</span></code>) then a <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">resultHook</span></code>) followed by 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of queries (<code class="docutils literal notranslate"><span class="pre">queries</span></code>).
+A query is serialized as <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>) followed by <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">address</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OperatorOfQuery ::= (owner: Address) (address: Address)
+
+OperatorOfParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (queries: OperatorOfQueryⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the size limit on contract function parameters which currently is 1024 bytes, which puts a limit on the number of queries depending on the name of the receive function.</p>
+</div>
+</section>
+<section id="id6">
+<h5>Result parameter<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h5>
+<p>The parameter for the callback receive function is a list of pairs, where each pair consist of a query and a boolean.</p>
+<p>It is serialized as: 2 bytes for the number of query-boolean pairs (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of pairs (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
+A query-boolean pair is serialized as a query (<code class="docutils literal notranslate"><span class="pre">query</span></code>) and then a byte with value 0 for false and 1 for true (<code class="docutils literal notranslate"><span class="pre">isOperator</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bool ::= (0: Byte) // False
+       | (1: Byte) // True
+
+OperatorOfQueryResult ::= (query: OperatorOfQuery) (isOperator: Bool)
+
+OperatorOfResultParameter ::= (n: Byte²) (results: OperatorOfQueryResultⁿ)
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h5>Requirements<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The contract function MUST NOT add or remove any operator for any address.</p></li>
+<li><p>The contract function MUST reject if any of the queries fail.</p></li>
+</ul>
+</section>
+</section>
+<section id="tokenmetadata">
+<span id="cis-1-functions-tokenmetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code><a class="headerlink" href="#tokenmetadata" title="Link to this heading">¶</a></h4>
+<p>Query the current token metadata URLs for a list of token IDs, and send the result to a provided contract address.</p>
+<section id="id8">
+<h5>Parameter<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h5>
+<p>The parameter consists of a name of the contract address and receive function to callback with the result and a list of token IDs.</p>
+<p>It is serialized as: a <a class="reference internal" href="#cis-1-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">resultContract</span></code>) then a <a class="reference internal" href="#cis-1-receivehookname"><span class="std std-ref">ReceiveHookName</span></a> (<code class="docutils literal notranslate"><span class="pre">resultHook</span></code>) followed by 1 byte for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">ids</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataParameter ::= (resultContract: ContractAddress) (resultHook: ReceiveHookName) (n: Byte²) (ids: TokenIDⁿ)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the size limit on contract function parameters which is currently 1024 bytes, which puts a limit on the number of queries depending on the byte size of the Token ID and the name of the receive function.</p>
+</div>
+</section>
+<section id="id9">
+<h5>Result parameter<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h5>
+<p>The parameter for the callback receive function is a list of pairs, where each pair consist of a token ID and the corresponding token metadata URL.</p>
+<p>It is serialized as: 2 bytes for the number of queries (<code class="docutils literal notranslate"><span class="pre">n</span></code>) and then this number of result pairs (<code class="docutils literal notranslate"><span class="pre">results</span></code>).
+A pair is serialized as a <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>) and then a <a class="reference internal" href="#cis-1-metadataurl"><span class="std std-ref">MetadataUrl</span></a> (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataResult ::= (id: TokenID) (metadata: MetadataUrl)
+
+TokenMetadataResultParameter ::= (n: Byte²) (results: TokenMetadataResultⁿ)
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h5>Requirements<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The contract function MUST NOT increase or decrease the balance of any address for any token type.</p></li>
+<li><p>The contract function MUST NOT add or remove any operator for any address.</p></li>
+<li><p>The contract function MUST reject if any of the queries fail:</p>
+<ul>
+<li><p>A query MUST fail if the token ID is unknown with error: <a class="reference internal" href="#cis-1-rejection-errors"><span class="std std-ref">INVALID_TOKEN_ID</span></a>.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<section id="logged-events">
+<h3>Logged events<a class="headerlink" href="#logged-events" title="Link to this heading">¶</a></h3>
+<p>The idea of the logged events for this specification is for off-chain applications to be able to track balances and operators without knowledge of the contract-specific implementation details.
+For this reason it is important to log events in any functionality of the token contract which modifies balances or operators.</p>
+<ul class="simple">
+<li><p>It MUST be possible to derive the balance of an address for a token type from the logged <a class="reference internal" href="#cis-1-event-transfer"><span class="std std-ref">TransferEvent</span></a>, <a class="reference internal" href="#cis-1-event-mint"><span class="std std-ref">MintEvent</span></a> and <a class="reference internal" href="#cis-1-event-burn"><span class="std std-ref">BurnEvent</span></a> events.</p></li>
+<li><p>It MUST be safe to assume that with no events logged, every address have zero tokens and no operators enabled for any address.</p></li>
+</ul>
+<p>The events defined by this specification are serialized using one byte to the discriminate the different events.
+Any custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.</p>
+<section id="transferevent">
+<span id="cis-1-event-transfer"></span><h4><code class="docutils literal notranslate"><span class="pre">TransferEvent</span></code><a class="headerlink" href="#transferevent" title="Link to this heading">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">TransferEvent</span></code> event MUST be logged for every amount of a token type changing ownership from one address to another.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TransferEvent</span></code> event is serialized as: first a byte with the value of 255, followed by the token ID <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), an amount of tokens <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>), from address <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>) and to address <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TransferEvent ::= (255: Byte) (id: TokenID) (amount: TokenAmount) (from: Address) (to: Address)
+</pre></div>
+</div>
+</section>
+<section id="mintevent">
+<span id="cis-1-event-mint"></span><h4><code class="docutils literal notranslate"><span class="pre">MintEvent</span></code><a class="headerlink" href="#mintevent" title="Link to this heading">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">MintEvent</span></code> event MUST be logged every time a new token is minted. This also applies when introducing new token types and the initial token types and amounts in a contract.
+Minting a token with a zero amount can be used to indicating the existence of a token type without minting any amount of tokens.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">MintEvent</span></code> event is serialized as: first a byte with the value of 254, followed by the token ID <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), an amount of tokens being minted <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>) and the owner address of the tokens <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">to</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>MintEvent ::= (254: Byte) (id: TokenID) (amount: TokenAmount) (to: Address)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the limit on the number of logs per smart contract function call which currently is 64.
+A token smart contract function which needs to mint a large number of token types with token metadata might hit this limit.</p>
+</div>
+</section>
+<section id="burnevent">
+<span id="cis-1-event-burn"></span><h4><code class="docutils literal notranslate"><span class="pre">BurnEvent</span></code><a class="headerlink" href="#burnevent" title="Link to this heading">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">BurnEvent</span></code> event MUST be logged every time an amount of a token type is burned.</p>
+<p>Summing all of the minted amounts from <code class="docutils literal notranslate"><span class="pre">MintEvent</span></code> events and subtracting all of the burned amounts from <code class="docutils literal notranslate"><span class="pre">BurnEvent</span></code> events for a token type MUST sum up to the total supply for the token type.
+The total supply of a token type MUST be in the inclusive range of [0, 2^64 - 1].</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">BurnEvent</span></code> event is serialized as: first a byte with the value of 253, followed by the token ID <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>), an amount of tokens being burned <a class="reference internal" href="#cis-1-tokenamount"><span class="std std-ref">TokenAmount</span></a> (<code class="docutils literal notranslate"><span class="pre">amount</span></code>) and the owner address of the tokens <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">from</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BurnEvent ::= (253: Byte) (id: TokenID) (amount: TokenAmount) (from: Address)
+</pre></div>
+</div>
+</section>
+<section id="updateoperatorevent">
+<span id="cis-1-event-updateoperator"></span><h4><code class="docutils literal notranslate"><span class="pre">UpdateOperatorEvent</span></code><a class="headerlink" href="#updateoperatorevent" title="Link to this heading">¶</a></h4>
+<p>The event to log when updating an operator of some address.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">UpdateOperatorEvent</span></code> event is serialized as: first a byte with the value of 252, followed by a <code class="docutils literal notranslate"><span class="pre">OperatorUpdate</span></code> (<code class="docutils literal notranslate"><span class="pre">update</span></code>), then the owner address updating an operator <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>) and an operator address <a class="reference internal" href="#cis-1-address"><span class="std std-ref">Address</span></a> (<code class="docutils literal notranslate"><span class="pre">operator</span></code>) being added or removed:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UpdateOperatorEvent ::= (252: Byte) (update: OperatorUpdate) (owner: Address) (operator: Address)
+</pre></div>
+</div>
+</section>
+<section id="tokenmetadataevent">
+<span id="cis-1-event-tokenmetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code><a class="headerlink" href="#tokenmetadataevent" title="Link to this heading">¶</a></h4>
+<p>The event to log when setting the metadata url for a token type.</p>
+<p>It consists of a token ID and a URL (<span class="target" id="index-1"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc3986.html"><strong>RFC 3986</strong></a>) for the location of the metadata for this token type with an optional SHA256 checksum of the content.
+Logging the <code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code> event again with the same token ID, is used to update the metadata location and only the most recently logged token metadata event for certain token id should be used to get the token metadata.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code> event is serialized as: first a byte with the value of 251, followed by the token ID <a class="reference internal" href="#cis-1-tokenid"><span class="std std-ref">TokenID</span></a> (<code class="docutils literal notranslate"><span class="pre">id</span></code>) and then a <a class="reference internal" href="#cis-1-metadataurl"><span class="std std-ref">MetadataUrl</span></a> (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>TokenMetadataEvent ::= (251: Byte) (id: TokenID) (metadata: MetadataUrl)
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Be aware of the limit on the number of logs per smart contract function call, which currently is 64, and also the byte size limit on each logged event, which currently is 512 bytes.
+This will limit the length of the metadata URL depending on the size of the token ID and whether a content hash is included.
+With the largest possible token ID and a content hash included; the URL can be up to 220 bytes.</p>
+</div>
+</section>
+</section>
+<section id="rejection-errors">
+<span id="cis-1-rejection-errors"></span><h3>Rejection errors<a class="headerlink" href="#rejection-errors" title="Link to this heading">¶</a></h3>
+<p>A smart contract following this specification MUST reject the specified errors found in this specification with the following error codes:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Error code</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>INVALID_TOKEN_ID</p></td>
+<td><p>-42000001</p></td>
+<td><p>A provided token ID it not part of this token contract.</p></td>
+</tr>
+<tr class="row-odd"><td><p>INSUFFICIENT_FUNDS</p></td>
+<td><p>-42000002</p></td>
+<td><p>An address balance contains insufficient amount of tokens to complete some transfer of a token.</p></td>
+</tr>
+<tr class="row-even"><td><p>UNAUTHORIZED</p></td>
+<td><p>-42000003</p></td>
+<td><p>Sender is unauthorized to call this function. Note authorization is not mandated anywhere in this specification, but can still be introduced on top of the standard.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The smart contract implementing this specification MAY introduce custom error codes other than the ones specified in the table above.</p>
+</section>
+<section id="token-metadata-json">
+<h3>Token metadata JSON<a class="headerlink" href="#token-metadata-json" title="Link to this heading">¶</a></h3>
+<p>The token metadata is stored off chain and MUST be a JSON (<span class="target" id="index-2"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8259.html"><strong>RFC 8259</strong></a>) file.</p>
+<p>All of the fields in the JSON file are optional, and this specification reserves a number of field names, shown in the table below.</p>
+<div class="table-wrapper docutils container" id="id11">
+<table class="docutils align-default" id="id11">
+<caption><span class="caption-text">Token metadata JSON Object</span><a class="headerlink" href="#id11" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>JSON value type [JSON-Schema]</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>The name to display for the token type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">symbol</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>Short text to display for the token type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">decimals</span></code> (optional)</p></td>
+<td><p>number [<code class="docutils literal notranslate"><span class="pre">integer</span></code>]</p></td>
+<td><p>The number of decimals, when displaying an amount of this token type in a user interface.
+If the decimal is set to <code class="docutils literal notranslate"><span class="pre">d</span></code> then a token amount <code class="docutils literal notranslate"><span class="pre">a</span></code> should be displayed as <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">*</span> <span class="pre">10^(-d)</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>A description for this token type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">thumbnail</span></code> (optional)</p></td>
+<td><p>URL JSON object</p></td>
+<td><p>An image URL to a small image for displaying the asset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">display</span></code> (optional)</p></td>
+<td><p>URL JSON object</p></td>
+<td><p>An image URL to a large image for displaying the asset.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">artifact</span></code> (optional)</p></td>
+<td><p>URL JSON object</p></td>
+<td><p>A URL to the token asset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">assets</span></code> (optional)</p></td>
+<td><p>JSON array of Token metadata JSON objects</p></td>
+<td><p>Collection of assets.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">attributes</span></code> (optional)</p></td>
+<td><p>JSON array of Attribute JSON objects</p></td>
+<td><p>Assign a number of attributes to the token type.
+Attributes can be used to include extra information about the token type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">localization</span></code> (optional)</p></td>
+<td><p>JSON object with locales as field names (<span class="target" id="index-3"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc5646.html"><strong>RFC 5646</strong></a>) and field values are URL JSON object to JSON files.</p></td>
+<td><p>URL’s to JSON files with localized token metadata.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Optionally a SHA256 hash of the JSON file can be logged with the TokenMetadata event for checking integrity.
+Since the metadata json file could contain URLs, a SHA256 hash can optionally be associated with the URL.
+To associate a hash with a URL the JSON value is an object:</p>
+<div class="table-wrapper docutils container" id="id12">
+<table class="docutils align-default" id="id12">
+<caption><span class="caption-text">URL JSON Object</span><a class="headerlink" href="#id12" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>JSON value type [JSON-Schema]</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">url</span></code></p></td>
+<td><p>string (<span class="target" id="index-4"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc3986.html"><strong>RFC 3986</strong></a>) [<code class="docutils literal notranslate"><span class="pre">uri-reference</span></code>]</p></td>
+<td><p>A URL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hash</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>A SHA256 hash of the URL content encoded as a hex string.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Attributes are objects with the following fields:</p>
+<div class="table-wrapper docutils container" id="id13">
+<table class="docutils align-default" id="id13">
+<caption><span class="caption-text">Attribute JSON object</span><a class="headerlink" href="#id13" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>JSON value type [JSON-Schema]</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Type for the value field of the attribute.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Name of the attribute.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">value</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Value of the attrbute.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="example-token-metadata-fungible">
+<h4>Example token metadata: Fungible<a class="headerlink" href="#example-token-metadata-fungible" title="Link to this heading">¶</a></h4>
+<p>An example of token metadata for a CIS1 implementation wrapping the GTU could be:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Wrapped GTU Token&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;symbol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;wGTU&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;decimals&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;A CIS1 token wrapping the Global Transaction Unit&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;thumbnail&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/thumbnail.png&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;display&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/display.png&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;artifact&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/artifact.png&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;localization&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;da-DK&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/danish/metadata.json&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;624a1a7e51f7a87effbf8261426cb7d436cf597be327ebbf113e62cb7814a34b&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The danish localization JSON file could be:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CIS1 indpakket GTU&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="example-token-metadata-non-fungible">
+<h4>Example token metadata: Non-fungible<a class="headerlink" href="#example-token-metadata-non-fungible" title="Link to this heading">¶</a></h4>
+<p>An example of token metadata for a NFT could be:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bibi - The Ryan Cat&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ryan cats are lonely creatures travelling the galaxy in search of their ancestors and true inheritance&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;thumbnail&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/thumbnail.png&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;display&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/display.png&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;attributes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;date&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Birthday&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1629792199610&quot;</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Body&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Strong&quot;</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Head&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Round&quot;</span>
+<span class="w">  </span><span class="p">},</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Tail&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Short&quot;</span>
+<span class="w">  </span><span class="p">}],</span>
+<span class="w">  </span><span class="nt">&quot;localization&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;da-DK&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;url&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://location.of/the/danish/metadata.json&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;hash&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;588d7c14883231cfee522479cc66565fd9a50024603a7b8c99bd7869ca2f0ea3&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The danish localization JSON file could be:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Bibi - Ryan katten&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Ryan katte er ensomme væsner, som rejser rundt i galaxen søgende efter deres forfædre og sande fortid&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="smart-contract-limitations">
+<h2>Smart contract limitations<a class="headerlink" href="#smart-contract-limitations" title="Link to this heading">¶</a></h2>
+<p>A number of limitations are important to be aware of:</p>
+<ul class="simple">
+<li><p>Smart contract state size is limited to 16 KiB.</p></li>
+<li><p>Smart contract function parameters are limited to 1 KiB.</p></li>
+<li><p>Each logged event is limited to 0.5 KiB.</p></li>
+<li><p>The number of logged events is limited to 64 per contract function invocation.</p></li>
+<li><p>The total size of the smart contract module is limited to 64 KiB.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Smart contracts, where the contract state size limit is too low, can distribute the state across multiple smart contract instances.</p>
+</div>
+</section>
+<section id="decisions-and-rationale">
+<h2>Decisions and rationale<a class="headerlink" href="#decisions-and-rationale" title="Link to this heading">¶</a></h2>
+<p>In this section we point out some of the differences from other popular token standards found on other blockchains, and provide reasons for deviating from them in CIS1.</p>
+<section id="token-id-bytes-instead-an-integer">
+<h3>Token ID bytes instead an integer<a class="headerlink" href="#token-id-bytes-instead-an-integer" title="Link to this heading">¶</a></h3>
+<p>Token standards such as ERC721 and ERC1155 both use a 256-bit unsigned integer (32 bytes) for the token ID, to support using something like a SHA256 hash for the token ID.
+But in the case where the token ID have no significance other than a simple identifier, smaller sized token IDs can reduce energy costs.
+This is why we chose to let the first byte indicate the size of the token ID, meaning a token ID can vary between 1 byte and 256 bytes, resulting in more than 10^614 possible token IDs.</p>
+</section>
+<section id="only-batched-transfers">
+<h3>Only batched transfers<a class="headerlink" href="#only-batched-transfers" title="Link to this heading">¶</a></h3>
+<p>The specification only has a <code class="docutils literal notranslate"><span class="pre">transfer</span></code> smart contract function which takes list of transfer and no function for a single transfer.
+This will result in lower energy cost compared to multiple contract calls and only introduces a small overhead for single transfers.
+The reason for not also including a single transfer function is to have smaller smart contract modules, which in turn leads to saving cost on every function call.</p>
+</section>
+<section id="no-explicit-authorization">
+<h3>No explicit authorization<a class="headerlink" href="#no-explicit-authorization" title="Link to this heading">¶</a></h3>
+<p>The specification does not mandate any authorization scheme and one might expect a requirement for the owner and operators being authorized to transfer tokens.
+This is very much intentional and the reasoning for this is to keep the specification focused on the interface for transferring token ownership with as few restrictions as possible.</p>
+<p>Having a requirement that only owners and operators can transfer would prevent introducing any other authorization scheme on top of this specification.</p>
+<p>Adding a requirement for owners and operators being authorized to transfer tokens would prevent introducing custom contract logic rejecting transfers, such as limiting the daily transfers, temporary token lockups or non-transferrable tokens.</p>
+<p>Instead, this specification includes a requirement to ensure transfers by operators are executed as if they are sent by the owner, meaning whenever a token owner is authorized, so is an operator of the owner.</p>
+<p>Most contracts implementing this specification should probably add some authorization and not have anyone being able to transfer any token, but this is not in the scope of this standard.</p>
+</section>
+<section id="no-token-level-approval-allowance-like-in-erc20-and-erc721">
+<h3>No token-level approval/allowance like in ERC20 and ERC721<a class="headerlink" href="#no-token-level-approval-allowance-like-in-erc20-and-erc721" title="Link to this heading">¶</a></h3>
+<p>This standard only specifies address-level operators and not token-level operators.
+The main argument is simplicity and to save energy cost on common cases, but other reasons are:</p>
+<ul class="simple">
+<li><p>Token-level operators require the token smart contract to track more state, which increases the overall energy cost.</p></li>
+<li><p>For token smart contracts with a lot of token types, such as a smart contract with a large collection of NFTs, token-level operators could become very expensive.</p></li>
+<li><p>For fungible tokens; <a class="reference external" href="https://docs.google.com/document/d/1YLPtQxZu1UAvO9cZ1O2RPXBbT0mooh4DYKjA_jp-RLM/edit">approval/allowance introduces an attack vector</a>.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The specification does not prevent adding more fine-grained authorization, such as token-level operators.</p>
+</div>
+</section>
+<section id="receive-hook-function">
+<h3>Receive hook function<a class="headerlink" href="#receive-hook-function" title="Link to this heading">¶</a></h3>
+<p>The specification requires a token receive hook to be called on a smart contract receiving tokens, this will in some cases prevent mistakes such as sending tokens to smart contracts which do not define behavior for receiving tokens.
+These token could then be lost forever.</p>
+<p>The reason for this not being optional is to allow other smart contracts which integrate with a token smart contract to rely on this for functionality.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The smart contract receive hook function could be called by any smart contract and it is up to the integrating contract whether to trust the token contract.</p>
+</div>
+</section>
+<section id="receive-hook-function-callback-argument">
+<h3>Receive hook function callback argument<a class="headerlink" href="#receive-hook-function-callback-argument" title="Link to this heading">¶</a></h3>
+<p>The name of the receive hook function called on a smart contract receiving tokens is supplied as part of the parameter.
+This allows for a smart contract integrating with a token smart contract to have multiple hooks and leave it to the caller to know which hook they want to trigger.</p>
+<p>Another technical reason is that the name of the smart contract is part of the smart contract receive function name, which means the specification would include a requirement of the smart contract name for others to integrate reliably.</p>
+</section>
+<section id="no-sender-hook-function">
+<h3>No sender hook function<a class="headerlink" href="#no-sender-hook-function" title="Link to this heading">¶</a></h3>
+<p>The FA2 token standard found on Tezos, allows for a hook function to be called on a smart contract sending tokens, such that the contract could reject the transfer on some criteria.
+This seems to only make sense, if some operator is transferring tokens from a contract, in which case the sender smart contract might as well contain the logic to transfer the tokens and trigger this directly.</p>
+</section>
+<section id="explicit-events-for-mint-and-burn">
+<h3>Explicit events for mint and burn<a class="headerlink" href="#explicit-events-for-mint-and-burn" title="Link to this heading">¶</a></h3>
+<p>ERC20, ERC721 and ERC1155 use a transfer event from or to the zero address to indicate mint and burn respectively, but since there are no such thing as the zero address on the Concordium blockchain these events are separate.
+Making it more explicit instead of special case transfer events.</p>
+</section>
+<section id="no-error-code-for-receive-hook-rejecting">
+<h3>No error code for receive hook rejecting<a class="headerlink" href="#no-error-code-for-receive-hook-rejecting" title="Link to this heading">¶</a></h3>
+<p>The specification could include an error code for the receive hook function to return if rejecting the token transferred (as seen in the <a class="reference external" href="https://gitlab.com/tezos/tzip/-/blob/master/proposals/tzip-12/tzip-12.md#error-handling">FA2 standard</a> on Tezos).
+But we chose to leave this error code up to the receiving smart contract, which allows for more informative error codes.</p>
+</section>
+<section id="adding-sha256-checksum-for-token-metadata-event">
+<h3>Adding SHA256 checksum for token metadata event<a class="headerlink" href="#adding-sha256-checksum-for-token-metadata-event" title="Link to this heading">¶</a></h3>
+<p>A token can optionally include a SHA256 checksum when logging the token metadata event, this is to ensure the integrity of the token metadata.
+This checksum can be updated by logging a new event.</p>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="cis-2.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">CIS-2: Concordium Token Standard 2</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="cis-0.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">CIS-0: Standard Detection</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Concordium
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">CIS-1: Concordium Token Standard</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#specification">Specification</a><ul>
+<li><a class="reference internal" href="#general-types-and-serialization">General types and serialization</a><ul>
+<li><a class="reference internal" href="#tokenid"><code class="docutils literal notranslate"><span class="pre">TokenID</span></code></a></li>
+<li><a class="reference internal" href="#tokenamount"><code class="docutils literal notranslate"><span class="pre">TokenAmount</span></code></a></li>
+<li><a class="reference internal" href="#receivehookname"><code class="docutils literal notranslate"><span class="pre">ReceiveHookName</span></code></a></li>
+<li><a class="reference internal" href="#contractname"><code class="docutils literal notranslate"><span class="pre">ContractName</span></code></a></li>
+<li><a class="reference internal" href="#accountaddress"><code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code></a></li>
+<li><a class="reference internal" href="#contractaddress"><code class="docutils literal notranslate"><span class="pre">ContractAddress</span></code></a></li>
+<li><a class="reference internal" href="#address"><code class="docutils literal notranslate"><span class="pre">Address</span></code></a></li>
+<li><a class="reference internal" href="#receiver"><code class="docutils literal notranslate"><span class="pre">Receiver</span></code></a></li>
+<li><a class="reference internal" href="#additionaldata"><code class="docutils literal notranslate"><span class="pre">AdditionalData</span></code></a></li>
+<li><a class="reference internal" href="#metadataurl"><code class="docutils literal notranslate"><span class="pre">MetadataUrl</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#contract-functions">Contract functions</a><ul>
+<li><a class="reference internal" href="#transfer"><code class="docutils literal notranslate"><span class="pre">transfer</span></code></a><ul>
+<li><a class="reference internal" href="#parameter">Parameter</a></li>
+<li><a class="reference internal" href="#receive-hook-parameter">Receive hook parameter</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#updateoperator"><code class="docutils literal notranslate"><span class="pre">updateOperator</span></code></a><ul>
+<li><a class="reference internal" href="#id1">Parameter</a></li>
+<li><a class="reference internal" href="#id2">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#balanceof"><code class="docutils literal notranslate"><span class="pre">balanceOf</span></code></a><ul>
+<li><a class="reference internal" href="#id3">Parameter</a></li>
+<li><a class="reference internal" href="#result-parameter">Result parameter</a></li>
+<li><a class="reference internal" href="#id4">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#operatorof"><code class="docutils literal notranslate"><span class="pre">operatorOf</span></code></a><ul>
+<li><a class="reference internal" href="#id5">Parameter</a></li>
+<li><a class="reference internal" href="#id6">Result parameter</a></li>
+<li><a class="reference internal" href="#id7">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tokenmetadata"><code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code></a><ul>
+<li><a class="reference internal" href="#id8">Parameter</a></li>
+<li><a class="reference internal" href="#id9">Result parameter</a></li>
+<li><a class="reference internal" href="#id10">Requirements</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#logged-events">Logged events</a><ul>
+<li><a class="reference internal" href="#transferevent"><code class="docutils literal notranslate"><span class="pre">TransferEvent</span></code></a></li>
+<li><a class="reference internal" href="#mintevent"><code class="docutils literal notranslate"><span class="pre">MintEvent</span></code></a></li>
+<li><a class="reference internal" href="#burnevent"><code class="docutils literal notranslate"><span class="pre">BurnEvent</span></code></a></li>
+<li><a class="reference internal" href="#updateoperatorevent"><code class="docutils literal notranslate"><span class="pre">UpdateOperatorEvent</span></code></a></li>
+<li><a class="reference internal" href="#tokenmetadataevent"><code class="docutils literal notranslate"><span class="pre">TokenMetadataEvent</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rejection-errors">Rejection errors</a></li>
+<li><a class="reference internal" href="#token-metadata-json">Token metadata JSON</a><ul>
+<li><a class="reference internal" href="#example-token-metadata-fungible">Example token metadata: Fungible</a></li>
+<li><a class="reference internal" href="#example-token-metadata-non-fungible">Example token metadata: Non-fungible</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#smart-contract-limitations">Smart contract limitations</a></li>
+<li><a class="reference internal" href="#decisions-and-rationale">Decisions and rationale</a><ul>
+<li><a class="reference internal" href="#token-id-bytes-instead-an-integer">Token ID bytes instead an integer</a></li>
+<li><a class="reference internal" href="#only-batched-transfers">Only batched transfers</a></li>
+<li><a class="reference internal" href="#no-explicit-authorization">No explicit authorization</a></li>
+<li><a class="reference internal" href="#no-token-level-approval-allowance-like-in-erc20-and-erc721">No token-level approval/allowance like in ERC20 and ERC721</a></li>
+<li><a class="reference internal" href="#receive-hook-function">Receive hook function</a></li>
+<li><a class="reference internal" href="#receive-hook-function-callback-argument">Receive hook function callback argument</a></li>
+<li><a class="reference internal" href="#no-sender-hook-function">No sender hook function</a></li>
+<li><a class="reference internal" href="#explicit-events-for-mint-and-burn">Explicit events for mint and burn</a></li>
+<li><a class="reference internal" href="#no-error-code-for-receive-hook-rejecting">No error code for receive hook rejecting</a></li>
+<li><a class="reference internal" href="#adding-sha256-checksum-for-token-metadata-event">Adding SHA256 checksum for token metadata event</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

@@ -1,0 +1,25 @@
+==============================================================
+Protocol Update 4 - Sirius - Delegation and new contract state
+==============================================================
+
+.. list-table::
+   :stub-columns: 1
+
+   * - Effective on Mainnet
+     - Jun 23, 2022
+   * - Effective on Testnet
+     - Jun 13, 2022
+   * - Specification hash
+     - ``20c6f246713e573fb5bfdf1e59c0a6f1a37cded34ff68fda4a60aa2ed9b151aa``
+
+Specification
+=============
+
+.. include:: ../../updates/P4.txt
+   :literal:
+
+Commentary
+==========
+
+.. include:: ../../commentary/P4-commentary.txt
+   :literal:
