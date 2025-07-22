@@ -117,7 +117,7 @@ The following behaviours are changed in protocol version 9.
     
    `CreatePLT` updates are executed immediately when they occur in blocks. This differs
    from existing chain updates, which are added to update queues and executed in the
-   first future block after a specified time. A `CreatePLT` updates creates the new PLT
+   first future block after a specified time. A `CreatePLT` update creates the new PLT
    with the specified configuration. If specified, an initial amount is minted to the
    governance account. Invalid `CreatePLT` updates cannot occur in valid blocks. A
    `CreatePLT` update may be invalid if the TokenId already exists or the configuration
