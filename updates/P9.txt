@@ -35,9 +35,10 @@ the token representation.
 
 The governance account for a PLT is a Concordium account that is granted
 capabilities to perform administrative operations associated with the PLT. These
-consist of pausing or un-pausing token transfers, adding or removing accounts from
-the allow and deny lists (if they are enabled), minting and burning tokens (if
-enabled, and transfers are not paused).
+consist of pausing or un-pausing token balance change operations (mint, burn, and
+transfer operations), adding or removing accounts from the allow and deny lists
+(if they are enabled), minting and burning tokens (if enabled, and the PLT is not
+paused).
 
 PLTs may be held by Concordium accounts. An account may send an amount of a PLT to
 another account with a transfer operation. If the PLT supports an allow list, both
@@ -47,6 +48,11 @@ transfer will also fail if the PLT is currently globally paused, or if the sende
 has insufficient balance to cover the transfer. Similarly to regular CCD transfers,
 PLT transfers can include a memo of up to 255 bytes and may reference the recipient
 account by an alias.
+
+Each PLT specifies the number of decimal places (d) used in its representation, from
+0 to 255. PLT amounts are represented using unsigned 64-bit values, which limits the
+maximum representable amount to (2^64-1) * 10^(-d) (approximately 1.84 * 10^(19-d))
+which limits the useful range of the number of decimal places.
 
                                Changes
 
@@ -66,13 +72,13 @@ The following behaviours are changed in protocol version 9.
        The list is initially empty.
     
     (b) Each account maintains a list of balances of PLTs held on the account.
-        The balance may be 0. An account does not necessarily have balances for
-        all extant PLTs. The list is initially empty.
+        The balance may be 0. An account does not necessarily have a balance for
+        every existing PLT. The list is initially empty.
     
-    (c) The chain updates adds a `CreatePLT` access structure to the level-2 keys
-        and a sequence number for updates authorized by these keys. The initial
-        access structure is defined by the auxiliary data provided by the protocol
-        update. The initial next sequence number is 1.
+    (c) The "chain updates" data structure adds a `CreatePLT` access structure to
+        the level-2 keys and a sequence number for updates authorized by these keys.
+        The initial access structure is defined by the auxiliary data provided by
+        the protocol update. The initial next sequence number is 1.
 
 2. A new level 2 update instruction (payload `CreatePLT`) is added. It is
    authorized by a new access structure on the level 2 keys: the `CreatePLT` keys.
@@ -169,7 +175,7 @@ The following behaviours are changed in protocol version 9.
         (c) The PLT configuration supports minting; otherwise fail with
             `unsupportedOperation`.
 
-        (d) The total supply of the token after minting does not seed the maximum
+        (d) The total supply of the token after minting does not exceed the maximum
             representable amount ((2^64 - 1) * 10^(-decimals)); otherwise fail with
             `mintWouldOverflow`.
     
@@ -265,7 +271,7 @@ The following behaviours are changed in protocol version 9.
       The incremental cost of a pause operation is 50. If successful, the operation
       generates a `TokenModuleEvent` wrapping a `pause` event.
     
-    - `unpause`: resume all balance-changing operations (transer, mint, and burn)
+    - `unpause`: resume all balance-changing operations (transfer, mint, and burn)
       for the PLT. To succeed, the following condition must hold:
 
         (a) The sender account is the PLT's governance account; otherwise fail
@@ -286,7 +292,7 @@ The following behaviours are changed in protocol version 9.
 
    In the event that one operation in a `TokenUpdate` transaction fails, none of
    the operations has any effect. Nonetheless, energy is charged for the
-   operations up to an including the first failed operation.
+   operations up to and including the first failed operation.
 
                      Protocol update instruction
 
