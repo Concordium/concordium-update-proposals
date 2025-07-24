@@ -276,7 +276,7 @@
 <td><p>TBD</p></td>
 </tr>
 <tr class="row-odd"><th class="stub"><p>Specification hash</p></th>
-<td><p>TBD</p></td>
+<td><p>38c093fafce85684da59135441f37ebf4ece195be15e23ab9072d3d12d6dc3a7</p></td>
 </tr>
 </tbody>
 </table>
@@ -336,8 +336,9 @@ account by an alias.
 
 Each PLT specifies the number of decimal places (d) used in its representation, from
 0 to 255. PLT amounts are represented using unsigned 64-bit values, which limits the
-maximum representable amount to (2^64-1) * 10^(-d) (approximately 1.84 * 10^(19-d))
-which limits the useful range of the number of decimal places.
+maximum representable amount to (2^64-1) * 10^(-d) (approximately 1.84 * 10^(19-d)).
+The useful range of the number of decimal places is thus more limited than the
+permitted range.
 
                                Changes
 
@@ -351,15 +352,15 @@ The following behaviours are changed in protocol version 9.
 
         - The mutable state of the PLT. This is stored in a trie datastructure that
           provides a key-value map interface.
-        
+
         - The current circulating supply of the PLT.
 
        The list is initially empty.
-    
+
     (b) Each account maintains a list of balances of PLTs held on the account.
         The balance may be 0. An account does not necessarily have a balance for
         every existing PLT. The list is initially empty.
-    
+
     (c) The &quot;chain updates&quot; data structure adds a `CreatePLT` access structure to
         the level-2 keys and a sequence number for updates authorized by these keys.
         The initial access structure is defined by the auxiliary data provided by
@@ -381,7 +382,7 @@ The following behaviours are changed in protocol version 9.
       This must be at least 0 and at most 255.
 
     - CBOR-encoded parameters that are used by the Token Module to initialize the PLT.
-      This includes:
+      These include:
 
         - The token name.
 
@@ -399,7 +400,7 @@ The following behaviours are changed in protocol version 9.
         - Optionally, whether tokens can be minted. (Defaults to no.)
 
         - Optionally, whether tokens can be burnt. (Defaults to no.)
-    
+
    `CreatePLT` updates are executed immediately when they occur in blocks. This differs
    from existing chain updates, which are added to update queues and executed in the
    first future block after a specified time. A `CreatePLT` update creates the new PLT
@@ -412,11 +413,11 @@ The following behaviours are changed in protocol version 9.
 3. A new transaction payload type (`TokenUpdate`) is added. It is identified by payload
    type 27. The payload consists of the TokenId of the PLT the update pertains to and
    a CBOR-encoded list of operations to perform. If the PLT does not exist, the transaction
-   is rejected with a `NonExistentTokenId` reject reason. 
-   
+   is rejected with a `NonExistentTokenId` reject reason.
+
    The Token Module is responsible for decoding and executing the list of operations.
    If the Token Module cannot decode and execute the operations, the transaction is
-   rejected with a `TokenUpdateTransactionFailed`, which specifies a type of the
+   rejected with a `TokenUpdateTransactionFailed`, which specifies the type of the
    failure and, potentially, CBOR-encoded details associated with the failure.
    If the list cannot be decoded successfully, the Token Module fails with a
    `deserializationFailure`. The following operations are supported:
@@ -440,14 +441,14 @@ The following behaviours are changed in protocol version 9.
 
         (f) If the PLT supports a deny list, the recipient is not on the deny list;
             otherwise fail with `operationNotPermitted`.
-        
+
         (g) The sender&#39;s balance is sufficient to cover the transfer; otherwise fail
             with `tokenBalanceInsufficient`.
 
        The incremental energy cost of a transfer operation is 100. If successful,
        the operation generates a `TokenTransfer` event specifying the TokenId,
        sender, receiver, amount, and (if specified) memo.
-    
+
     - `mint`: mint a specified amount to the sender&#39;s account. This increases the
       total supply and the balance of the sender&#39;s account by the specified amount.
       To succeed, the following conditions must hold:
@@ -463,7 +464,7 @@ The following behaviours are changed in protocol version 9.
         (d) The total supply of the token after minting does not exceed the maximum
             representable amount ((2^64 - 1) * 10^(-decimals)); otherwise fail with
             `mintWouldOverflow`.
-    
+
        The incremental energy cost of a mint operation is 50. If successful, the
        operation generates a `TokenMint` event specifying the TokenId, sender account,
        and minted amount.
@@ -471,7 +472,7 @@ The following behaviours are changed in protocol version 9.
     - `burn`: burn a specified amount from the sender&#39;s account. This decreases
       the total supply and the balance of the sender&#39;s account by the specified
       amount. To succeed, the following conditions must hold:
-    
+
         (a) The account is the PLT&#39;s governance account; otherwise fail with
             `operationNotPermitted`.
 
@@ -479,14 +480,14 @@ The following behaviours are changed in protocol version 9.
 
         (c) The PLT configuration supports burning; otherwise fail with
             `unsupportedOperation`.
-        
+
         (d) The balance of the sender account must be at least the specified amount;
             otherwise fail with `tokenBalanceInsufficient`.
-        
+
       The incremental energy cost of a burn operation is 50. If successful, the
       operation generates a `TokenBurn` event specifying the TokenId, sender account,
       and burnt amount.
-    
+
     - `addAllowList`: add a specified target account to the allow list. To succeed,
       the following conditions must hold:
 
@@ -496,8 +497,8 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports an allow list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
-    
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping an `addAllowList` event
       that specifies the target account.
@@ -511,8 +512,8 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports an allow list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
-    
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping a `removeAllowList`
       event that specifies the target account.
@@ -526,8 +527,8 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports a deny list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
-    
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping an `addDenyList` event
       that specifies the target account.
@@ -541,27 +542,27 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports a deny list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
-    
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping a `removeDenyList`
       event that specifies the target account.
-    
+
     - `pause`: suspend all balance-changing operations (transfer, mint, and burn)
       for the PLT. To succeed, the following condition must hold:
 
         (a) The sender account is the PLT&#39;s governance account; otherwise fail
             with `operationNotPermitted`.
-    
+
       The incremental cost of a pause operation is 50. If successful, the operation
       generates a `TokenModuleEvent` wrapping a `pause` event.
-    
+
     - `unpause`: resume all balance-changing operations (transfer, mint, and burn)
       for the PLT. To succeed, the following condition must hold:
 
         (a) The sender account is the PLT&#39;s governance account; otherwise fail
             with `operationNotPermitted`.
-    
+
       The incremental cost of an unpause operation is 50. If successful, the
       operation generates a `TokenModuleEvent` wrapping an `unpause` event.
 
@@ -569,7 +570,7 @@ The following behaviours are changed in protocol version 9.
 
     - The general transaction base cost:
         100 * `number of signatures` + `total size of transaction payload and header`
-    
+
     - The token update base cost: 300
 
     - The total incremental cost of executed operations, excluding any operations
@@ -601,8 +602,55 @@ file. The instruction needs the following auxiliary data:
 Protocol Version: 9
 Builds on Protocol Version: 8
 
-Protocol version 9 introduces Protocol-Level Tokens (PLTs), which enable chain-native support for
-tokens other than CCD, without reliance on smart contracts.
+Protocol version 9 introduces Protocol-Level Tokens (PLTs), which enable
+chain-native support for tokens other than CCD, without reliance on smart
+contracts. Since they are implemented natively, PLTs can be cheaper and
+more efficient than smart-contract-based tokens, which incur runtime
+overheads.
+
+Protocol-Level Tokens are intended to provide a high-assurance platform
+for implementing tokens, such as stable coins. Since PLTs are built in
+to the Concordium blockchain, users are not required to trust third-party
+smart contract implementations.
+
+While there are advantages to protocol-level tokens, they also come with
+certain limitations. Firstly, PLTs can only be created by a
+chain-governance operation. While any user can create a CIS-2 (smart
+contract-based) token, PLTs can only be created if sanctioned by the
+Concordium governance process.
+
+Secondly, the functionality of PLTs is currently limited. Tokens can
+only be held on accounts, and not by smart contracts. There are no
+mechanisms to assign or delegate control of PLTs held on an account
+(other than by transferring them), and there is no mechanism for
+supporting sponsored transactions. However, future protocol updates
+may introduce additional functionality, including the possibility of
+upgrading PLT functionality without the need for a further protocol
+update.
+
+Since PLTs are designed with future upgradability in mind, the
+interface to PLTs is built for extensibility. Core to this is the
+concept of a Token Module: the specific implementation behind any
+given PLT. At protocol version 9, only one Token Module implementation
+is supported, but in future there may be more, either adding
+general functionality to all PLTs, or providing specialized
+functionality tailored to individual PLTs. To allow for extensibility,
+the Token Module interacts with the outside world through CBOR-encoded
+data [1]. Transactions, events, reject reasons, and state query responses
+all use CBOR-encoding. This allows for future token modules to support
+additional transaction types, events, etc., without requiring changes
+to the Concordium node&#39;s interface. The CIS-7 standard [2] for PLTs
+defines the interface.
+
+
+                        References
+
+[1] RFC 8949: Concise Binary Object Representation (CBOR),
+    C. Bormann and P. Hoffman
+    &lt;https://www.rfc-editor.org/rfc/rfc8949.html&gt;
+
+[2] CIS-7: Protocol-level Tokens (PLTs)
+    &lt;https://proposals.concordium.com/CIS/cis-7.html&gt;
 </pre></div>
 </div>
 </section>
