@@ -10,7 +10,7 @@ Protocol Update 9 - Protocol-Level Tokens
    * - Effective on Mainnet
      - TBD
    * - Specification hash
-     - TBD
+     - 38c093fafce85684da59135441f37ebf4ece195be15e23ab9072d3d12d6dc3a7
 
 Specification
 =============

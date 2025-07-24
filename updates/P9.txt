@@ -51,8 +51,9 @@ account by an alias.
 
 Each PLT specifies the number of decimal places (d) used in its representation, from
 0 to 255. PLT amounts are represented using unsigned 64-bit values, which limits the
-maximum representable amount to (2^64-1) * 10^(-d) (approximately 1.84 * 10^(19-d))
-which limits the useful range of the number of decimal places.
+maximum representable amount to (2^64-1) * 10^(-d) (approximately 1.84 * 10^(19-d)).
+The useful range of the number of decimal places is thus more limited than the
+permitted range.
 
                                Changes
 
@@ -96,7 +97,7 @@ The following behaviours are changed in protocol version 9.
       This must be at least 0 and at most 255.
 
     - CBOR-encoded parameters that are used by the Token Module to initialize the PLT.
-      This includes:
+      These include:
 
         - The token name.
 
@@ -131,7 +132,7 @@ The following behaviours are changed in protocol version 9.
 
    The Token Module is responsible for decoding and executing the list of operations.
    If the Token Module cannot decode and execute the operations, the transaction is
-   rejected with a `TokenUpdateTransactionFailed`, which specifies a type of the
+   rejected with a `TokenUpdateTransactionFailed`, which specifies the type of the
    failure and, potentially, CBOR-encoded details associated with the failure.
    If the list cannot be decoded successfully, the Token Module fails with a
    `deserializationFailure`. The following operations are supported:
@@ -211,7 +212,7 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports an allow list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
+        (c) The target account exists; otherwise fail with `addressNotFound`.
 
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping an `addAllowList` event
@@ -226,7 +227,7 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports an allow list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
+        (c) The target account exists; otherwise fail with `addressNotFound`.
 
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping a `removeAllowList`
@@ -241,7 +242,7 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports a deny list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
+        (c) The target account exists; otherwise fail with `addressNotFound`.
 
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping an `addDenyList` event
@@ -256,7 +257,7 @@ The following behaviours are changed in protocol version 9.
         (b) The PLT configuration supports a deny list; otherwise fail with
             `unsupportedOperation`.
 
-        (c) The target account must exist.
+        (c) The target account exists; otherwise fail with `addressNotFound`.
 
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping a `removeDenyList`
