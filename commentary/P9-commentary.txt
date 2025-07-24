@@ -1,0 +1,54 @@
+                      Protocol update commentary
+
+Protocol Version: 9
+Builds on Protocol Version: 8
+
+Protocol version 9 introduces Protocol-Level Tokens (PLTs), which enable
+chain-native support for tokens other than CCD, without reliance on smart
+contracts. Since they are implemented natively, PLTs can be cheaper and
+more efficient than smart-contract-based tokens, which incur runtime
+overheads.
+
+Protocol-Level Tokens are intended to provide a high-assurance platform
+for implementing tokens, such as stable coins. Since PLTs are built in
+to the Concordium blockchain, users are not required to trust third-party
+smart contract implementations.
+
+While there are advantages to protocol-level tokens, they also come with
+certain limitations. Firstly, PLTs can only be created by a
+chain-governance operation. While any user can create a CIS-2 (smart
+contract-based) token, PLTs can only be created if sanctioned by the
+Concordium governance process.
+
+Secondly, the functionality of PLTs is currently limited. Tokens can
+only be held on accounts, and not by smart contracts. There are no
+mechanisms to assign or delegate control of PLTs held on an account
+(other than by transferring them), and there is no mechanism for
+supporting sponsored transactions. However, future protocol updates
+may introduce additional functionality, including the possibility of
+upgrading PLT functionality without the need for a further protocol
+update.
+
+Since PLTs are designed with future upgradability in mind, the
+interface to PLTs is built for extensibility. Core to this is the
+concept of a Token Module: the specific implementation behind any
+given PLT. At protocol version 9, only one Token Module implementation
+is supported, but in future there may be more, either adding
+general functionality to all PLTs, or providing specialized
+functionality tailored to individual PLTs. To allow for extensibility,
+the Token Module interacts with the outside world through CBOR-encoded
+data [1]. Transactions, events, reject reasons, and state query responses
+all use CBOR-encoding. This allows for future token modules to support
+additional transaction types, events, etc., without requiring changes
+to the Concordium node's interface. The CIS-7 standard [2] for PLTs
+defines the interface.
+
+
+                        References
+
+[1] RFC 8949: Concise Binary Object Representation (CBOR),
+    C. Bormann and P. Hoffman
+    <https://www.rfc-editor.org/rfc/rfc8949.html>
+
+[2] CIS-7: Protocol-level Tokens (PLTs)
+    <https://proposals.concordium.com/CIS/cis-7.html>
