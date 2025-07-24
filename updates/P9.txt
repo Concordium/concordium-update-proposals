@@ -66,15 +66,15 @@ The following behaviours are changed in protocol version 9.
 
         - The mutable state of the PLT. This is stored in a trie datastructure that
           provides a key-value map interface.
-        
+
         - The current circulating supply of the PLT.
 
        The list is initially empty.
-    
+
     (b) Each account maintains a list of balances of PLTs held on the account.
         The balance may be 0. An account does not necessarily have a balance for
         every existing PLT. The list is initially empty.
-    
+
     (c) The "chain updates" data structure adds a `CreatePLT` access structure to
         the level-2 keys and a sequence number for updates authorized by these keys.
         The initial access structure is defined by the auxiliary data provided by
@@ -114,7 +114,7 @@ The following behaviours are changed in protocol version 9.
         - Optionally, whether tokens can be minted. (Defaults to no.)
 
         - Optionally, whether tokens can be burnt. (Defaults to no.)
-    
+
    `CreatePLT` updates are executed immediately when they occur in blocks. This differs
    from existing chain updates, which are added to update queues and executed in the
    first future block after a specified time. A `CreatePLT` update creates the new PLT
@@ -127,8 +127,8 @@ The following behaviours are changed in protocol version 9.
 3. A new transaction payload type (`TokenUpdate`) is added. It is identified by payload
    type 27. The payload consists of the TokenId of the PLT the update pertains to and
    a CBOR-encoded list of operations to perform. If the PLT does not exist, the transaction
-   is rejected with a `NonExistentTokenId` reject reason. 
-   
+   is rejected with a `NonExistentTokenId` reject reason.
+
    The Token Module is responsible for decoding and executing the list of operations.
    If the Token Module cannot decode and execute the operations, the transaction is
    rejected with a `TokenUpdateTransactionFailed`, which specifies a type of the
@@ -155,14 +155,14 @@ The following behaviours are changed in protocol version 9.
 
         (f) If the PLT supports a deny list, the recipient is not on the deny list;
             otherwise fail with `operationNotPermitted`.
-        
+
         (g) The sender's balance is sufficient to cover the transfer; otherwise fail
             with `tokenBalanceInsufficient`.
 
        The incremental energy cost of a transfer operation is 100. If successful,
        the operation generates a `TokenTransfer` event specifying the TokenId,
        sender, receiver, amount, and (if specified) memo.
-    
+
     - `mint`: mint a specified amount to the sender's account. This increases the
       total supply and the balance of the sender's account by the specified amount.
       To succeed, the following conditions must hold:
@@ -178,7 +178,7 @@ The following behaviours are changed in protocol version 9.
         (d) The total supply of the token after minting does not exceed the maximum
             representable amount ((2^64 - 1) * 10^(-decimals)); otherwise fail with
             `mintWouldOverflow`.
-    
+
        The incremental energy cost of a mint operation is 50. If successful, the
        operation generates a `TokenMint` event specifying the TokenId, sender account,
        and minted amount.
@@ -186,7 +186,7 @@ The following behaviours are changed in protocol version 9.
     - `burn`: burn a specified amount from the sender's account. This decreases
       the total supply and the balance of the sender's account by the specified
       amount. To succeed, the following conditions must hold:
-    
+
         (a) The account is the PLT's governance account; otherwise fail with
             `operationNotPermitted`.
 
@@ -194,14 +194,14 @@ The following behaviours are changed in protocol version 9.
 
         (c) The PLT configuration supports burning; otherwise fail with
             `unsupportedOperation`.
-        
+
         (d) The balance of the sender account must be at least the specified amount;
             otherwise fail with `tokenBalanceInsufficient`.
-        
+
       The incremental energy cost of a burn operation is 50. If successful, the
       operation generates a `TokenBurn` event specifying the TokenId, sender account,
       and burnt amount.
-    
+
     - `addAllowList`: add a specified target account to the allow list. To succeed,
       the following conditions must hold:
 
@@ -212,7 +212,7 @@ The following behaviours are changed in protocol version 9.
             `unsupportedOperation`.
 
         (c) The target account must exist.
-    
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping an `addAllowList` event
       that specifies the target account.
@@ -227,7 +227,7 @@ The following behaviours are changed in protocol version 9.
             `unsupportedOperation`.
 
         (c) The target account must exist.
-    
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping a `removeAllowList`
       event that specifies the target account.
@@ -242,7 +242,7 @@ The following behaviours are changed in protocol version 9.
             `unsupportedOperation`.
 
         (c) The target account must exist.
-    
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping an `addDenyList` event
       that specifies the target account.
@@ -257,26 +257,26 @@ The following behaviours are changed in protocol version 9.
             `unsupportedOperation`.
 
         (c) The target account must exist.
-    
+
       The incremental energy cost of a list-update operation is 50. If successful,
       the operation generates a `TokenModuleEvent` wrapping a `removeDenyList`
       event that specifies the target account.
-    
+
     - `pause`: suspend all balance-changing operations (transfer, mint, and burn)
       for the PLT. To succeed, the following condition must hold:
 
         (a) The sender account is the PLT's governance account; otherwise fail
             with `operationNotPermitted`.
-    
+
       The incremental cost of a pause operation is 50. If successful, the operation
       generates a `TokenModuleEvent` wrapping a `pause` event.
-    
+
     - `unpause`: resume all balance-changing operations (transfer, mint, and burn)
       for the PLT. To succeed, the following condition must hold:
 
         (a) The sender account is the PLT's governance account; otherwise fail
             with `operationNotPermitted`.
-    
+
       The incremental cost of an unpause operation is 50. If successful, the
       operation generates a `TokenModuleEvent` wrapping an `unpause` event.
 
@@ -284,7 +284,7 @@ The following behaviours are changed in protocol version 9.
 
     - The general transaction base cost:
         100 * `number of signatures` + `total size of transaction payload and header`
-    
+
     - The token update base cost: 300
 
     - The total incremental cost of executed operations, excluding any operations
