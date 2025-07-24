@@ -36,7 +36,7 @@ Introduction
 ============
 
 Protocol-level tokens (PLTs) provide chain-native support for tokens (other than CCD) without depending on smart contracts for the implementation.
-Each PLT is governed by a Token Module, which manages the token's lifecycle, including creation, transfer, and burning of tokens.
+Each PLT is governed by a Token Module, which manages the token's lifecycle, including creation, transfer, minting, and burning of tokens.
 There may be a single Token Module that manages all PLTs, or there may be multiple Token Modules, each managing one or more PLTs.
 
 The Token Module defines a number of interfaces for interaction with PLTs.
@@ -64,6 +64,36 @@ The Token Module MUST produce data in preferred serialization, and SHOULD produc
 Common Types
 ------------
 
+TokenId
+^^^^^^^
+
+::
+
+    token-id = text .size (1..128) .regexp "[a-zA-Z0-9\-.%]+"
+
+A TokenId is a text string that uniquely identifies a PLT.
+It is a non-empty string of 1 to 128 characters, consisting of alphanumeric characters, as well as the characters "-", ".", and "%".
+It is RECOMMENDED that TokenIds are limited to 6 characters, and are purely alphabetic.
+Implementations MUST match TokenIds in a case-insensitive manner.
+
+The TokenId is used to identify the PLT in transactions, events and queries.
+It is not typically encoded in CBOR.
+
+Token Module Hash
+^^^^^^^^^^^^^^^^^
+
+::
+
+    sha256-hash = bytes .size(32)
+
+    token-module-hash = sha256-hash
+
+A Token Module Hash identifies a particular implementation of a Token Module.
+It should be a 32-byte SHA256 hash.
+
+The Token Module Hash is used to idenitfy the Token Module implementation in transactions, events and queries.
+It is not typically encoded in CBOR.
+
 .. _CIS-7-token-amount:
 
 ``token-amount``
@@ -79,7 +109,7 @@ From the CDDL prelude (:rfc:`8610`)::
   decfrac = #6.4([e10: int, m: integer])
 
 For ``token-amount``, as of protocol version 9, the exponent (``e10``) must be between 0 and -255 (inclusive).
-The significand (``m``) must be between 0 and 18446744073709551615 (inclusive).
+The significand (``m``) must be between 0 and 2^64-1 = 18446744073709551615 (inclusive); that is, the significand is a 64-bit unsigned integer.
 
 
 Each PLT defines the number of decimal places in its representation.
@@ -157,8 +187,6 @@ When rendering a ``tagged-account-address`` in a human-readable format, it SHOUL
         ; Additional fields may be included for future extensibility, e.g. another hash algorithm.
         * text => any
     }
-
-    sha256-hash = bytes .size(32)
 
 A ``metadata-url`` encodes a URL that identifies metadata, together with an optional sha256 checksum of the contents of the metadata.
 When the ``checksumSha256`` field is present, tools SHOULD confirm that the computed sha256 hash of the data retrieved from the URL specified by the ``url`` field matches the contents of the ``checksumSha256`` field.
