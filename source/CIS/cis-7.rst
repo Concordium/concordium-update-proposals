@@ -29,7 +29,7 @@ In particular, the interface defines the following:
 - Transactions
 - Events
 - Reject reasons
-- Token state
+- Token module state
 - Account state
 
 Introduction
@@ -42,7 +42,7 @@ There may be a single Token Module that manages all PLTs, or there may be multip
 The Token Module defines a number of interfaces for interaction with PLTs.
 At each interface, data is exchanged in Concise Binary Object Representation (CBOR) format.
 The CBOR format is defined in :rfc:`8949`.
-This document defines schemas for the data exchanged at each interface, including initialization parameters, transactions, events, reject reasons, token state, and account state.
+This document defines schemas for the data exchanged at each interface, including initialization parameters, transactions, events, reject reasons, token module state, and account state.
 
 Terminology and Conventions
 ---------------------------
@@ -91,13 +91,15 @@ Token Module Hash
 A Token Module Hash identifies a particular implementation of a Token Module.
 It should be a 32-byte SHA256 hash.
 
-The Token Module Hash is used to idenitfy the Token Module implementation in transactions, events and queries.
+The Token Module Hash is used to identify the Token Module implementation in transactions, events and queries.
 It is not typically encoded in CBOR.
+
+Protocol version 9 introduces a single Token Module implementation, referred to as TokenModuleV0, which is identified by the Token Module Hash ``5c5c2645db84a7026d78f2501740f60a8ccb8fae5c166dc2428077fd9a699a4a``.
 
 .. _CIS-7-token-amount:
 
-``token-amount``
-^^^^^^^^^^^^^^^^
+Token Amount
+^^^^^^^^^^^^
 ::
 
   token-amount = decfrac
@@ -119,8 +121,8 @@ Thus, the following ``token-amount``\s are not equivalent::
   4([2, 100])      -- 1.00
   4([6, 1000000])  -- 1.000000
 
-``memo``
-^^^^^^^^
+Memo
+^^^^
 ::
 
     memo = raw-memo / cbor-memo
@@ -136,8 +138,8 @@ The tag 24 is defined in :rfc:`8949#section-3.4.5.1` to denote that the enclosed
 The tagged ``cbor-memo`` format SHOULD NOT be used unless the memo data itself is valid CBOR.
 The purpose of the tagged ``cbor-memo`` is to hint to a decoder that the contents is interpreted as CBOR, and allow it to displayed in decoded form, where appropriate.
 
-``tagged-account-address``
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Account Address
+^^^^^^^^^^^^^^^
 ::
 
     tagged-account-address = #6.40307(untagged-account-address)
@@ -175,7 +177,41 @@ The network field (key ``2``) is not supported and therefore omitted.
 
 When rendering a ``tagged-account-address`` in a human-readable format, it SHOULD be displayed in the standard base58 check encoding.
 
-``metadata-url``
+Smart Contract Address
+^^^^^^^^^^^^^^^^^^^^^^
+
+A Concordium smart contract address is a pair of unsigned 64-bit integers: the *index* and *subindex*.
+A smart contract address is conventionally represented as <*index*, *subindex*>.
+Smart contract addresses with a subindex other than 0 are unused, but reserved for future use.
+
+::
+
+    ; A Concordium smart contract address.
+    tagged-contract-address = #6.40919(contract-address)
+    
+    contract-address = contract-address-index-only / contract-address-index-subindex
+
+    ; A smart contract address represented as the contract index only.
+    ; The subindex is implied to be 0.
+    contract-address-index-only = uint
+
+    ; A smart contract address represented as a pair of the index and subindex.
+    contract-address-index-subindex = [
+        index: uint,
+        subindex: uint
+    ]
+
+A smart contract address is represented by ``tagged-contract-address``.
+The tag 40919 denotes a Concordium smart contract address.
+The smart contract address is either represented as only the index, in which case the subindex is implicitly 0, or as an ordered pair of the index and subindex.
+
+A smart contract address with subindex 0 has two possible representations.
+Encoders SHOULD use the ``contract-address-index-only`` representation for such addresses.
+Decoders MUST accept the ``contract-address-index-only`` representation.
+Decoders MUST accept the ``contract-address-index-subindex`` representation with subindex 0, unless deterministic encoding is required.
+
+Metadata URL
+^^^^^^^^^^^^
 
 ::
 
@@ -198,34 +234,116 @@ Initialization Parameters
 The initialization parameters are used when creating a new PLT instance.
 They are included as part of the CreatePLT chain update transaction.
 They are passed to the Token Module to initialize the state.
-Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the Token ID, the Token Module Reference, and the number of decimal places in the token's representation.
+Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the TokenID, the Token Module Hash, and the number of decimal places in the token's representation.
 
 The format and semantics of the initialization parameters may differ between Token Module implementations.
-The format presented here is that used by the TokenModuleV0 implementation.
+The initializations parameters for a conforming implementation MUST be represented as a CBOR map conforming to the following schema:
 ::
 
     token-initialization-parameters = { 
         ; The name of the token
-        "name": text,
+        ? "name": text,
         ; A URL pointing to the token metadata
-        "metadata": metadata-url,
+        ? "metadata": metadata-url,
         ; The governance account of the token
-        "governanceAccount": tagged-account-address
-        ; Whether the token supports an allow list
+        ? "governanceAccount": tagged-account-address,
+        ; Whether the token enforces an allow list
         ? "allowList": bool .default false,
-        ; Whether the token supports a deny list
+        ; Whether the token enforces a deny list
         ? "denyList": bool .default false,
         ; The initial supply of the token. If not present, no tokens are minted initially.
         ? "initialSupply": token-amount,
         ; Whether the token is mintable
         ? "mintable": bool .default false,
         ; Whether the token is burnable
-        ? "burnable": bool .default false
+        ? "burnable": bool .default false,
+        ; Additional fields
+        * text => any
     }
 
-Token Modules that use a different format for initialization parameters SHOULD represent the parameters in a key-value map.
-Where keys that are the same as those above are used in initialization parameters, their semantics SHOULD be the same or substantially similar.
+The schema defines a number of standardized fields, while allowing for additional fields that may be defined by future standards.
+The semantics of the standardized fields are defined below.
 
+The TokenModuleV0 implementation requires the `name`, `metadataUrl`, and `governanceAccount` fields.
+The `allowList`, `denyList`, `initialSupply`, `mintable`, and `burnable` fields are optional.
+All other fields are prohibited.
+
+``name``
+^^^^^^^^
+
+The full name of the token.
+
+``metadata-url``
+^^^^^^^^^^^^^^^^
+
+A URL pointing to the token metadata JSON object, and optionally a hash of the metadata.
+
+``governanceAccount``
+^^^^^^^^^^^^^^^^^^^^^
+
+The singular *governance account* that is permitted to perform mint, burn, pause, and list-update governance operations, if they are enabled for the token.
+A PLT with a governance account MUST NOT allow accounts other than the governance account to perform token governance operations.
+The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicate the governance account, if it exists.
+
+``allowList``
+^^^^^^^^^^^^^
+
+Whether the PLT enforces an allow list.
+A PLT that enforces an allow list is subject to the following:
+
+* Transfers MUST be rejected unless both the sender and receiver accounts belong to the allow list.
+
+* The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicated that the allow list is enforced.
+
+* Accounts with no :ref:`account state <CIS-7-AccountState>` implicitly MUST NOT belong to the allow list.
+
+* Accounts that have an account state MUST report whether the account belongs to the allow list.
+
+* The ``addAllowList`` and ``removeAllowList`` operations SHOULD be implemented.
+
+* When an account is added to the allow list, an ``addAllowList`` Token Module Event MUST be emitted.
+
+* When an account is removed from the allow list, a ``removeAllowList`` Token Module Event MUST be emitted.
+
+If the value is not specified, the PLT MUST NOT enforce an allow list.
+
+``denyList``
+^^^^^^^^^^^^
+
+Whether the PLT implements a deny list.
+A PLT that implements a deny list is subject to the following:
+
+* Transfers MUST be rejected if either the sender or receiver account belongs to the deny list.
+
+* The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicated that the deny list is enforced.
+
+* Accounts with no :ref:`account state <CIS-7-AccountState>` implicitly MUST NOT belong to the deny list.
+
+* Accounts that have an account state MUST report whether the account belongs to the deny list.
+
+* The ``addDenyList`` and ``removeDenyList`` operations SHOULD be implemented.
+
+* When an account is added to the deny list, an ``addDenyList`` Token Module Event MUST be emitted.
+
+* When an account is removed from the deny list, a ``removeDenyList`` Token Module Event MUST be emitted.
+
+If the value is not specified, the PLT MUST NOT enforce a deny list.
+
+``initialSupply``
+^^^^^^^^^^^^^^^^^
+
+The initial supply of the PLT that is minted when the token is created.
+If this is not specified, no initial supply is minted.
+
+``mintable``
+^^^^^^^^^^^^
+
+Whether the PLT supports the ``mint`` transaction operation.
+
+``burnable``
+^^^^^^^^^^^^
+
+Whether the PLT supports the ``burn`` transaction operation.
 
 Transactions
 ------------
@@ -247,7 +365,7 @@ Each token operation MUST consist of a map with a single key that identifies the
 
 The semantics of each token operation SHOULD be the same across all Token Modules which implements it.
 In particular, implementations MUST conform to the schema for the token operations defined in this document.
-Implementation MUST NOT use the operation types ``transfer``, ``mint``, ``burn``, ``addAllowList``, ``removeAllowList``, ``addDenyList``, or ``removeDenyList`` for any other operation than those defined below.
+An implementation MUST NOT use the operation types ``transfer``, ``mint``, ``burn``, ``addAllowList``, ``removeAllowList``, ``addDenyList``, or ``removeDenyList`` for any other operation than those defined below.
 
 ``transfer``
 ^^^^^^^^^^^^
@@ -403,9 +521,9 @@ Events
 ------
 
 The Token Module may emit Token Module Events as a consequence of transaction execution.
-These events are in addition to the ``TokenTransfer``, ``TokenMint``, ``TokenBurn`` and ``TokenCreated`` events, and the semanitcs is dependent on the Token Module implementation.
+These events are in addition to the ``TokenTransfer``, ``TokenMint``, ``TokenBurn`` and ``TokenCreated`` events, and the semantics is dependent on the Token Module implementation.
 
-Each Token Module Event type is designated by a ``TokenEventType``, which is a UTF-8 enocded string of at most 255 bytes.
+Each Token Module Event type is designated by a ``TokenEventType``, which is a UTF-8 encoded string of at most 255 bytes.
 Each Token Module Event has a CBOR-encoded event details.
 The ``TokenEventType`` determines the semantics of the event details, and in particular the schema to which it should conform.
 
@@ -464,7 +582,7 @@ The following reject reason types are defined by TokenModuleV0:
     }
 
 ``tokenBalanceInsufficient``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 ::
 
     ; "tokenBalanceInsufficient": the balance of tokens on the sender account is insufficient
@@ -538,8 +656,11 @@ The following reject reason types are defined by TokenModuleV0:
         "maxRepresentableAmount": token-amount,
     }
 
-Token State
------------
+
+.. _CIS-7-TokenModuleState:
+
+Token Module State
+------------------
 
 The Token Module state is a representation of the global state of a PLT, which is maintained by the Token Module.
 It is returned as part of a `GetTokenInfo` query.
@@ -556,9 +677,9 @@ The Token Module state is represented as a CBOR map conforming to the following 
         "metadata": metadata-url,
         ; The governance account of the token
         ? "governanceAccount": tagged-account-address
-        ; Whether the token supports an allow list.
+        ; Whether the token enforces an allow list.
         ? "allowList": bool,
-        ; Whether the token supports a deny list.
+        ; Whether the token enforces a deny list.
         ? "denyList": bool,
         ; Whether the token is mintable.
         ? "mintable": bool,
@@ -577,6 +698,8 @@ A Token Module MAY include non-standard fields (i.e. any fields that are not def
 These non-standard fields SHOULD be prefixed with an underscore ("_") to distinguish them as such.
 For example, a Token Module may include a field ``"_customField"`` with a value that is specific to the module implementation.
 The semantics of such non-standard fields are not defined by this specification, and are specific to the module implementation.
+
+.. _CIS-7-AccountState:
 
 Account State
 -------------
