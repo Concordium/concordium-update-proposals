@@ -26,7 +26,7 @@ The PLT implementation is intended to be updated in future protocol versions to
 support additional functionality.
 
 Each PLT is initially created on the chain by a chain-governance operation.
-This operation assigns a unique TokenId for the PLT that is used to identify it.
+This operation assigns a unique Token ID for the PLT that is used to identify it.
 It also specifies data and metadata associated with the PLT, such as: the token
 name; the URL of additional metadata; the governance account for the PLT; whether
 the PLT supports an allow list, a deny list, minting of tokens, and burning of
@@ -63,7 +63,7 @@ The following behaviours are changed in protocol version 9.
 
     (a) A list of the protocol-level tokens is maintained. Each entry contains:
 
-        - The static configuration (TokenId, Token Module hash, number of decimals).
+        - The static configuration (Token ID, Token Module hash, number of decimals).
 
         - The mutable state of the PLT. This is stored in a trie datastructure that
           provides a key-value map interface.
@@ -85,8 +85,8 @@ The following behaviours are changed in protocol version 9.
    authorized by a new access structure on the level 2 keys: the `CreatePLT` keys.
    The update instruction is identified by payload type 24. It consists of:
 
-    - The TokenId of the PLT being created. This consists of up to 128 characters,
-      limited to a-z, A-Z, 0-9, `-`, `.` and `%`. TokenIds are matched in a
+    - The Token ID of the PLT being created. This consists of up to 128 characters,
+      limited to a-z, A-Z, 0-9, `-`, `.` and `%`. Token IDs are matched in a
       case-insensitive manner.
 
     - The Token Module hash. This identifies the specific implementation used for
@@ -121,12 +121,12 @@ The following behaviours are changed in protocol version 9.
    first future block after a specified time. A `CreatePLT` update creates the new PLT
    with the specified configuration. If specified, an initial amount is minted to the
    governance account. Invalid `CreatePLT` updates cannot occur in valid blocks. A
-   `CreatePLT` update may be invalid if the TokenId already exists or the configuration
+   `CreatePLT` update may be invalid if the Token ID already exists or the configuration
    is invalid. A successful `CreatePLT` update results in a `TokenCreated` event,
    followed by a `TokenMint` event if an initial supply is specified.
 
 3. A new transaction payload type (`TokenUpdate`) is added. It is identified by payload
-   type 27. The payload consists of the TokenId of the PLT the update pertains to and
+   type 27. The payload consists of the Token ID of the PLT the update pertains to and
    a CBOR-encoded list of operations to perform. If the PLT does not exist, the transaction
    is rejected with a `NonExistentTokenId` reject reason.
 
@@ -161,7 +161,7 @@ The following behaviours are changed in protocol version 9.
             with `tokenBalanceInsufficient`.
 
        The incremental energy cost of a transfer operation is 100. If successful,
-       the operation generates a `TokenTransfer` event specifying the TokenId,
+       the operation generates a `TokenTransfer` event specifying the Token ID,
        sender, receiver, amount, and (if specified) memo.
 
     - `mint`: mint a specified amount to the sender's account. This increases the
@@ -181,7 +181,7 @@ The following behaviours are changed in protocol version 9.
             `mintWouldOverflow`.
 
        The incremental energy cost of a mint operation is 50. If successful, the
-       operation generates a `TokenMint` event specifying the TokenId, sender account,
+       operation generates a `TokenMint` event specifying the Token ID, sender account,
        and minted amount.
 
     - `burn`: burn a specified amount from the sender's account. This decreases
@@ -200,7 +200,7 @@ The following behaviours are changed in protocol version 9.
             otherwise fail with `tokenBalanceInsufficient`.
 
       The incremental energy cost of a burn operation is 50. If successful, the
-      operation generates a `TokenBurn` event specifying the TokenId, sender account,
+      operation generates a `TokenBurn` event specifying the Token ID, sender account,
       and burnt amount.
 
     - `addAllowList`: add a specified target account to the allow list. To succeed,
