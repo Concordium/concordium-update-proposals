@@ -44,6 +44,17 @@ At each interface, data is exchanged in Concise Binary Object Representation (CB
 The CBOR format is defined in :rfc:`8949`.
 This document defines schemas for the data exchanged at each interface, including initialization parameters, transactions, events, reject reasons, token module state, and account state.
 
+The Token Module interacts with the state of the chain through the Token Kernel, which provides basic operations for updating account balances and state, as well as generating events.
+This document does not specify the behavior or interface of the Token Kernel.
+
+The outside world interacts with the Token Module through transactions and queries.
+This document does not specify the serialization format of transactions, or the `API for querying the node <https://docs.concordium.com/concordium-grpc-api/>`_.
+The CreatePLT chain update transaction carries CBOR-encoded :ref:`initialization parameters<Initialization Parameters>`.
+The TokenUpdate account transaction carries a CBOR-encoded :ref:`list of transaction operations<Transactions>`.
+The GetTokenInfo gRPC query returns the CBOR-encoded :ref:`Token Module state<Token Module State>`.
+The GetAccountInfo gRPC query returns the CBOR-encoded :ref:`token account state<Account State>`.
+The GetBlockTransactionEvents and GetBlockItemStatus gRPC queries return CBOR-encoded :ref:`events<Events>` and :ref:`reject reasons<Reject Reasons>` for TokenUpdate transactions.
+
 Terminology and Conventions
 ---------------------------
 
@@ -264,26 +275,38 @@ The initializations parameters for a conforming implementation MUST be represent
 The schema defines a number of standardized fields, while allowing for additional fields that may be defined by future standards.
 The semantics of the standardized fields are defined below.
 
-The TokenModuleV0 implementation requires the `name`, `metadataUrl`, and `governanceAccount` fields.
-The `allowList`, `denyList`, `initialSupply`, `mintable`, and `burnable` fields are optional.
+The TokenModuleV0 implementation requires the ``name``, ``metadata``, and ``governanceAccount`` fields.
+The ``allowList``, ``denyList``, ``initialSupply``, ``mintable``, and ``burnable`` fields are optional.
 All other fields are prohibited.
+
+
+.. _CIS-7-name:
 
 ``name``
 ^^^^^^^^
 
 The full name of the token.
 
-``metadata-url``
-^^^^^^^^^^^^^^^^
+.. _CIS-7-metadata:
+
+``metadata``
+^^^^^^^^^^^^
 
 A URL pointing to the token metadata JSON object, and optionally a hash of the metadata.
+
+.. _CIS-7-governanceAccount:
 
 ``governanceAccount``
 ^^^^^^^^^^^^^^^^^^^^^
 
 The singular *governance account* that is permitted to perform mint, burn, pause, and list-update governance operations, if they are enabled for the token.
-A PLT with a governance account MUST NOT allow accounts other than the governance account to perform token governance operations.
+A PLT with a governance account MUST NOT allow accounts other than the governance account to perform token-governance operations.
 The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicate the governance account, if it exists.
+
+Token Modules may implement different access control mechanisms (such as role-based access control) that permit different accounts to perform token-governance operations.
+Such mechanisms are not specified in the current standard, but may be incompatible with having a singular governance account as defined above.
+
+.. _CIS-7-allowList:
 
 ``allowList``
 ^^^^^^^^^^^^^
@@ -293,7 +316,7 @@ A PLT that enforces an allow list is subject to the following:
 
 * Transfers MUST be rejected unless both the sender and receiver accounts belong to the allow list.
 
-* The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicated that the allow list is enforced.
+* The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicate that the allow list is enforced.
 
 * Accounts with no :ref:`account state <CIS-7-AccountState>` implicitly MUST NOT belong to the allow list.
 
@@ -307,6 +330,8 @@ A PLT that enforces an allow list is subject to the following:
 
 If the value is not specified, the PLT MUST NOT enforce an allow list.
 
+.. _CIS-7-denyList:
+
 ``denyList``
 ^^^^^^^^^^^^
 
@@ -315,9 +340,9 @@ A PLT that implements a deny list is subject to the following:
 
 * Transfers MUST be rejected if either the sender or receiver account belongs to the deny list.
 
-* The :ref:`token module state <CIS-7-TokenModuleState>` MUST indicated that the deny list is enforced.
+* The :ref:`token module state<Token Module State>` MUST indicate that the deny list is enforced.
 
-* Accounts with no :ref:`account state <CIS-7-AccountState>` implicitly MUST NOT belong to the deny list.
+* Accounts with no :ref:`account state<Account State>` implicitly MUST NOT belong to the deny list.
 
 * Accounts that have an account state MUST report whether the account belongs to the deny list.
 
@@ -335,10 +360,14 @@ If the value is not specified, the PLT MUST NOT enforce a deny list.
 The initial supply of the PLT that is minted when the token is created.
 If this is not specified, no initial supply is minted.
 
+.. _CIS-7-mintable:
+
 ``mintable``
 ^^^^^^^^^^^^
 
 Whether the PLT supports the ``mint`` transaction operation.
+
+.. _CIS-7-burnable:
 
 ``burnable``
 ^^^^^^^^^^^^
@@ -349,6 +378,10 @@ Transactions
 ------------
 
 A Token Update transaction identifies a PLT by its Token ID and carries a CBOR-encoded payload that consists of a list of token operations (``token-update-transaction``).
+The Token Module MUST execute the token operations in sequence.
+If any of the token operations fails, the entire transaction SHOULD fail with the reject reason indicating the cause of failure of the first failing operation.
+Energy fees SHOULD be charged for each operation up to and including the first failing operation.
+
 ::
 
     token-update-transaction = [ * token-operation ]
@@ -357,6 +390,8 @@ A Token Update transaction identifies a PLT by its Token ID and carries a CBOR-e
         / token-mint
         / token-burn
         / token-update-list
+        / token-pause
+        / token-unpause
 
 The token operations presented here are those implemented by TokenModuleV0.
 Different Token Module implementations may implement a different set of operations.
@@ -385,6 +420,23 @@ An implementation MUST NOT use the operation types ``transfer``, ``mint``, ``bur
         }
     }
 
+The token transfer operation transfers a specified amount of tokens from the sender account to the recipient account, generating a transfer event.
+The transfer event MUST record the ``memo`` if one is provided.
+(Note that, while the ``memo`` in the transaction may be explicitly tagged as CBOR encoded, the generated transfer event does not retain this tagging.)
+
+The transfer operation MUST fail if any of the following conditions are met:
+
+- the token is paused;
+- the recipient account does not exist;
+- the token has an allow list and the sender is not on the allow list;
+- the token has an allow list and the recipient is not on the allow list;
+- the token has a deny list and the sender is on the deny list;
+- the token has a deny list and the recipient is on the deny list; or
+- the sender's balance is insufficient to complete the transfer.
+
+The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.
+
 ``mint`` and ``burn``
 ^^^^^^^^^^^^^^^^^^^^^
 ::
@@ -406,6 +458,25 @@ An implementation MUST NOT use the operation types ``transfer``, ``mint``, ``bur
         ; The amount of tokens to either mint or burn.
         "amount": token-amount
     }
+
+The mint operation increases the total supply of the token by the specified amount, issuing the new tokens to the sender account.
+The burn operation decreases the total supply of the token by the specified amount, deducting the tokens from the sender account.
+These operations are considered token-governance operations, and thus are not available to all accounts.
+
+The mint operation MUST fail if any of the following conditions holds:
+- the token has a governance account, and the sender account is not the governance account;
+- the token is paused;
+- the token is not mintable; or
+- minting would cause the total supply of the token to exceed the maximum representable value for the token.
+
+The burn operation MUST fail if any of the following conditions holds:
+- the token has a governance account, and the sender account is not the governance account;
+- the token is paused;
+- the token is not burnable; or
+- the balance of the sender account is less than the specified amount to burn.
+
+The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.
 
 ``addAllowList``, ``removeAllowList``, ``addDenyList``, and ``removeDenyList``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -448,6 +519,51 @@ An implementation MUST NOT use the operation types ``transfer``, ``mint``, ``bur
         "target": tagged-account-address
     }
 
+The list update operations add or remove a specified account to or from the allow or deny list.
+The list update operations are considered token-governance operations, and thus are not available to all accounts.
+
+A list-update operation MUST fail if any of the following conditions holds:
+- the token has a governance account, and the sender account is not the governance account;
+- the token does not implement the relevant list; or
+- the target account does not exist.
+
+Adding an account to a list that it already belongs to, or removing it from a list that it does not belong to, SHOULD NOT be considered grounds for failure.
+Such updates MUST NOT affect on the list.
+
+The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.
+
+``pause`` and ``unpause``
+^^^^^^^^^^^^^^^^^^^^^^^^^
+::
+
+    ; Suspend any current or future token operations involving
+    ; balance changes. If any transaction submitted includes any such operation
+    ; while the token is in its paused state, the transaction will fail. The
+    ; suspension lasts until the token is unpaused with the corresponding
+    ; `token-unpause` operation.
+    token-pause = {
+        "pause": {}
+    }
+
+    ; Unpause the token operations described in the `token-pause` operation,
+    ; thus acting as an inverse of `token-pause`.
+    token-unpause = {
+        "unpause": {}
+    }
+
+The pause operation sets the token into a global pause state in which no balance-changing operations can be carried out.
+The unpause operations ends the global pause.
+
+The pause and unpause operations MUST fail if any of the following conditions holds:
+- the token has a governance account, and the sender account is not the governance account.
+
+Pausing a token that is already paused, or unpausing a token that is not paused, SHOULD NOT be considered grounds for failure.
+Such updates MUST NOT affect whether the token is paused.
+
+The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.
+
 Forward Compatibility
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -468,19 +584,20 @@ In order for tools such as hardware wallets to be able to handle such operations
     simple-key = short-text / uint
 
     value-0 =
-        tagged-account-address  ; An account address
-        / int                   ; An integer
-        / bigint                ; A big integer
-        / decfrac               ; A decimal fraction
-        / text                  ; A text string
-        / bytes                 ; A byte string
-        / epoch-time            ; An epoch time
-        / encoded-cbor          ; Encoded CBOR data
-        / base16-data           ; Data to be represented in base16
-        / base64-data           ; Data to be represented in base64
-        / bool                  ; A boolean value
-        / null                  ; The null value
-        / undefined             ; The undefined value
+        tagged-account-address      ; An account address
+        / tagged-contract-address   ; A smart contract address
+        / int                       ; An integer
+        / bigint                    ; A big integer
+        / decfrac                   ; A decimal fraction
+        / text                      ; A text string
+        / bytes                     ; A byte string
+        / epoch-time                ; An epoch time
+        / encoded-cbor              ; Encoded CBOR data
+        / base16-data               ; Data to be represented in base16
+        / base64-data               ; Data to be represented in base64
+        / bool                      ; A boolean value
+        / null                      ; The null value
+        / undefined                 ; The undefined value
     
     epoch-time = #6.1(uint)
     base16-data = #6.23(bytes)
@@ -501,6 +618,7 @@ Simple keys are either short text strings (1-24 characters) or unsigned integers
 The values can be of various types:
 
 - `tagged-account-address`: An account address.
+- `tagged-contract-address`: A smart contract address.
 - `int`: An integer value.
 - `bigint`: A big integer value.
 - `decfrac`: A decimal fraction.
@@ -565,6 +683,10 @@ Reject Reasons
 
 The Token Module may reject a transaction for various reasons.
 When a transaction is rejected, the reject reason identifies the PLT, the type of the reject reason (a UTF-8 encoded string of at most 255 bytes), and, optionally, the details of the reject reason (encoded as CBOR).
+
+Then the Token Module rejects a transaction, it produces a "token update transaction failed" reject reason that includes the Token ID, the reject reason type, and (optionally) CBOR-encoded reject reason details.
+A TokenUpdate transaction may also be rejected for a reason outside of the control of the Token Module.
+In particular "non existent Token ID" and "out of energy" reject reasons are possible.
 
 As with Token Module Events, the reject reason type determines the semantics of the reject reason details, and in particular the schema to which it should conform.
 The following reject reason types are defined by TokenModuleV0:
@@ -664,7 +786,7 @@ Token Module State
 
 The Token Module state is a representation of the global state of a PLT, which is maintained by the Token Module.
 It is returned as part of a `GetTokenInfo` query.
-The Token Module state does not include state that is managed by the Token Kernel, such as the token identifier and global supply.
+The Token Module state does not include state that is managed by the Token Kernel, such as the Token ID and global supply.
 It also does not (typically) include account-specific state, which is returned as part of `GetAccountInfo` instead.
 The Token Module state is represented as a CBOR map conforming to the following schema:
 
@@ -672,9 +794,9 @@ The Token Module state is represented as a CBOR map conforming to the following 
 
     token-module-state = {
         ; The name of the token
-        "name": text,
+        ? "name": text,
         ; A URL pointing to the token metadata
-        "metadata": metadata-url,
+        ? "metadata": metadata-url,
         ; The governance account of the token
         ? "governanceAccount": tagged-account-address
         ; Whether the token enforces an allow list.
@@ -685,12 +807,15 @@ The Token Module state is represented as a CBOR map conforming to the following 
         ? "mintable": bool,
         ; Whether the token is burnable.
         ? "burnable": bool,
+        ; Whether the token is paused, i.e. operations involving balance changes are suspended.
+        ? "paused": bool,
         ; Additional state information may be provided under further text keys, the meaning
         ; of which are not defined in the present specification.
         * text => any
     }
 
-The ``name``, ``metadata``, and ``governanceAccount`` fields are required.
+All fields are optional.
+It is RECOMMENDED that Token Modules provide the ``name`` and ``metadata`` fields.
 Other fields are optional, and can be omitted if the module implementation does not support them.
 The structure supports additional fields for future extensibility.
 
@@ -699,6 +824,15 @@ These non-standard fields SHOULD be prefixed with an underscore ("_") to disting
 For example, a Token Module may include a field ``"_customField"`` with a value that is specific to the module implementation.
 The semantics of such non-standard fields are not defined by this specification, and are specific to the module implementation.
 
+The fields :ref:`name<CIS-7-name>`, :ref:`metadata<CIS-7-metadata>`, :ref:`governanceAccount<CIS-7-governanceAccount>`, :ref:`allowList<CIS-7-allowList>`, :ref:`denyList<CIS-7-denyList>`, :ref:`mintable<CIS-7-mintable>`, and :ref:`burnable<CIS-7-burnable>` have the same semantics as in ``token-initialization-parameters``.
+
+``pause``
+^^^^^^^^^
+
+Whether the token is currently paused.
+When the token is paused, any transaction that includes a balance-changing operation (such as a transfer, mint, or burn) MUST fail.
+Other operations (such as adding or removing accounts from the allow or deny list) SHOULD NOT be affected by the pause state.
+
 .. _CIS-7-AccountState:
 
 Account State
@@ -706,7 +840,7 @@ Account State
 
 The account state represents account-specific information that is maintained by the Token Module.
 It is returned as part of a `GetAccountInfo` query.
-The account state does not include state that is managed by the Token Kernel, such as the token identifier and account balance.
+The account state does not include state that is managed by the Token Kernel, such as the Token ID and account balance.
 It is represented as a CBOR map conforming to the following schema:
 
 ::
@@ -730,3 +864,51 @@ The structure supports additional fields for future extensibility.
 
 A Token Module MAY include non-standard fields (i.e. any fields that are not defined by a standard, and are specific to the module implementation).
 These non-standard fields SHOULD be prefixed with an underscore ("_") to distinguish them as such.
+
+
+Token Metadata Format
+---------------------
+
+While some token metadata (such as the Token ID, name and number of decimals) is stored on-chain, additional metadata is stored off-chain and referenced by the ``metadata`` field in the Token Module state.
+This token metadata MUST be a JSON (:rfc:`8259`) file.
+
+All of the fields in the JSON file are optional, and this specification reserves a number of field names, shown in the table below.
+
+.. list-table:: Token metadata JSON Object
+  :header-rows: 1
+
+  * - Property
+    - JSON value type [JSON-Schema]
+    - Description
+  * - ``name`` (optional)
+    - string
+    - The name of the token (used for localization).
+  * - ``description`` (optional)
+    - string
+    - A description for this token type.
+  * - ``thumbnail`` (optional)
+    - URL JSON object
+    - An image URL to a small image for displaying the asset.
+  * - ``display`` (optional)
+    - URL JSON object
+    - An image URL to a large image for displaying the asset.
+  * - ``localization`` (optional)
+    - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
+    - URLs to JSON files with localized token metadata.
+
+Optionally a SHA256 hash of the JSON file can be logged with the TokenMetadata event for checking integrity.
+Since the metadata JSON file could contain URLs, a SHA256 hash can optionally be associated with the URL.
+To associate a hash with a URL the JSON value is an object:
+
+.. list-table:: URL JSON Object
+  :header-rows: 1
+
+  * - Property
+    - JSON value type [JSON-Schema]
+    - Description
+  * - ``url``
+    - string (:rfc:`3986`) [``uri-reference``]
+    - A URL.
+  * - ``hash`` (optional)
+    - string
+    - A SHA256 hash of the URL content encoded as a hex string.
