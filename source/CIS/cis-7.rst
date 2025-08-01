@@ -635,11 +635,41 @@ The values can be of various types:
 - `map-0`: A map of simple keys to simple values.
 
 
-Events
-------
+Token Kernel Events
+-------------------
+
+Token Kernel events are emitted by the Token Kernel as a consequence of transaction execution.
+These events are emitted whenever the Token Module invokes the Token Kernel to perform a balance-changing update, or when the PLT is first initialized.
+
+TokenTransfer
+^^^^^^^^^^^^^
+
+The TokenTransfer event occurs whenever an amount is transferred from one account to another.
+It indicates the Token ID involved, the sender and recipient accounts, the amount transferred, and any memo associated with the transfer.
+
+TokenMint
+^^^^^^^^^
+
+The TokenMint event occurs whenever an amount of tokens is minted (i.e. introduced into circulation).
+It indicates the Token ID involved, the account that received the minted tokens, and the amount minted.
+
+TokenBurn
+^^^^^^^^^
+
+The TokenBurn event occurs whenever an amount of tokens is burned (i.e. removed from circulation).
+It indicates the Token ID involved, the account that burned the tokens, and the amount burned.
+
+TokenCreated
+^^^^^^^^^^^^
+
+The TokenCreated event occurs when a new PLT is created.
+It indicates the Token ID, the Token Module Hash, the number of decimal places, and the `initialization parameters <Initialization Parameters>`_.
+
+Token Module Events
+-------------------
 
 The Token Module may emit Token Module Events as a consequence of transaction execution.
-These events are in addition to the ``TokenTransfer``, ``TokenMint``, ``TokenBurn`` and ``TokenCreated`` events, and the semantics is dependent on the Token Module implementation.
+These events are in addition to the `Token Kernel Events`, and the semantics is dependent on the Token Module implementation.
 
 Each Token Module Event type is designated by a ``TokenEventType``, which is a UTF-8 encoded string of at most 255 bytes.
 Each Token Module Event has a CBOR-encoded event details.
