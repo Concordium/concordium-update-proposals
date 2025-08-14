@@ -75,19 +75,19 @@ The Token Module MUST produce data in preferred serialization, and SHOULD produc
 Common Types
 ------------
 
-TokenId
-^^^^^^^
+Token ID
+^^^^^^^^
 
 ::
 
     token-id = text .size (1..128) .regexp "[a-zA-Z0-9\-.%]+"
 
-A TokenId is a text string that uniquely identifies a PLT.
+A Token ID is a text string that uniquely identifies a PLT.
 It is a non-empty string of 1 to 128 characters, consisting of alphanumeric characters, as well as the characters "-", ".", and "%".
-It is RECOMMENDED that TokenIds are limited to 6 characters, and are purely alphabetic.
-Implementations MUST match TokenIds in a case-insensitive manner.
+It is RECOMMENDED that Token IDs are limited to 6 characters, and are purely alphabetic.
+Implementations MUST match Token IDs in a case-insensitive manner.
 
-The TokenId is used to identify the PLT in transactions, events and queries.
+The Token ID is used to identify the PLT in transactions, events and queries.
 It is not typically encoded in CBOR.
 
 Token Module Hash
@@ -107,6 +107,16 @@ It is not typically encoded in CBOR.
 
 Protocol version 9 introduces a single Token Module implementation, referred to as TokenModuleV0, which is identified by the Token Module Hash ``5c5c2645db84a7026d78f2501740f60a8ccb8fae5c166dc2428077fd9a699a4a``.
 
+Token Decimals
+^^^^^^^^^^^^^^
+::
+
+    token-decimals = int .range (0..255)
+
+The token decimals for a PLT is an integer that specifies the number of decimal places in the token's representation.
+It is a constant that is determined when the PLT is created.
+As of protocol version 9, it is constrained to be between 0 and 255 (inclusive).
+
 .. _CIS-7-token-amount:
 
 Token Amount
@@ -121,16 +131,14 @@ From the CDDL prelude (:rfc:`8610`)::
 
   decfrac = #6.4([e10: int, m: integer])
 
-For ``token-amount``, as of protocol version 9, the exponent (``e10``) must be between 0 and -255 (inclusive).
+For ``token-amount``, as of protocol version 9, the exponent (``e10``) must be between -255 and 0 (inclusive).
 The significand (``m``) must be between 0 and 2^64-1 = 18446744073709551615 (inclusive); that is, the significand is a 64-bit unsigned integer.
 
-
-Each PLT defines the number of decimal places in its representation.
-A ``token-amount`` for a given PLT MUST be expressed with the exponent ``e10`` being the negation of the number of decimals.
+A ``token-amount`` for a given PLT MUST be expressed with the exponent ``e10`` being the negation of the :ref:`token decimals`.
 Thus, the following ``token-amount``\s are not equivalent::
 
-  4([2, 100])      -- 1.00
-  4([6, 1000000])  -- 1.000000
+  4([-2, 100])      -- 1.00
+  4([-6, 1000000])  -- 1.000000
 
 Memo
 ^^^^
@@ -176,9 +184,9 @@ Accounts are represented by ``tagged-account-address``, which is based on the UR
 The tag 40307 denotes a cryptocurrency address.
 The ``untagged-account-address`` consists of an optional info field (key ``1``) that indicates the address is specifically a Concordium address.
 The type field (key ``2``) defined by BCR-2020-009 is not supported for Concordium account addresses, and is therefore omitted.
-The data field (key ``3``) is required and must be the 32-byte representation of the Concordium account address.
+The data field (key ``3``) is required and MUST be the 32-byte representation of the Concordium account address.
 
-When present, the info field should hold the value ``40305({1: 919})``.
+When present, the info field SHOULD hold the value ``40305({1: 919})``.
 The tag 40305 denotes a coin info type as defined in `BCR-2020-007 <https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md>`_.
 The info field MAY be omitted.
 Decoders SHOULD assume that a tagged cryptocurrency address with no info field represents a Concordium address.
@@ -245,7 +253,7 @@ Initialization Parameters
 The initialization parameters are used when creating a new PLT instance.
 They are included as part of the CreatePLT chain update transaction.
 They are passed to the Token Module to initialize the state.
-Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the TokenID, the Token Module Hash, and the number of decimal places in the token's representation.
+Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the :ref:`Token ID`, the :ref:`Token Module Hash`, and the :ref:`token decimals`.
 
 The format and semantics of the initialization parameters may differ between Token Module implementations.
 The initializations parameters for a conforming implementation MUST be represented as a CBOR map conforming to the following schema:
@@ -382,6 +390,10 @@ The Token Module MUST execute the token operations in sequence.
 If any of the token operations fails, the entire transaction SHOULD fail with the reject reason indicating the cause of failure of the first failing operation.
 Energy fees SHOULD be charged for each operation up to and including the first failing operation.
 
+If a Token Update transaction cannot be deserialized, the transaction SHOULD fail with the reject reason ``deserializationFailure``.
+A token amount that does not conform to the :ref:`token decimals` SHOULD be considered a deserialization failure.
+TokenModuleV0 deserializes the transaction in its entirety before executing any of the operations, and thus no charge is levied for any operations if deserialization fails.
+
 ::
 
     token-update-transaction = [ * token-operation ]
@@ -400,7 +412,7 @@ Each token operation MUST consist of a map with a single key that identifies the
 
 The semantics of each token operation SHOULD be the same across all Token Modules which implements it.
 In particular, implementations MUST conform to the schema for the token operations defined in this document.
-An implementation MUST NOT use the operation types ``transfer``, ``mint``, ``burn``, ``addAllowList``, ``removeAllowList``, ``addDenyList``, or ``removeDenyList`` for any other operation than those defined below.
+An implementation MUST NOT use the operation types ``transfer``, ``mint``, ``burn``, ``addAllowList``, ``removeAllowList``, ``addDenyList``, ``removeDenyList``, ``pause``, or ``unpause`` for any other operation than those defined below.
 
 ``transfer``
 ^^^^^^^^^^^^
@@ -464,12 +476,14 @@ The burn operation decreases the total supply of the token by the specified amou
 These operations are considered token-governance operations, and thus are not available to all accounts.
 
 The mint operation MUST fail if any of the following conditions holds:
+
 - the token has a governance account, and the sender account is not the governance account;
 - the token is paused;
 - the token is not mintable; or
 - minting would cause the total supply of the token to exceed the maximum representable value for the token.
 
 The burn operation MUST fail if any of the following conditions holds:
+
 - the token has a governance account, and the sender account is not the governance account;
 - the token is paused;
 - the token is not burnable; or
@@ -513,22 +527,25 @@ If multiple conditions apply, the reject reason can indicate any of them.
         "removeDenyList": token-list-update-details
     }
 
-    ; Specifies the details of a list update operation.
+    ; Specifies the details of a list-update operation.
     token-list-update-details = {
         ; The account to add or remove from the list.
         "target": tagged-account-address
     }
 
-The list update operations add or remove a specified account to or from the allow or deny list.
-The list update operations are considered token-governance operations, and thus are not available to all accounts.
+The list-update operations add or remove a specified account to or from the allow or deny list.
+The list-update operations are considered token-governance operations, and thus are not available to all accounts.
 
 A list-update operation MUST fail if any of the following conditions holds:
+
 - the token has a governance account, and the sender account is not the governance account;
 - the token does not implement the relevant list; or
 - the target account does not exist.
 
 Adding an account to a list that it already belongs to, or removing it from a list that it does not belong to, SHOULD NOT be considered grounds for failure.
-Such updates MUST NOT affect on the list.
+Such updates MUST NOT affect the list.
+
+If the token is paused, that SHOULD NOT be considered grounds for failure of a list-update operation, since the list-update operations do not involve balance changes.
 
 The reject reason SHOULD indicate which condition caused the failure.
 If multiple conditions apply, the reject reason can indicate any of them.
@@ -556,6 +573,7 @@ The pause operation sets the token into a global pause state in which no balance
 The unpause operations ends the global pause.
 
 The pause and unpause operations MUST fail if any of the following conditions holds:
+
 - the token has a governance account, and the sender account is not the governance account.
 
 Pausing a token that is already paused, or unpausing a token that is not paused, SHOULD NOT be considered grounds for failure.
@@ -583,6 +601,16 @@ In order for tools such as hardware wallets to be able to handle such operations
 
     simple-key = short-text / uint
 
+    details-value = value-1
+
+    value-1 = value-0
+        / list-0
+        / map-0
+
+    list-0 = [ * value-0 ]
+    
+    map-0 = { * simple-key => value-0 }
+
     value-0 =
         tagged-account-address      ; An account address
         / tagged-contract-address   ; A smart contract address
@@ -603,36 +631,27 @@ In order for tools such as hardware wallets to be able to handle such operations
     base16-data = #6.23(bytes)
     base64-data = #6.22(bytes)
 
-    list-0 = [ * value-0 ]
-    map-0 = { * simple-key => value-0 }
-
-    value-1 = value-0
-        / list-0
-        / map-0
-
-    details-value = value-1
-
-A `generic-token-operation` consists of a short text key (1-24 characters) that identifies the operation, and a map of simple keys to values that represent the details of the operation.
+A ``generic-token-operation`` consists of a short text key (1-24 characters) that identifies the operation, and a map of simple keys to values that represent the details of the operation.
 Simple keys are either short text strings (1-24 characters) or unsigned integers.
 
 The values can be of various types:
 
-- `tagged-account-address`: An account address.
-- `tagged-contract-address`: A smart contract address.
-- `int`: An integer value.
-- `bigint`: A big integer value.
-- `decfrac`: A decimal fraction.
-- `text`: A text string.
-- `bytes`: A byte string.
-- `epoch-time`: An time represented as a number of seconds since the Unix epoch (1970-01-01T00:00:00Z).
-- `encoded-cbor`: Encoded CBOR data. (Tooling may decode this data and display it in a human-readable format where appropriate.)
-- `base16-data`: Data to be represented in base16 (hexadecimal) format.
-- `base64-data`: Data to be represented in base64 format.
-- `bool`: A boolean value (true or false).
-- `null`: The null value.
-- `undefined`: The undefined value.
-- `list-0`: A list of values the above simple values.
-- `map-0`: A map of simple keys to simple values.
+- ``tagged-account-address``: An account address.
+- ``tagged-contract-address``: A smart contract address.
+- ``int``: An integer value.
+- ``bigint``: A big integer value.
+- ``decfrac``: A decimal fraction.
+- ``text``: A text string.
+- ``bytes``: A byte string.
+- ``epoch-time``: An time represented as a number of seconds since the Unix epoch (1970-01-01T00:00:00Z).
+- ``encoded-cbor``: Encoded CBOR data. (Tooling may decode this data and display it in a human-readable format where appropriate.)
+- ``base16-data``: Data to be represented in base16 (hexadecimal) format.
+- ``base64-data``: Data to be represented in base64 format.
+- ``bool``: A boolean value (true or false).
+- ``null``: The null value.
+- ``undefined``: The undefined value.
+- ``list-0``: A list of values the above simple values.
+- ``map-0``: A map of simple keys to simple values.
 
 
 Token Kernel Events
@@ -663,7 +682,7 @@ TokenCreated
 ^^^^^^^^^^^^
 
 The TokenCreated event occurs when a new PLT is created.
-It indicates the Token ID, the Token Module Hash, the number of decimal places, and the `initialization parameters <Initialization Parameters>`_.
+It indicates the :ref:`Token ID`, the :ref:`Token Module Hash`, the :ref:`token decimals`, and the `initialization parameters <Initialization Parameters>`_.
 
 Token Module Events
 -------------------
@@ -692,7 +711,7 @@ The ``TokenEventType`` determines the semantics of the event details, and in par
     token-remove-allow-list-event = token-list-update-details
 
 ``addDenyList``
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
 ::
 
     ; The details of a token "addDenyList" event.
@@ -700,13 +719,28 @@ The ``TokenEventType`` determines the semantics of the event details, and in par
     token-add-deny-list-event = token-list-update-details
 
 ``removeDenyList``
-^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 ::
 
     ; The details of a token "removeDenyList" event.
     ; Indicates that the account was removed from the deny list.
     token-remove-deny-list-event = token-list-update-details
 
+``pause``
+^^^^^^^^^
+::
+
+    ; The details of a token "pause" event.
+    ; Indicates that the token operations involving balance changes are suspended.
+    token-pause-event = {}
+
+``unpause``
+^^^^^^^^^^^
+::
+
+    ; The details of a token "unpause" event.
+    ; Indicates that the token operations involving balance changes are resumed.
+    token-unpause-event = {}
 
 Reject Reasons
 --------------
@@ -757,6 +791,8 @@ The following reject reason types are defined by TokenModuleV0:
         ; Text description of the failure mode.
         ? "cause": text
     }
+
+Note that it is considered a deserialization failure if the transaction contains a :ref:`token amount` that does not conform to the :ref:`token decimals`.
 
 ``unsupportedOperation``
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -846,7 +882,6 @@ The Token Module state is represented as a CBOR map conforming to the following 
 
 All fields are optional.
 It is RECOMMENDED that Token Modules provide the ``name`` and ``metadata`` fields.
-Other fields are optional, and can be omitted if the module implementation does not support them.
 The structure supports additional fields for future extensibility.
 
 A Token Module MAY include non-standard fields (i.e. any fields that are not defined by a standard, and are specific to the module implementation).
@@ -889,7 +924,7 @@ It is represented as a CBOR map conforming to the following schema:
         * text => any
     }
 
-All fields are optional, and can be omitted if the module implementation does not support them.
+All fields are optional.
 The structure supports additional fields for future extensibility.
 
 A Token Module MAY include non-standard fields (i.e. any fields that are not defined by a standard, and are specific to the module implementation).
@@ -926,9 +961,9 @@ All of the fields in the JSON file are optional, and this specification reserves
     - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
     - URLs to JSON files with localized token metadata.
 
-Optionally a SHA256 hash of the JSON file can be logged with the TokenMetadata event for checking integrity.
-Since the metadata JSON file could contain URLs, a SHA256 hash can optionally be associated with the URL.
-To associate a hash with a URL the JSON value is an object:
+To enforce integrity of the metadata, the SHA256 hash of the JSON file MAY be included as part of the :ref:`Metadata URL`.
+Since the metadata JSON file can itself contain URLs, a SHA256 hash MAY be associated with each URL.
+To associate a hash with a URL, the JSON value is an object:
 
 .. list-table:: URL JSON Object
   :header-rows: 1
