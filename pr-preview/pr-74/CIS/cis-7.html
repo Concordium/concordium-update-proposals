@@ -316,11 +316,11 @@ This document defines schemas for the data exchanged at each interface, includin
 This document does not specify the behavior or interface of the Token Kernel.</p>
 <p>The outside world interacts with the Token Module through transactions and queries.
 This document does not specify the serialization format of transactions, or the <a class="reference external" href="https://docs.concordium.com/concordium-grpc-api/">API for querying the node</a>.
-The CreatePLT chain update transaction carries CBOR-encoded <a class="reference internal" href="#initialization-parameters"><span class="std std-ref">initialization parameters</span></a>.
-The TokenUpdate account transaction carries a CBOR-encoded <a class="reference internal" href="#transactions"><span class="std std-ref">list of transaction operations</span></a>.
-The GetTokenInfo gRPC query returns the CBOR-encoded <a class="reference internal" href="#token-module-state"><span class="std std-ref">Token Module state</span></a>.
-The GetAccountInfo gRPC query returns the CBOR-encoded <a class="reference internal" href="#account-state"><span class="std std-ref">token account state</span></a>.
-The GetBlockTransactionEvents and GetBlockItemStatus gRPC queries return CBOR-encoded <span class="xref std std-ref">events</span> and <a class="reference internal" href="#reject-reasons"><span class="std std-ref">reject reasons</span></a> for TokenUpdate transactions.</p>
+The CreatePLT chain update transaction carries CBOR-encoded <a class="reference internal" href="#cis-7-initializationparameters"><span class="std std-ref">initialization parameters</span></a>.
+The TokenUpdate account transaction carries a CBOR-encoded <a class="reference internal" href="#cis-7-transactions"><span class="std std-ref">list of transaction operations</span></a>.
+The GetTokenInfo gRPC query returns the CBOR-encoded <a class="reference internal" href="#cis-7-tokenmodulestate"><span class="std std-ref">Token Module state</span></a>.
+The GetAccountInfo gRPC query returns the CBOR-encoded <a class="reference internal" href="#cis-7-accountstate"><span class="std std-ref">token account state</span></a>.
+The GetBlockTransactionEvents and GetBlockItemStatus gRPC queries return CBOR-encoded <a class="reference internal" href="#cis-7-tokenmoduleevents"><span class="std std-ref">events</span></a> and <a class="reference internal" href="#cis-7-rejectreasons"><span class="std std-ref">reject reasons</span></a> for TokenUpdate transactions.</p>
 <section id="terminology-and-conventions">
 <h3>Terminology and Conventions<a class="headerlink" href="#terminology-and-conventions" title="Link to this heading">¶</a></h3>
 <p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-2"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
@@ -336,7 +336,7 @@ The Token Module MUST produce data in preferred serialization, and SHOULD produc
 <section id="common-types">
 <h3>Common Types<a class="headerlink" href="#common-types" title="Link to this heading">¶</a></h3>
 <section id="token-id">
-<h4>Token ID<a class="headerlink" href="#token-id" title="Link to this heading">¶</a></h4>
+<span id="cis-7-tokenid"></span><h4>Token ID<a class="headerlink" href="#token-id" title="Link to this heading">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-id = text .size (1..128) .regexp &quot;[a-zA-Z0-9\-.%]+&quot;
 </pre></div>
 </div>
@@ -348,7 +348,7 @@ Implementations MUST match Token IDs in a case-insensitive manner.</p>
 It is not typically encoded in CBOR.</p>
 </section>
 <section id="token-module-hash">
-<h4>Token Module Hash<a class="headerlink" href="#token-module-hash" title="Link to this heading">¶</a></h4>
+<span id="cis-7-tokenmodulehash"></span><h4>Token Module Hash<a class="headerlink" href="#token-module-hash" title="Link to this heading">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sha256-hash = bytes .size(32)
 
 token-module-hash = sha256-hash
@@ -361,7 +361,7 @@ It is not typically encoded in CBOR.</p>
 <p>Protocol version 9 introduces a single Token Module implementation, referred to as TokenModuleV0, which is identified by the Token Module Hash <code class="docutils literal notranslate"><span class="pre">5c5c2645db84a7026d78f2501740f60a8ccb8fae5c166dc2428077fd9a699a4a</span></code>.</p>
 </section>
 <section id="token-decimals">
-<h4>Token Decimals<a class="headerlink" href="#token-decimals" title="Link to this heading">¶</a></h4>
+<span id="cis-7-tokendecimals"></span><h4>Token Decimals<a class="headerlink" href="#token-decimals" title="Link to this heading">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-decimals = int .range (0..255)
 </pre></div>
 </div>
@@ -370,7 +370,7 @@ It is a constant that is determined when the PLT is created.
 As of protocol version 9, it is constrained to be between 0 and 255 (inclusive).</p>
 </section>
 <section id="token-amount">
-<span id="cis-7-token-amount"></span><h4>Token Amount<a class="headerlink" href="#token-amount" title="Link to this heading">¶</a></h4>
+<span id="cis-7-tokenamount"></span><h4>Token Amount<a class="headerlink" href="#token-amount" title="Link to this heading">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-amount = decfrac
 </pre></div>
 </div>
@@ -382,7 +382,7 @@ From the CDDL prelude (<span class="target" id="index-6"></span><a class="rfc re
 </div>
 <p>For <code class="docutils literal notranslate"><span class="pre">token-amount</span></code>, as of protocol version 9, the exponent (<code class="docutils literal notranslate"><span class="pre">e10</span></code>) must be between -255 and 0 (inclusive).
 The significand (<code class="docutils literal notranslate"><span class="pre">m</span></code>) must be between 0 and 2^64-1 = 18446744073709551615 (inclusive); that is, the significand is a 64-bit unsigned integer.</p>
-<p>A <code class="docutils literal notranslate"><span class="pre">token-amount</span></code> for a given PLT MUST be expressed with the exponent <code class="docutils literal notranslate"><span class="pre">e10</span></code> being the negation of the <a class="reference internal" href="#token-decimals"><span class="std std-ref">Token Decimals</span></a>.
+<p>A <code class="docutils literal notranslate"><span class="pre">token-amount</span></code> for a given PLT MUST be expressed with the exponent <code class="docutils literal notranslate"><span class="pre">e10</span></code> being the negation of the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>.
 Thus, the following <code class="docutils literal notranslate"><span class="pre">token-amount</span></code>s are not equivalent:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>4([-2, 100])      -- 1.00
 4([-6, 1000000])  -- 1.000000
@@ -469,7 +469,7 @@ Decoders MUST accept the <code class="docutils literal notranslate"><span class=
 Decoders MUST accept the <code class="docutils literal notranslate"><span class="pre">contract-address-index-subindex</span></code> representation with subindex 0, unless deterministic encoding is required.</p>
 </section>
 <section id="metadata-url">
-<h4>Metadata URL<a class="headerlink" href="#metadata-url" title="Link to this heading">¶</a></h4>
+<span id="cis-7-metadataurl"></span><h4>Metadata URL<a class="headerlink" href="#metadata-url" title="Link to this heading">¶</a></h4>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>metadata-url = {
     ; A string field representing the URL
     &quot;url&quot;: text,
@@ -485,11 +485,11 @@ When the <code class="docutils literal notranslate"><span class="pre">checksumSh
 </section>
 </section>
 <section id="initialization-parameters">
-<h3>Initialization Parameters<a class="headerlink" href="#initialization-parameters" title="Link to this heading">¶</a></h3>
+<span id="cis-7-initializationparameters"></span><h3>Initialization Parameters<a class="headerlink" href="#initialization-parameters" title="Link to this heading">¶</a></h3>
 <p>The initialization parameters are used when creating a new PLT instance.
 They are included as part of the CreatePLT chain update transaction.
 They are passed to the Token Module to initialize the state.
-Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the <a class="reference internal" href="#token-id"><span class="std std-ref">Token ID</span></a>, the <a class="reference internal" href="#token-module-hash"><span class="std std-ref">Token Module Hash</span></a>, and the <a class="reference internal" href="#token-decimals"><span class="std std-ref">Token Decimals</span></a>.</p>
+Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the <a class="reference internal" href="#cis-7-tokenid"><span class="std std-ref">Token ID</span></a>, the <a class="reference internal" href="#cis-7-tokenmodulehash"><span class="std std-ref">Token Module Hash</span></a>, and the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>.</p>
 <p>The format and semantics of the initialization parameters may differ between Token Module implementations.
 The initializations parameters for a conforming implementation MUST be represented as a CBOR map conforming to the following schema:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-initialization-parameters = {
@@ -556,8 +556,8 @@ A PLT that enforces an allow list is subject to the following:</p>
 A PLT that implements a deny list is subject to the following:</p>
 <ul class="simple">
 <li><p>Transfers MUST be rejected if either the sender or receiver account belongs to the deny list.</p></li>
-<li><p>The <a class="reference internal" href="#token-module-state"><span class="std std-ref">token module state</span></a> MUST indicate that the deny list is enforced.</p></li>
-<li><p>Accounts with no <a class="reference internal" href="#account-state"><span class="std std-ref">account state</span></a> implicitly MUST NOT belong to the deny list.</p></li>
+<li><p>The <a class="reference internal" href="#cis-7-tokenmodulestate"><span class="std std-ref">token module state</span></a> MUST indicate that the deny list is enforced.</p></li>
+<li><p>Accounts with no <a class="reference internal" href="#cis-7-accountstate"><span class="std std-ref">account state</span></a> implicitly MUST NOT belong to the deny list.</p></li>
 <li><p>Accounts that have an account state MUST report whether the account belongs to the deny list.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code> and <code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code> operations SHOULD be implemented.</p></li>
 <li><p>When an account is added to the deny list, an <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code> Token Module Event MUST be emitted.</p></li>
@@ -580,13 +580,13 @@ If this is not specified, no initial supply is minted.</p>
 </section>
 </section>
 <section id="transactions">
-<h3>Transactions<a class="headerlink" href="#transactions" title="Link to this heading">¶</a></h3>
+<span id="cis-7-transactions"></span><h3>Transactions<a class="headerlink" href="#transactions" title="Link to this heading">¶</a></h3>
 <p>A Token Update transaction identifies a PLT by its Token ID and carries a CBOR-encoded payload that consists of a list of token operations (<code class="docutils literal notranslate"><span class="pre">token-update-transaction</span></code>).
 The Token Module MUST execute the token operations in sequence.
 If any of the token operations fails, the entire transaction SHOULD fail with the reject reason indicating the cause of failure of the first failing operation.
 Energy fees SHOULD be charged for each operation up to and including the first failing operation.</p>
 <p>If a Token Update transaction cannot be deserialized, the transaction SHOULD fail with the reject reason <code class="docutils literal notranslate"><span class="pre">deserializationFailure</span></code>.
-A token amount that does not conform to the <a class="reference internal" href="#token-decimals"><span class="std std-ref">Token Decimals</span></a> SHOULD be considered a deserialization failure.
+A token amount that does not conform to the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a> SHOULD be considered a deserialization failure.
 TokenModuleV0 deserializes the transaction in its entirety before executing any of the operations, and thus no charge is levied for any operations if deserialization fails.</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-update-transaction = [ * token-operation ]
 
@@ -854,11 +854,11 @@ It indicates the Token ID involved, the account that burned the tokens, and the 
 <section id="tokencreated">
 <h4>TokenCreated<a class="headerlink" href="#tokencreated" title="Link to this heading">¶</a></h4>
 <p>The TokenCreated event occurs when a new PLT is created.
-It indicates the <a class="reference internal" href="#token-id"><span class="std std-ref">Token ID</span></a>, the <a class="reference internal" href="#token-module-hash"><span class="std std-ref">Token Module Hash</span></a>, the <a class="reference internal" href="#token-decimals"><span class="std std-ref">Token Decimals</span></a>, and the <a class="reference external" href="InitializationParameters">initialization parameters</a>.</p>
+It indicates the <a class="reference internal" href="#cis-7-tokenid"><span class="std std-ref">Token ID</span></a>, the <a class="reference internal" href="#cis-7-tokenmodulehash"><span class="std std-ref">Token Module Hash</span></a>, the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>, and the <a class="reference external" href="CIS-7-InitializationParameters">initialization parameters</a>.</p>
 </section>
 </section>
 <section id="token-module-events">
-<h3>Token Module Events<a class="headerlink" href="#token-module-events" title="Link to this heading">¶</a></h3>
+<span id="cis-7-tokenmoduleevents"></span><h3>Token Module Events<a class="headerlink" href="#token-module-events" title="Link to this heading">¶</a></h3>
 <p>The Token Module may emit Token Module Events as a consequence of transaction execution.
 These events are in addition to the <cite>Token Kernel Events</cite>, and the semantics is dependent on the Token Module implementation.</p>
 <p>Each Token Module Event type is designated by a <code class="docutils literal notranslate"><span class="pre">TokenEventType</span></code>, which is a UTF-8 encoded string of at most 255 bytes.
@@ -914,7 +914,7 @@ token-unpause-event = {}
 </section>
 </section>
 <section id="reject-reasons">
-<h3>Reject Reasons<a class="headerlink" href="#reject-reasons" title="Link to this heading">¶</a></h3>
+<span id="cis-7-rejectreasons"></span><h3>Reject Reasons<a class="headerlink" href="#reject-reasons" title="Link to this heading">¶</a></h3>
 <p>The Token Module may reject a transaction for various reasons.
 When a transaction is rejected, the reject reason identifies the PLT, the type of the reject reason (a UTF-8 encoded string of at most 255 bytes), and, optionally, the details of the reject reason (encoded as CBOR).</p>
 <p>Then the Token Module rejects a transaction, it produces a “token update transaction failed” reject reason that includes the Token ID, the reject reason type, and (optionally) CBOR-encoded reject reason details.
@@ -958,7 +958,7 @@ reject-details-deserialization-failure = {
 }
 </pre></div>
 </div>
-<p>Note that it is considered a deserialization failure if the transaction contains a <a class="reference internal" href="#token-amount"><span class="std std-ref">Token Amount</span></a> that does not conform to the <a class="reference internal" href="#token-decimals"><span class="std std-ref">Token Decimals</span></a>.</p>
+<p>Note that it is considered a deserialization failure if the transaction contains a <a class="reference internal" href="#cis-7-tokenamount"><span class="std std-ref">Token Amount</span></a> that does not conform to the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>.</p>
 </section>
 <section id="unsupportedoperation">
 <h4><code class="docutils literal notranslate"><span class="pre">unsupportedOperation</span></code><a class="headerlink" href="#unsupportedoperation" title="Link to this heading">¶</a></h4>
@@ -1120,7 +1120,7 @@ This token metadata MUST be a JSON (<span class="target" id="index-8"></span><a 
 </tbody>
 </table>
 </div>
-<p>To enforce integrity of the metadata, the SHA256 hash of the JSON file MAY be included as part of the <a class="reference internal" href="#metadata-url"><span class="std std-ref">Metadata URL</span></a>.
+<p>To enforce integrity of the metadata, the SHA256 hash of the JSON file MAY be included as part of the <a class="reference internal" href="#cis-7-metadataurl"><span class="std std-ref">Metadata URL</span></a>.
 Since the metadata JSON file can itself contain URLs, a SHA256 hash MAY be associated with each URL.
 To associate a hash with a URL, the JSON value is an object:</p>
 <div class="table-wrapper docutils container" id="id4">
