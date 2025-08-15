@@ -1,4 +1,0 @@
-/* Disable uppercase transformed headers  */
-h4, h5, h6 {
-    text-transform: none;
-}
