@@ -169,7 +169,7 @@ Account Address
 
     tagged-account-address = #6.40307(untagged-account-address)
 
-    untagged-account-address = { 
+    untagged-account-address = {
         ; If the info (1) field is present, it must indicate CCD.
         ? 1: tagged-ccd-coininfo,
         ; The type (2) field is not supported.
@@ -180,9 +180,9 @@ Account Address
     ; A subtype of the tagged-coininfo type from BCR-2020-007
     tagged-ccd-coininfo = #6.40305(ccd-coininfo)
 
-    ccd-coininfo = { 
+    ccd-coininfo = {
         ; The type (1) field is the SLIP44 code for Concordium
-        1: 919 
+        1: 919
         ; The network (2) field is not supported.
     }
 
@@ -213,7 +213,7 @@ Smart contract addresses with a subindex other than 0 are unused, but reserved f
 
     ; A Concordium smart contract address.
     tagged-contract-address = #6.40919(contract-address)
-    
+
     contract-address = contract-address-index-only / contract-address-index-subindex
 
     ; A smart contract address represented as the contract index only.
@@ -268,7 +268,7 @@ The format and semantics of the initialization parameters may differ between Tok
 The initializations parameters for a conforming implementation MUST be represented as a CBOR map conforming to the following schema:
 ::
 
-    token-initialization-parameters = { 
+    token-initialization-parameters = {
         ; The name of the token
         ? "name": text,
         ; A URL pointing to the token metadata
@@ -508,7 +508,7 @@ If multiple conditions apply, the reject reason can indicate any of them.
 ::
 
     ; Update an allow or a deny list by adding or removing an account from it.
-    token-update-list = 
+    token-update-list =
         token-add-allow-list
         / token-remove-allow-list
         / token-add-deny-list
@@ -619,7 +619,7 @@ In order for tools such as hardware wallets to be able to handle such operations
         / map-0
 
     list-0 = [ * value-0 ]
-    
+
     map-0 = { * simple-key => value-0 }
 
     value-0 =
@@ -637,7 +637,7 @@ In order for tools such as hardware wallets to be able to handle such operations
         / bool                      ; A boolean value
         / null                      ; The null value
         / undefined                 ; The undefined value
-    
+
     epoch-time = #6.1(uint)
     base16-data = #6.23(bytes)
     base64-data = #6.22(bytes)
