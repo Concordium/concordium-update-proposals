@@ -28,8 +28,7 @@ author = 'Concordium'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'notfound.extension',
-    'sphinx.ext.autosectionlabel'
+    'notfound.extension'
 ]
 
 # Disable default url prefix "/en/latest/" on every resource for 404.html.

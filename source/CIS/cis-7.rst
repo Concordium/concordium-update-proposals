@@ -49,11 +49,11 @@ This document does not specify the behavior or interface of the Token Kernel.
 
 The outside world interacts with the Token Module through transactions and queries.
 This document does not specify the serialization format of transactions, or the `API for querying the node <https://docs.concordium.com/concordium-grpc-api/>`_.
-The CreatePLT chain update transaction carries CBOR-encoded :ref:`initialization parameters<Initialization Parameters>`.
-The TokenUpdate account transaction carries a CBOR-encoded :ref:`list of transaction operations<Transactions>`.
-The GetTokenInfo gRPC query returns the CBOR-encoded :ref:`Token Module state<Token Module State>`.
-The GetAccountInfo gRPC query returns the CBOR-encoded :ref:`token account state<Account State>`.
-The GetBlockTransactionEvents and GetBlockItemStatus gRPC queries return CBOR-encoded :ref:`events<Events>` and :ref:`reject reasons<Reject Reasons>` for TokenUpdate transactions.
+The CreatePLT chain update transaction carries CBOR-encoded :ref:`initialization parameters<CIS-7-InitializationParameters>`.
+The TokenUpdate account transaction carries a CBOR-encoded :ref:`list of transaction operations<CIS-7-Transactions>`.
+The GetTokenInfo gRPC query returns the CBOR-encoded :ref:`Token Module state<CIS-7-TokenModuleState>`.
+The GetAccountInfo gRPC query returns the CBOR-encoded :ref:`token account state<CIS-7-AccountState>`.
+The GetBlockTransactionEvents and GetBlockItemStatus gRPC queries return CBOR-encoded :ref:`events<CIS-7-TokenModuleEvents>` and :ref:`reject reasons<CIS-7-RejectReasons>` for TokenUpdate transactions.
 
 Terminology and Conventions
 ---------------------------
@@ -75,6 +75,8 @@ The Token Module MUST produce data in preferred serialization, and SHOULD produc
 Common Types
 ------------
 
+.. _CIS-7-TokenID:
+
 Token ID
 ^^^^^^^^
 
@@ -89,6 +91,8 @@ Implementations MUST match Token IDs in a case-insensitive manner.
 
 The Token ID is used to identify the PLT in transactions, events and queries.
 It is not typically encoded in CBOR.
+
+.. _CIS-7-TokenModuleHash:
 
 Token Module Hash
 ^^^^^^^^^^^^^^^^^
@@ -107,6 +111,8 @@ It is not typically encoded in CBOR.
 
 Protocol version 9 introduces a single Token Module implementation, referred to as TokenModuleV0, which is identified by the Token Module Hash ``5c5c2645db84a7026d78f2501740f60a8ccb8fae5c166dc2428077fd9a699a4a``.
 
+.. _CIS-7-TokenDecimals:
+
 Token Decimals
 ^^^^^^^^^^^^^^
 ::
@@ -117,7 +123,7 @@ The token decimals for a PLT is an integer that specifies the number of decimal 
 It is a constant that is determined when the PLT is created.
 As of protocol version 9, it is constrained to be between 0 and 255 (inclusive).
 
-.. _CIS-7-token-amount:
+.. _CIS-7-TokenAmount:
 
 Token Amount
 ^^^^^^^^^^^^
@@ -134,7 +140,7 @@ From the CDDL prelude (:rfc:`8610`)::
 For ``token-amount``, as of protocol version 9, the exponent (``e10``) must be between -255 and 0 (inclusive).
 The significand (``m``) must be between 0 and 2^64-1 = 18446744073709551615 (inclusive); that is, the significand is a 64-bit unsigned integer.
 
-A ``token-amount`` for a given PLT MUST be expressed with the exponent ``e10`` being the negation of the :ref:`token decimals`.
+A ``token-amount`` for a given PLT MUST be expressed with the exponent ``e10`` being the negation of the :ref:`CIS-7-TokenDecimals`.
 Thus, the following ``token-amount``\s are not equivalent::
 
   4([-2, 100])      -- 1.00
@@ -229,6 +235,8 @@ Encoders SHOULD use the ``contract-address-index-only`` representation for such 
 Decoders MUST accept the ``contract-address-index-only`` representation.
 Decoders MUST accept the ``contract-address-index-subindex`` representation with subindex 0, unless deterministic encoding is required.
 
+.. _CIS-7-MetadataURL:
+
 Metadata URL
 ^^^^^^^^^^^^
 
@@ -246,6 +254,7 @@ Metadata URL
 A ``metadata-url`` encodes a URL that identifies metadata, together with an optional sha256 checksum of the contents of the metadata.
 When the ``checksumSha256`` field is present, tools SHOULD confirm that the computed sha256 hash of the data retrieved from the URL specified by the ``url`` field matches the contents of the ``checksumSha256`` field.
 
+.. _CIS-7-InitializationParameters:
 
 Initialization Parameters
 -------------------------
@@ -253,7 +262,7 @@ Initialization Parameters
 The initialization parameters are used when creating a new PLT instance.
 They are included as part of the CreatePLT chain update transaction.
 They are passed to the Token Module to initialize the state.
-Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the :ref:`Token ID`, the :ref:`Token Module Hash`, and the :ref:`token decimals`.
+Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the :ref:`CIS-7-TokenID`, the :ref:`CIS-7-TokenModuleHash`, and the :ref:`CIS-7-TokenDecimals`.
 
 The format and semantics of the initialization parameters may differ between Token Module implementations.
 The initializations parameters for a conforming implementation MUST be represented as a CBOR map conforming to the following schema:
@@ -348,9 +357,9 @@ A PLT that implements a deny list is subject to the following:
 
 * Transfers MUST be rejected if either the sender or receiver account belongs to the deny list.
 
-* The :ref:`token module state<Token Module State>` MUST indicate that the deny list is enforced.
+* The :ref:`token module state<CIS-7-TokenModuleState>` MUST indicate that the deny list is enforced.
 
-* Accounts with no :ref:`account state<Account State>` implicitly MUST NOT belong to the deny list.
+* Accounts with no :ref:`account state<CIS-7-AccountState>` implicitly MUST NOT belong to the deny list.
 
 * Accounts that have an account state MUST report whether the account belongs to the deny list.
 
@@ -382,6 +391,8 @@ Whether the PLT supports the ``mint`` transaction operation.
 
 Whether the PLT supports the ``burn`` transaction operation.
 
+.. _CIS-7-Transactions:
+
 Transactions
 ------------
 
@@ -391,7 +402,7 @@ If any of the token operations fails, the entire transaction SHOULD fail with th
 Energy fees SHOULD be charged for each operation up to and including the first failing operation.
 
 If a Token Update transaction cannot be deserialized, the transaction SHOULD fail with the reject reason ``deserializationFailure``.
-A token amount that does not conform to the :ref:`token decimals` SHOULD be considered a deserialization failure.
+A token amount that does not conform to the :ref:`CIS-7-TokenDecimals` SHOULD be considered a deserialization failure.
 TokenModuleV0 deserializes the transaction in its entirety before executing any of the operations, and thus no charge is levied for any operations if deserialization fails.
 
 ::
@@ -682,7 +693,9 @@ TokenCreated
 ^^^^^^^^^^^^
 
 The TokenCreated event occurs when a new PLT is created.
-It indicates the :ref:`Token ID`, the :ref:`Token Module Hash`, the :ref:`token decimals`, and the `initialization parameters <Initialization Parameters>`_.
+It indicates the :ref:`CIS-7-TokenID`, the :ref:`CIS-7-TokenModuleHash`, the :ref:`CIS-7-TokenDecimals`, and the `initialization parameters <CIS-7-InitializationParameters>`_.
+
+.. _CIS-7-TokenModuleEvents:
 
 Token Module Events
 -------------------
@@ -742,6 +755,8 @@ The ``TokenEventType`` determines the semantics of the event details, and in par
     ; Indicates that the token operations involving balance changes are resumed.
     token-unpause-event = {}
 
+.. _CIS-7-RejectReasons:
+
 Reject Reasons
 --------------
 
@@ -792,7 +807,7 @@ The following reject reason types are defined by TokenModuleV0:
         ? "cause": text
     }
 
-Note that it is considered a deserialization failure if the transaction contains a :ref:`token amount` that does not conform to the :ref:`token decimals`.
+Note that it is considered a deserialization failure if the transaction contains a :ref:`CIS-7-TokenAmount` that does not conform to the :ref:`CIS-7-TokenDecimals`.
 
 ``unsupportedOperation``
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -961,7 +976,7 @@ All of the fields in the JSON file are optional, and this specification reserves
     - JSON object with locales as field names (:rfc:`5646`) and field values are URL JSON objects linking to JSON files.
     - URLs to JSON files with localized token metadata.
 
-To enforce integrity of the metadata, the SHA256 hash of the JSON file MAY be included as part of the :ref:`Metadata URL`.
+To enforce integrity of the metadata, the SHA256 hash of the JSON file MAY be included as part of the :ref:`CIS-7-MetadataURL`.
 Since the metadata JSON file can itself contain URLs, a SHA256 hash MAY be associated with each URL.
 To associate a hash with a URL, the JSON value is an object:
 
