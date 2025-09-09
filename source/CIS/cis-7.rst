@@ -10,7 +10,7 @@ CIS-7: Protocol-level Tokens (PLTs)
    * - Created
      - Jun 25, 2025
    * - Final
-     - TBD
+     - Sep 9, 2025
    * - Supported versions
      - | Protocol version 9 or newer
    * - Standard identifier
