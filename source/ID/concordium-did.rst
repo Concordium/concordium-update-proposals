@@ -58,7 +58,7 @@ Concordium DID identifiers are defined by the following ABNF_:
   scitype = "sci:" index *1(“:” subindex)
   idptype = "idp:" index
   credtype = "cred:" 96(base16char)
-  encidtype = "eic:" *(base16char)
+  encidtype = "encidcred" *(base16char)
   index = 1*DIGIT
   subindex = 1*DIGIT
   base16char = HEXDIG
@@ -394,7 +394,7 @@ The Encrypted Identity Credential DID Document MUST contain the following data:
 .. code-block:: json
 
   {
-    "id": "did:ccd:eic:XX",
+    "id": "did:ccd:encidcredXX",
     "idp": "did:ccd:idp:YY"
   }
 
@@ -597,9 +597,9 @@ Encrypted Identity Credential DID
 
 The DID document corresponding to a DID of the form 
 
-``did:ccd:NET:eic:ENCID``
+``did:ccd:NET:encidcredENCID``
 
-can be constructed from a `ConcordiumIdBasedCredential` verifiable presentation that contains ``did:ccd:NET:eic:ENCID`` as the ``id`` of the `credentialSubject`.
+can be constructed from a `ConcordiumIdBasedCredential` verifiable presentation that contains ``did:ccd:NET:encidcredENCID`` as the ``id`` of the `credentialSubject`.
 The ``idp`` field is set to the `issuer` field of the verifiable presentation.
 
 Update
