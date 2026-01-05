@@ -1,7 +1,7 @@
 .. _concordium_did:
 
 ==================================
-Concordium DID Method Version 1.0
+Concordium DID Method Version 1.1
 ==================================
 
 About
@@ -21,6 +21,7 @@ We distinguish the following types of DIDs:
 - **Smart Contract DID** refers to smart contract instances on the Concordium blockchain.
 - **Public Key DID** refers to a subject that knows the corresponding secret key.
 - **Identity Provider DID** refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.
+- **Encrypted Identity Credenital DID** refers to a subject that has registered at an identity provider with the corresponding holder identifier.
 
 Status of This Document
 =======================
@@ -49,7 +50,7 @@ Concordium DID identifiers are defined by the following ABNF_:
 
 .. code-block:: ABNF
 
-  ccd-did = prefix ":" *1(network ":") (acctype / pkctype / scitype / idptype / credtype)
+  ccd-did = prefix ":" *1(network ":") (acctype / pkctype / scitype / idptype / credtype / encidtype)
   prefix  = %s"did:ccd"
   network = "testnet" / "mainnet"
   acctype = "acc:" 50(base58char)
@@ -57,6 +58,7 @@ Concordium DID identifiers are defined by the following ABNF_:
   scitype = "sci:" index *1(“:” subindex)
   idptype = "idp:" index
   credtype = "cred:" 96(base16char)
+  encidtype = "eic:" *(base16char)
   index = 1*DIGIT
   subindex = 1*DIGIT
   base16char = HEXDIG
@@ -378,6 +380,23 @@ The Identity Provider DID Document MUST contain the following data:
     ]
   }
 
+Encrypted Identity Credential DID
+---------------------------
+
+The goal of the Encrypted Identity Credential DID is to represent a pseudonymous subject that has registered at an identity provider.
+The subject can be identified via identity disclosure.
+
+The Encrypted Identity Credential DID Document MUST contain the following data:
+
+- ``id`` - the DID of the subject.
+- ``idp`` - specifies the identity provider that issued the identity credential
+
+.. code-block:: json
+
+  {
+    "id": "did:ccd:eic:XX",
+    "idp": "did:ccd:idp:YY"
+  }
 
 Concordium DID Operations
 =========================
@@ -415,6 +434,12 @@ Identity Provider DID
 ^^^^^^^^^^^^^^^^^^^^^
 
 Identity providers can be added as a `chain update <https://docs.rs/concordium_base/1.2.0/concordium_base/updates/index.html>`_ transaction of type `UpdateAddIdentityProvider <https://docs.rs/concordium_base/1.2.0/concordium_base/updates/enum.UpdateType.html#variant.UpdateAddIdentityProvider>`_.
+
+Encrypted Identity Credential DID
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+An encrypted identity credential DID can be created as part of a verifiable presentation that is directly based on the identity credential.
+See [TODO ADD LINK HERE] for more details.
 
 Read
 ----
@@ -566,6 +591,16 @@ From the command line, ``concordium-client`` allows retrieving the data in the f
 
     $concordium-client raw GetIdentityProviders
 
+
+Encrypted Identity Credential DID
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The DID document corresponding to a DID of the form 
+
+``did:ccd:NET:eic:ENCID``
+
+can be constructed from a `ConcordiumIdBasedCredential` verifiable presentation that contains ``did:ccd:NET:eic:ENCID`` as the ``id`` of the `credentialSubject`.
+The ``idp`` field is set to the `issuer` field of the verifiable presentation.
 
 Update
 ------
