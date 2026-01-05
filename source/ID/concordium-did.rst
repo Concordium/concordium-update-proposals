@@ -595,7 +595,7 @@ From the command line, ``concordium-client`` allows retrieving the data in the f
 Encrypted Identity Credential DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The DID document corresponding to a DID of the form 
+The DID document corresponding to a DID of the form
 
 ``did:ccd:NET:encidcredENCID``
 
