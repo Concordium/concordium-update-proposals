@@ -381,7 +381,7 @@ The Identity Provider DID Document MUST contain the following data:
   }
 
 Encrypted Identity Credential DID
----------------------------
+---------------------------------
 
 The goal of the Encrypted Identity Credential DID is to represent a pseudonymous subject that has registered at an identity provider.
 The subject can be identified via identity disclosure.
