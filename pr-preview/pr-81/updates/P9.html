@@ -1,0 +1,735 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Protocol Update 9 - Protocol-Level Tokens" href="P10.html" /><link rel="prev" title="Protocol Update 8 - Suspension of inactive validators" href="P8.html" />
+
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>Protocol Update 9 - Protocol-Level Tokens - Interoperability Specifications</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=8806b39e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Interoperability Specifications</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/concordium-logo-black.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/concordium-logo-white.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Interoperability Specifications</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Protocol Updates</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Protocol Update 9 - Protocol-Level Tokens</a></li>
+<li class="toctree-l1"><a class="reference internal" href="P10.html">Protocol Update 9 - Protocol-Level Tokens</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Standards</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-0.html">CIS-0: Standard Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-1.html">CIS-1: Concordium Token Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-2.html">CIS-2: Concordium Token Standard 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-4.html">CIS-4: Credential Registry Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-5.html">CIS-5: Smart Contract Wallet Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-7.html">CIS-7: Protocol-level Tokens (PLTs)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ID/concordium-did.html">Concordium DID Method Version 1.0</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/updates/P9.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="protocol-update-9-protocol-level-tokens">
+<h1>Protocol Update 9 - Protocol-Level Tokens<a class="headerlink" href="#protocol-update-9-protocol-level-tokens" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><th class="stub"><p>Effective on Testnet</p></th>
+<td><p>Aug 27, 2025</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Effective on Mainnet</p></th>
+<td><p>Sep 23, 2025</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Specification hash</p></th>
+<td><p>1524c737e9d81fe79e4fccfa0b74d11d1cd7d3217b069b4b92f0cb3490d79ba6</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                           Protocol update
+
+Protocol Version: 9
+Builds on Protocol Version: 8
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 9 compared to
+protocol version 8.
+
+The protocol change supports Protocol-Level Tokens (PLTs), which provide
+chain-native support for tokens other than CCD, without depending on smart
+contracts for the implementation.
+
+                              Background
+
+Prior to protocol version 9, only CCD is supported as a native token. Non-native
+tokens can be implemented using smart contracts, typically following the CIS-2
+token standard [1]. Smart contracts allow for significant flexibility in the
+implementation and functionality of tokens.
+
+Protocol version 9 introduces a new mechanism for token implementation:
+Protocol-Level Tokens (PLTs). PLTs are implemented natively, without the use of
+smart contracts, which allows for more efficient (and hence cheaper) transactions.
+The PLT implementation is intended to be updated in future protocol versions to
+support additional functionality.
+
+Each PLT is initially created on the chain by a chain-governance operation.
+This operation assigns a unique Token ID for the PLT that is used to identify it.
+It also specifies data and metadata associated with the PLT, such as: the token
+name; the URL of additional metadata; the governance account for the PLT; whether
+the PLT supports an allow list, a deny list, minting of tokens, and burning of
+tokens; the initial supply of the token; and the number of decimal places used in
+the token representation.
+
+The governance account for a PLT is a Concordium account that is granted
+capabilities to perform administrative operations associated with the PLT. These
+consist of pausing or un-pausing token balance change operations (mint, burn, and
+transfer operations), adding or removing accounts from the allow and deny lists
+(if they are enabled), minting and burning tokens (if enabled, and the PLT is not
+paused).
+
+PLTs may be held by Concordium accounts. An account may send an amount of a PLT to
+another account with a transfer operation. If the PLT supports an allow list, both
+the sender and recipient account must be on the allow list. If the PLT supports a
+deny list, neither the sender nor the recipient may be on the deny list. The
+transfer will also fail if the PLT is currently globally paused, or if the sender
+has insufficient balance to cover the transfer. Similarly to regular CCD transfers,
+PLT transfers can include a memo of up to 255 bytes and may reference the recipient
+account by an alias.
+
+Each PLT specifies the number of decimal places (d) used in its representation, from
+0 to 255. PLT amounts are represented using unsigned 64-bit values, which limits the
+maximum representable amount to (2^64-1) * 10^(-d) (approximately 1.84 * 10^(19-d)).
+The useful range of the number of decimal places is thus more limited than the
+permitted range.
+
+                               Changes
+
+The following behaviours are changed in protocol version 9.
+
+1. The block state is updated in the following ways:
+
+    (a) A list of the protocol-level tokens is maintained. Each entry contains:
+
+        - The static configuration (Token ID, Token Module hash, number of decimals).
+
+        - The mutable state of the PLT. This is stored in a trie datastructure that
+          provides a key-value map interface.
+
+        - The current circulating supply of the PLT.
+
+       The list is initially empty.
+
+    (b) Each account maintains a list of balances of PLTs held on the account.
+        The balance may be 0. An account does not necessarily have a balance for
+        every existing PLT. The list is initially empty.
+
+    (c) The &quot;chain updates&quot; data structure adds a `CreatePLT` access structure to
+        the level-2 keys and a sequence number for updates authorized by these keys.
+        The initial access structure is defined by the auxiliary data provided by
+        the protocol update. The initial next sequence number is 1.
+
+2. A new level 2 update instruction (payload `CreatePLT`) is added. It is
+   authorized by a new access structure on the level 2 keys: the `CreatePLT` keys.
+   The update instruction is identified by payload type 24. It consists of:
+
+    - The Token ID of the PLT being created. This consists of up to 128 characters,
+      limited to a-z, A-Z, 0-9, `-`, `.` and `%`. Token IDs are matched in a
+      case-insensitive manner.
+
+    - The Token Module hash. This identifies the specific implementation used for
+      a particular PLT. As of protocol version 9, only the following value is supported:
+      `5c5c2645db84a7026d78f2501740f60a8ccb8fae5c166dc2428077fd9a699a4a`.
+
+    - The number of decimals used in the representation of amounts of the new PLT.
+      This must be at least 0 and at most 255.
+
+    - CBOR-encoded parameters that are used by the Token Module to initialize the PLT.
+      These include:
+
+        - The token name.
+
+        - The URL at which token metadata can be obtained, optionally including a SHA256
+          hash of the metadata.
+
+        - The address of the account to serve as the governance account for the PLT.
+
+        - Optionally, whether an allow list is supported. (Defaults to not supported.)
+
+        - Optionally, whether a deny list is supported. (Defaults to not supported.)
+
+        - Optionally, an initial supply of tokens to be minted to the governance account.
+
+        - Optionally, whether tokens can be minted. (Defaults to no.)
+
+        - Optionally, whether tokens can be burnt. (Defaults to no.)
+
+   `CreatePLT` updates are executed immediately when they occur in blocks. This differs
+   from existing chain updates, which are added to update queues and executed in the
+   first future block after a specified time. A `CreatePLT` update creates the new PLT
+   with the specified configuration. If specified, an initial amount is minted to the
+   governance account. Invalid `CreatePLT` updates cannot occur in valid blocks. A
+   `CreatePLT` update may be invalid if the Token ID already exists or the configuration
+   is invalid. A successful `CreatePLT` update results in a `TokenCreated` event,
+   followed by a `TokenMint` event if an initial supply is specified.
+
+3. A new transaction payload type (`TokenUpdate`) is added. It is identified by payload
+   type 27. The payload consists of the Token ID of the PLT the update pertains to and
+   a CBOR-encoded list of operations to perform. If the PLT does not exist, the transaction
+   is rejected with a `NonExistentTokenId` reject reason.
+
+   The Token Module is responsible for decoding and executing the list of operations.
+   If the Token Module cannot decode and execute the operations, the transaction is
+   rejected with a `TokenUpdateTransactionFailed`, which specifies the type of the
+   failure and, potentially, CBOR-encoded details associated with the failure.
+   If the list cannot be decoded successfully, the Token Module fails with a
+   `deserializationFailure`. The following operations are supported:
+
+    - `transfer`: transfer a specified amount from the sender account to the specified
+      recipient account. An optional memo may be specified. To succeed, the following
+      conditions must hold:
+
+        (a) The PLT is not currently paused; otherwise fail with `operationNotPermitted`.
+
+        (b) The recipient account exists; otherwise fail with `addressNotFound`.
+
+        (c) If the PLT supports an allow list, the sender is on the allow list;
+            otherwise fail with `operationNotPermitted`.
+
+        (d) If the PLT supports an allow list, the recipient is on the allow list;
+            otherwise fail with `operationNotPermitted`.
+
+        (e) If the PLT supports a deny list, the sender is not on the deny list;
+            otherwise fail with `operationNotPermitted`.
+
+        (f) If the PLT supports a deny list, the recipient is not on the deny list;
+            otherwise fail with `operationNotPermitted`.
+
+        (g) The sender&#39;s balance is sufficient to cover the transfer; otherwise fail
+            with `tokenBalanceInsufficient`.
+
+       The incremental energy cost of a transfer operation is 100. If successful,
+       the operation generates a `TokenTransfer` event specifying the Token ID,
+       sender, receiver, amount, and (if specified) memo.
+
+    - `mint`: mint a specified amount to the sender&#39;s account. This increases the
+      total supply and the balance of the sender&#39;s account by the specified amount.
+      To succeed, the following conditions must hold:
+
+        (a) The account is the PLT&#39;s governance account; otherwise fail with
+            `operationNotPermitted`.
+
+        (b) The PLT is not currently paused; otherwise fail with `operationNotPermitted`.
+
+        (c) The PLT configuration supports minting; otherwise fail with
+            `unsupportedOperation`.
+
+        (d) The total supply of the token after minting does not exceed the maximum
+            representable amount ((2^64 - 1) * 10^(-decimals)); otherwise fail with
+            `mintWouldOverflow`.
+
+       The incremental energy cost of a mint operation is 50. If successful, the
+       operation generates a `TokenMint` event specifying the Token ID, sender account,
+       and minted amount.
+
+    - `burn`: burn a specified amount from the sender&#39;s account. This decreases
+      the total supply and the balance of the sender&#39;s account by the specified
+      amount. To succeed, the following conditions must hold:
+
+        (a) The account is the PLT&#39;s governance account; otherwise fail with
+            `operationNotPermitted`.
+
+        (b) The PLT is not currently paused; otherwise fail with `operationNotPermitted`.
+
+        (c) The PLT configuration supports burning; otherwise fail with
+            `unsupportedOperation`.
+
+        (d) The balance of the sender account must be at least the specified amount;
+            otherwise fail with `tokenBalanceInsufficient`.
+
+      The incremental energy cost of a burn operation is 50. If successful, the
+      operation generates a `TokenBurn` event specifying the Token ID, sender account,
+      and burnt amount.
+
+    - `addAllowList`: add a specified target account to the allow list. To succeed,
+      the following conditions must hold:
+
+        (a) The sender account is the PLT&#39;s governance account; otherwise fail with
+            `operationNotPermitted`.
+
+        (b) The PLT configuration supports an allow list; otherwise fail with
+            `unsupportedOperation`.
+
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
+      The incremental energy cost of a list-update operation is 50. If successful,
+      the operation generates a `TokenModuleEvent` wrapping an `addAllowList` event
+      that specifies the target account.
+
+    - `removeAllowList`: remove a specified target account from the allow list. To
+       succeed, the following conditions must hold:
+
+        (a) The sender account is the PLT&#39;s governance account; otherwise fail with
+            `operationNotPermitted`.
+
+        (b) The PLT configuration supports an allow list; otherwise fail with
+            `unsupportedOperation`.
+
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
+      The incremental energy cost of a list-update operation is 50. If successful,
+      the operation generates a `TokenModuleEvent` wrapping a `removeAllowList`
+      event that specifies the target account.
+
+    - `addDenyList`: add a specified target account to the deny list. To succeed,
+      the following conditions must hold:
+
+        (a) The sender account is the PLT&#39;s governance account; otherwise fail with
+            `operationNotPermitted`.
+
+        (b) The PLT configuration supports a deny list; otherwise fail with
+            `unsupportedOperation`.
+
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
+      The incremental energy cost of a list-update operation is 50. If successful,
+      the operation generates a `TokenModuleEvent` wrapping an `addDenyList` event
+      that specifies the target account.
+
+    - `removeDenyList`: remove a specified target account from the deny list. To
+       succeed, the following conditions must hold:
+
+        (a) The sender account is the PLT&#39;s governance account; otherwise fail with
+            `operationNotPermitted`.
+
+        (b) The PLT configuration supports a deny list; otherwise fail with
+            `unsupportedOperation`.
+
+        (c) The target account exists; otherwise fail with `addressNotFound`.
+
+      The incremental energy cost of a list-update operation is 50. If successful,
+      the operation generates a `TokenModuleEvent` wrapping a `removeDenyList`
+      event that specifies the target account.
+
+    - `pause`: suspend all balance-changing operations (transfer, mint, and burn)
+      for the PLT. To succeed, the following condition must hold:
+
+        (a) The sender account is the PLT&#39;s governance account; otherwise fail
+            with `operationNotPermitted`.
+
+      The incremental cost of a pause operation is 50. If successful, the operation
+      generates a `TokenModuleEvent` wrapping a `pause` event.
+
+    - `unpause`: resume all balance-changing operations (transfer, mint, and burn)
+      for the PLT. To succeed, the following condition must hold:
+
+        (a) The sender account is the PLT&#39;s governance account; otherwise fail
+            with `operationNotPermitted`.
+
+      The incremental cost of an unpause operation is 50. If successful, the
+      operation generates a `TokenModuleEvent` wrapping an `unpause` event.
+
+   The energy cost for a `TokenUpdate` transaction consists of:
+
+    - The general transaction base cost:
+        100 * `number of signatures` + `total size of transaction payload and header`
+
+    - The token update base cost: 300
+
+    - The total incremental cost of executed operations, excluding any operations
+      after the first failed operation.
+
+   In the event that one operation in a `TokenUpdate` transaction fails, none of
+   the operations has any effect. Nonetheless, energy is charged for the
+   operations up to and including the first failed operation.
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of this
+file. The instruction needs the following auxiliary data:
+
+- The access structure defining the level 2 keys that are authorized to perform
+  `CreatePLT` chain updates.
+
+                             References
+
+  [1] CIS-2: Concordium Token Standard 2
+      &lt;https://proposals.concordium.com/CIS/cis-2.html&gt;
+</pre></div>
+</div>
+</section>
+<section id="commentary">
+<h2>Commentary<a class="headerlink" href="#commentary" title="Link to this heading">¶</a></h2>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>                      Protocol update commentary
+
+Protocol Version: 9
+Builds on Protocol Version: 8
+
+Protocol version 9 introduces Protocol-Level Tokens (PLTs), which enable
+chain-native support for tokens other than CCD, without reliance on smart
+contracts. Since they are implemented natively, PLTs can be cheaper and
+more efficient than smart-contract-based tokens, which incur runtime
+overheads.
+
+Protocol-Level Tokens are intended to provide a high-assurance platform
+for implementing tokens, such as stable coins. Since PLTs are built in
+to the Concordium blockchain, users are not required to trust third-party
+smart contract implementations.
+
+While there are advantages to protocol-level tokens, they also come with
+certain limitations. Firstly, PLTs can only be created by a
+chain-governance operation. While any user can create a CIS-2 (smart
+contract-based) token, PLTs can only be created if sanctioned by the
+Concordium governance process.
+
+Secondly, the functionality of PLTs is currently limited. Tokens can
+only be held on accounts, and not by smart contracts. There are no
+mechanisms to assign or delegate control of PLTs held on an account
+(other than by transferring them), and there is no mechanism for
+supporting sponsored transactions. However, future protocol updates
+may introduce additional functionality, including the possibility of
+upgrading PLT functionality without the need for a further protocol
+update.
+
+Since PLTs are designed with future upgradability in mind, the
+interface to PLTs is built for extensibility. Core to this is the
+concept of a Token Module: the specific implementation behind any
+given PLT. At protocol version 9, only one Token Module implementation
+is supported, but in future there may be more, either adding
+general functionality to all PLTs, or providing specialized
+functionality tailored to individual PLTs. To allow for extensibility,
+the Token Module interacts with the outside world through CBOR-encoded
+data [1]. Transactions, events, reject reasons, and state query responses
+all use CBOR-encoding. This allows for future token modules to support
+additional transaction types, events, etc., without requiring changes
+to the Concordium node&#39;s interface. The CIS-7 standard [2] for PLTs
+defines the interface.
+
+
+                        References
+
+[1] RFC 8949: Concise Binary Object Representation (CBOR),
+    C. Bormann and P. Hoffman
+    &lt;https://www.rfc-editor.org/rfc/rfc8949.html&gt;
+
+[2] CIS-7: Protocol-level Tokens (PLTs)
+    &lt;https://proposals.concordium.com/CIS/cis-7.html&gt;
+</pre></div>
+</div>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="P10.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Protocol Update 9 - Protocol-Level Tokens</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="P8.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Protocol Update 8 - Suspension of inactive validators</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Concordium
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Protocol Update 9 - Protocol-Level Tokens</a><ul>
+<li><a class="reference internal" href="#specification">Specification</a></li>
+<li><a class="reference internal" href="#commentary">Commentary</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

@@ -1,0 +1,25 @@
+=========================================
+Protocol Update 9 - Protocol-Level Tokens
+=========================================
+
+.. list-table::
+   :stub-columns: 1
+
+   * - Effective on Testnet
+     - TBD
+   * - Effective on Mainnet
+     - TBD
+   * - Specification hash
+     - ba3527ee8862a2041ae5d31cc67c139ef1745a93a8aceacdca903f249e84d11f
+
+Specification
+=============
+
+.. include:: ../../updates/P10.txt
+   :literal:
+
+Commentary
+==========
+
+.. include:: ../../commentary/P10-commentary.txt
+   :literal:
