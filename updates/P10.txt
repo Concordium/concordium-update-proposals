@@ -33,9 +33,10 @@ sender account, but not on behalf of the sponsor account.
 
 The following behaviours are changed in protocol version 10:
 
-1. A new BlockItem type is introduced (TransactionV1). In serialized form, it
-   is distinguished by the 1-byte tag 3. The body of the TransactionV1 BlockItem
-   consists of 3 elements:
+1. A new BlockItem type is introduced: TransactionV1. The first byte of the
+   serialization of a BlockItem is a tag indicating the type; for TransactionV1,
+   this is the value 3. The body of the TransactionV1 BlockItem consists
+   of 3 elements:
 
    - `signatures`: this comprises a signature from the sender account, and
      (optionally) a signature from the sponsor account. Each signature consists
@@ -70,12 +71,12 @@ The following behaviours are changed in protocol version 10:
 
   - `encodedPayload`: the (serialized) transaction payload.
 
-  The messages that is signed by the sender and (optional) sponsor is the
+  The message that is signed by the sender and (optional) sponsor is the
   SHA256 hash of the concatenation of: 31 bytes of 0, 1 byte of 1, the
   serialized `header`, and the `encodedPayload`. The 32-byte prefix ensures that
   the signed message will never coincide with a valid (V0) transaction.
 
-2. From protocol version 10, TransactionV1 BlockItems are may be included in
+2. From protocol version 10, TransactionV1 BlockItems are included in
    blocks, if they are valid. A TransactionV1 is considered valid if the
    following conditions are met:
 
@@ -84,9 +85,9 @@ The following behaviours are changed in protocol version 10:
      524297 bytes. (This has not changed since protocol version 4.)
 
    - The energy allocated for executing the transaction (the reserved energy)
-     is sufficient to cover the base cost of the the transaction. The base
+     is sufficient to cover the base cost of the transaction. The base
      cost (in energy) is 100 * number of signatures + total number of bytes in
-     serialized header and payload.
+     the serialized header and payload.
 
    - The transaction expiry time does not exceed the block time.
 
@@ -109,17 +110,19 @@ The following behaviours are changed in protocol version 10:
 
 3. The effect of executing a TransactionV1 BlockItem within a block is the same
    as for a (V0) transaction, except that, in the case of a sponsored
-   transaction, the execution cost is deducted from the balance of the sponsor
+   transaction, the transaction fee is deducted from the balance of the sponsor
    account instead of the sender account.
 
 4. The transaction summary from protocol version 10 is changed as follows:
 
-   - The transaction summary includes an optional sponsor details. This is
+   - The transaction summary includes optional sponsor details. This is
      present for sponsored transactions and consists of the sponsor account
-     address and CCD cost paid by the sponsor.
+     address and the CCD cost paid by the sponsor. (This is the transaction
+     fee.)
 
-   - For a sponsored transaction, the energy cost recorded in the transaction
-     summary is 0. This reflects the cost paid by the sender account.
+   - Regardless of whether the transaction is sponsored, the transaction
+     summary includes the cost of fees charged to the sender account. For a
+     sponsored transaction, this is 0; otherwise, it is the transaction fee.
 
    - The hash computation for a transaction summary, which is used to calculate
      the hash of the block transaction outcomes (and thus the block hash), is

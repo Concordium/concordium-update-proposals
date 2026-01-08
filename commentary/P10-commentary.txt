@@ -8,9 +8,9 @@ transactions are transactions where the transaction fees are paid by an account
 other than the sender account, i.e., a sponsor account.
 
 Prior to protocol version 10, sponsored transactions have been possible to a
-limited extent using the CIS-3 standard. This is limited to smart contract
+limited extent using the CIS-3 standard [1]. This is limited to smart contract
 transactions, and only those where the smart contract supports the standard.
-In CIS-3 sponsored transactions [1], the transaction sender is the sponsor
+In CIS-3 sponsored transactions, the transaction sender is the sponsor
 account, but the smart contract transaction contains signatures that authorize
 action on behalf of the sponsored account.
 
@@ -25,9 +25,9 @@ Protocol-level sponsored transactions support such use-cases by allowing
 sponsor accounts to bear the transaction fees.
 
 Sponsored transactions are more expensive than the non-sponsored equivalent
-transactions. This cost largely arises from additional cost of checking sponsor
-signatures (100 energy per signature) and the additional size of the header
-(34 energy: 2 for the bitmap and 32 for the sponsor account address).
+transactions. This cost largely arises from the additional cost of checking
+sponsor signatures (100 energy per signature) and the additional size of the
+header (34 energy: 2 for the bitmap and 32 for the sponsor account address).
 
 While the new TransactionV1 format supports both sponsored and non-sponsored
 transactions, the existing (V0) transaction format is still supported for
