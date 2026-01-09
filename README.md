@@ -26,7 +26,7 @@ The table lists already effective as well as *planned/draft* protocol updates.
 | P7 | Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing | Sep 30, 2024 | Oct 30, 2024 | [P7.txt](../main/updates/P7.txt) | [P7-commentary.txt](../main/commentary/P7-commentary.txt) | `e68ea0b16bbadfa5e5da768ed9afe0880bd572e29337fe6fb584f293ed7699d6` | `8a3495a1b24d30f239ed9ab52ed6ba26f26f52039d7b740c968882732f3d0baa` | `11bb339c85b02d16c07984deeadb1c338871a49dd1527e129561b8c5b2fb1fb3` |
 | P8 | Suspension of inactive validators | Feb 24, 2025 | Mar 17, 2025 | [P8.txt](../main/updates/P8.txt) | [P8-commentary.txt](../main/commentary/P8-commentary.txt) | `f12e20b6936a6b1b736e95715e1654b92adb4226ef7601b4183895bee563f9da` | `3acad056779aaa3d55aa43e92ff2cba0addbb08a8add827ea82da5de83f47ca6` | `c5e029410af1ae257a06e95894cc5277bb9a19d12f5730ed24b2f95c922ecd6e` |
 | P9 | Protocol-Level Tokens | Aug 27, 2025 | Sep 23, 2025 | [P9.txt](../main/updates/P9.txt) | [P9-commentary.txt](../main/commentary/P9-commentary.txt) | `1524c737e9d81fe79e4fccfa0b74d11d1cd7d3217b069b4b92f0cb3490d79ba6` | `5bc63168c68fecd2c38bc9b69d9e6e1a76ea25226d307c22ba625e76f1e78868` | `a2bfe4119a98dce867dafa3a49afbf4c0858f26d09838c50cf5aa6a06c86221a` |
-| P10 | Sponsored Transactions | - | - | [P10.txt](../main/updates/P10.txt) | [P10-commentary.txt](../main/commentary/P10-commentary.txt) | `ba3527ee8862a2041ae5d31cc67c139ef1745a93a8aceacdca903f249e84d11f` | - | - |
+| P10 | Sponsored Transactions | - | - | [P10.txt](../main/updates/P10.txt) | [P10-commentary.txt](../main/commentary/P10-commentary.txt) | `6d84de01ccda394638459daa6b9e374094236d3e2e8fd19a51e7136abe77b06d` | - | - |
 
 ## Hosted front-end
 

@@ -53,21 +53,21 @@ The following behaviours are changed in protocol version 10:
        significant bit may be set. When the bit is set, it indicates that the
        `sponsor` field is present.
 
-    - `sender`: the address of the sender of the transaction.
+     - `sender`: the address of the sender of the transaction.
 
-    - `sequenceNumber`: the sequence number of the transaction (with respect to
-      the sender account).
+     - `sequenceNumber`: the sequence number of the transaction (with respect to
+       the sender account).
 
-    - `energyAmount`: the amount of energy allocated for executing the
-      transaction.
+     - `energyAmount`: the amount of energy allocated for executing the
+       transaction.
 
-    - `payloadSize`: the size of the transaction payload in bytes.
+     - `payloadSize`: the size of the transaction payload in bytes.
 
-    - `expiry`: the expiry time of the transaction in seconds since the UNIX
-      epoch.
+     - `expiry`: the expiry time of the transaction in seconds since the UNIX
+       epoch.
     
-    - `sponsor` (optional): if present, the address of the sponsor account for
-      the transaction.
+     - `sponsor` (optional): if present, the address of the sponsor account for
+       the transaction.
 
   - `encodedPayload`: the (serialized) transaction payload.
 
@@ -128,22 +128,30 @@ The following behaviours are changed in protocol version 10:
      the hash of the block transaction outcomes (and thus the block hash), is
      the SHA256 hash of the concatenation of the following:
 
-     * the string "TransactionOutcomeHashV1";
-     * if a sender is present, then the byte 1 followed by the 32-byte
+     - the string "TransactionOutcomeHashV1";
+
+     - if a sender is present, then the byte 1 followed by the 32-byte
        serialized sender account address; if no sender is present, then a
        sequence of 33 0 bytes;
-     * if a sponsor is present, then the byte 1 followed by the 32-byte
+
+     - if a sponsor is present, then the byte 1 followed by the 32-byte
        serialized sponsor address and the 8-byte serialized cost to the sponsor;
        if no sponsor is present, then just the byte 0;
-     * the hash of the transaction;
-     * the serialized cost to the sender;
-     * the serialized energy cost;
-     * the serialized transaction type (account transaction, credential
+
+     - the hash of the transaction;
+
+     - the serialized cost to the sender;
+
+     - the serialized energy cost;
+
+     - the serialized transaction type (account transaction, credential
        deployment, or chain update);
-     * the index of the transaction within the block; and
-     * if the transaction is successful, the byte 0 followed by the 
-      (length-prefixed) list of serialized transaction events; if it is
-      unsuccessful (i.e. rejected), the byte 1.
+
+     - the index of the transaction within the block; and
+
+     - if the transaction is successful, the byte 0 followed by the 
+       (length-prefixed) list of serialized transaction events; if it is
+       unsuccessful (i.e. rejected), the byte 1.
 
      This computation corresponds with the P9 computation except for the
      addition of the conditional sponsor details.
