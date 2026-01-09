@@ -1,6 +1,6 @@
-=========================================
-Protocol Update 9 - Protocol-Level Tokens
-=========================================
+===========================================
+Protocol Update 10 - Sponsored Transactions
+===========================================
 
 .. list-table::
    :stub-columns: 1
