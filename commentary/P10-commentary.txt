@@ -1,0 +1,44 @@
+                      Protocol update commentary
+
+Protocol Version: 10
+Builds on Protocol Version: 9
+
+Protocol version 10 introduces protocol-level sponsored transactions. Sponsored
+transactions are transactions where the transaction fees are paid by an account
+other than the sender account, i.e., a sponsor account.
+
+Prior to protocol version 10, sponsored transactions have been possible to a
+limited extent using the CIS-3 standard [1]. This is limited to smart contract
+transactions, and only those where the smart contract supports the standard.
+In CIS-3 sponsored transactions, the transaction sender is the sponsor
+account, but the smart contract transaction contains signatures that authorize
+action on behalf of the sponsored account.
+
+Protocol-level sponsored transactions, by contrast, allow any account
+transaction to be sponsored, not just smart contract transactions. This includes
+CCD transfer and staking operations, but most significantly protocol-level token
+(PLT) transactions. Since PLTs are not held in or managed by smart contracts,
+the CIS-3 standard cannot support sponsored PLT transactions. However, it may
+well be desirable for accounts to be able to hold and transact with PLTs
+without holding CCDs, which are required for payment of transaction fees.
+Protocol-level sponsored transactions support such use-cases by allowing
+sponsor accounts to bear the transaction fees.
+
+Sponsored transactions are more expensive than the non-sponsored equivalent
+transactions. This cost largely arises from the additional cost of checking
+sponsor signatures (100 energy per signature) and the additional size of the
+header (34 energy: 2 for the bitmap and 32 for the sponsor account address).
+
+While the new TransactionV1 format supports both sponsored and non-sponsored
+transactions, the existing (V0) transaction format is still supported for
+non-sponsored transactions. This ensures backwards compatibility with existing
+wallets and tooling, which do not need to adopt the new format except to support
+sponsored transactions. Moreover, a non-sponsored TransactionV1 will incur an
+additional cost of 2 energy over the corresponding V0 transaction, since the
+V1 header includes a 2-byte bitmap. It is therefore recommended (though not
+required) for tooling to use V0 transactions for non-sponsored transactions.
+
+                             References
+
+[1] CIS-3: Sponsored Transaction Standard
+    <https://proposals.concordium.com/CIS/cis-3.html>
