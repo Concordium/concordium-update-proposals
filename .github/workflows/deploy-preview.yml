@@ -16,7 +16,7 @@ jobs:
         shell: bash
         run: |
           apt-get update
-          apt-get install -y git rsync
+          apt-get install -y git rsync curl
           # The next line seems to be needed to work around a bug in either
           # checkout action or deploy action. It seems to have something to do
           # with running this inside a container. See
