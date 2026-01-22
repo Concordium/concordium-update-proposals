@@ -1,0 +1,162 @@
+                           Protocol update
+
+Protocol Version: 10
+Builds on Protocol Version: 9
+
+                               Abstract
+
+This document describes the changes in Concordium protocol version 10 compared
+to protocol version 9.
+
+The protocol change introduces sponsored transactions, which allow an account
+other than the sender of a transaction to pay the transaction fee.
+
+                              Background
+
+Transactions on the Concordium blockchain originate from a sender account. To
+be included in the chain, a transaction must be correctly signed by the sender
+account's keys. Transactions are authorized to act on behalf of the sender
+(e.g. to transfer funds from the sender account) but generally cannot act on
+behalf of any other account. Moreover, each transaction has an associated fee,
+which, prior to protocol version 10, is paid in CCD by the sender account when
+the transaction is included in a block.
+
+Protocol version 10 introduces sponsored transactions. In addition to a sender
+account, a sponsored transaction has a sponsor account that co-signs the
+transaction. For a sponsored transaction, the transaction fee is charged to the
+sponsor account instead of the sender account. In all other respects, a
+sponsored transaction behaves the same as a (non-sponsored) transaction from
+the sender. In particular, the transaction is authorized to act on behalf of the
+sender account, but not on behalf of the sponsor account.
+
+                               Changes
+
+The following behaviours are changed in protocol version 10:
+
+1. A new BlockItem type is introduced: TransactionV1. The first byte of the
+   serialization of a BlockItem is a tag indicating the type; for TransactionV1,
+   this is the value 3. The body of the TransactionV1 BlockItem consists
+   of 3 elements:
+
+   - `signatures`: this comprises a signature from the sender account, and
+     (optionally) a signature from the sponsor account. Each signature consists
+     of a one-byte count of the number of signing credentials from the relevant
+     account, followed by the specified number of credential signatures. Each
+     credential signature consists of a one-byte index of the credential, a
+     one-byte count of the number of signing-keys used, and a sequence of
+     key-index and signature pairs.
+
+   - `header`: the TransactionHeaderV1 consists of the following:
+   
+     - `bitmap`: a 16-bit (big-endian) bitmap indicating which optional fields
+       are included in the header. In protocol version 10, only the least-
+       significant bit may be set. When the bit is set, it indicates that the
+       `sponsor` field is present.
+
+     - `sender`: the address of the sender of the transaction.
+
+     - `sequenceNumber`: the sequence number of the transaction (with respect to
+       the sender account).
+
+     - `energyAmount`: the amount of energy allocated for executing the
+       transaction.
+
+     - `payloadSize`: the size of the transaction payload in bytes.
+
+     - `expiry`: the expiry time of the transaction in seconds since the UNIX
+       epoch.
+    
+     - `sponsor` (optional): if present, the address of the sponsor account for
+       the transaction.
+
+  - `encodedPayload`: the (serialized) transaction payload.
+
+  The message that is signed by the sender and (optional) sponsor is the
+  SHA256 hash of the concatenation of: 31 bytes of 0, 1 byte of 1, the
+  serialized `header`, and the `encodedPayload`. The 32-byte prefix ensures that
+  the signed message will never coincide with a valid (V0) transaction.
+
+2. From protocol version 10, TransactionV1 BlockItems are included in
+   blocks, if they are valid. A TransactionV1 is considered valid if the
+   following conditions are met:
+
+   - The transaction payload size does not exceed the maximum payload size
+     supported by the protocol version. As of protocol version 10, this is
+     524297 bytes. (This has not changed since protocol version 4.)
+
+   - The energy allocated for executing the transaction (the reserved energy)
+     is sufficient to cover the base cost of the transaction. The base
+     cost (in energy) is 100 * number of signatures + total number of bytes in
+     the serialized header and payload.
+
+   - The transaction expiry time does not exceed the block time.
+
+   - The sender account is valid.
+
+   - The transaction signature from the sender is valid.
+
+   - If the transaction includes a sponsor, then the sponsor account is valid
+     and a valid signature from the sponsor is present. If the transaction does
+     not include a sponsor, then a sponsor signature must not be present.
+
+   - The sequence number of the transaction is the next sequence number for the
+     sender account.
+
+   - The payer account has sufficient available balance to cover the cost of the
+     reserved energy. The payer account is the sponsor account if one is
+     present, and otherwise is the sender account. The required balance is
+     calculated using the current energy-to-CCD rate (which is calculated from
+     the Euro per energy and micro-CCD per Euro rates).
+
+3. The effect of executing a TransactionV1 BlockItem within a block is the same
+   as for a (V0) transaction, except that, in the case of a sponsored
+   transaction, the transaction fee is deducted from the balance of the sponsor
+   account instead of the sender account.
+
+4. The transaction summary from protocol version 10 is changed as follows:
+
+   - The transaction summary includes optional sponsor details. This is
+     present for sponsored transactions and consists of the sponsor account
+     address and the CCD cost paid by the sponsor. (This is the transaction
+     fee.)
+
+   - Regardless of whether the transaction is sponsored, the transaction
+     summary includes the cost of fees charged to the sender account. For a
+     sponsored transaction, this is 0; otherwise, it is the transaction fee.
+
+   - The hash computation for a transaction summary, which is used to calculate
+     the hash of the block transaction outcomes (and thus the block hash), is
+     the SHA256 hash of the concatenation of the following:
+
+     - the string "TransactionOutcomeHashV1";
+
+     - if a sender is present, then the byte 1 followed by the 32-byte
+       serialized sender account address; if no sender is present, then a
+       sequence of 33 0 bytes;
+
+     - if a sponsor is present, then the byte 1 followed by the 32-byte
+       serialized sponsor address and the 8-byte serialized cost to the sponsor;
+       if no sponsor is present, then just the byte 0;
+
+     - the hash of the transaction;
+
+     - the serialized cost to the sender;
+
+     - the serialized energy cost;
+
+     - the serialized transaction type (account transaction, credential
+       deployment, or chain update);
+
+     - the index of the transaction within the block; and
+
+     - if the transaction is successful, the byte 0 followed by the 
+       (length-prefixed) list of serialized transaction events; if it is
+       unsuccessful (i.e. rejected), the byte 1.
+
+     This computation corresponds with the P9 computation except for the
+     addition of the conditional sponsor details.
+
+                     Protocol update instruction
+
+The protocol update instruction is identified by the SHA256 hash of this
+file. The auxiliary data must be empty.
