@@ -1,0 +1,1293 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Concordium DID Method Version 1.1" href="../ID/concordium-did.html" /><link rel="prev" title="CIS-6: Track-and-Trace Standard" href="cis-6.html" />
+
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>CIS-7: Protocol-level Tokens (PLTs) - Interoperability Specifications</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=8806b39e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Interoperability Specifications</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/concordium-logo-black.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/concordium-logo-white.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Interoperability Specifications</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Protocol Updates</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P9.html">Protocol Update 9 - Protocol-Level Tokens</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P10.html">Protocol Update 10 - Sponsored Transactions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Standards</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cis-0.html">CIS-0: Standard Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-1.html">CIS-1: Concordium Token Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-2.html">CIS-2: Concordium Token Standard 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-4.html">CIS-4: Credential Registry Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-5.html">CIS-5: Smart Contract Wallet Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-7: Protocol-level Tokens (PLTs)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ID/concordium-did.html">Concordium DID Method Version 1.1</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/CIS/cis-7.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="cis-7-protocol-level-tokens-plts">
+<span id="cis-7"></span><h1>CIS-7: Protocol-level Tokens (PLTs)<a class="headerlink" href="#cis-7-protocol-level-tokens-plts" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><th class="stub"><p>Created</p></th>
+<td><p>Jun 25, 2025</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Final</p></th>
+<td><p>Sep 9, 2025</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Supported versions</p></th>
+<td><div class="line-block">
+<div class="line">Protocol version 9 or newer</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Standard identifier</p></th>
+<td><p><code class="docutils literal notranslate"><span class="pre">CIS-7</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Link to this heading">¶</a></h2>
+<p>A standard interface for protocol-level tokens (PLTs).
+The interface defines the data formats used when interacting with PLTs.
+These data are encoded in Concise Binary Object Representation (CBOR) as defined in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8949.html"><strong>RFC 8949</strong></a>.
+In particular, the interface defines the following:</p>
+<ul class="simple">
+<li><p>Initialization parameters</p></li>
+<li><p>Transactions</p></li>
+<li><p>Events</p></li>
+<li><p>Reject reasons</p></li>
+<li><p>Token module state</p></li>
+<li><p>Account state</p></li>
+</ul>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>Protocol-level tokens (PLTs) provide chain-native support for tokens (other than CCD) without depending on smart contracts for the implementation.
+Each PLT is governed by a Token Module, which manages the token’s lifecycle, including creation, transfer, minting, and burning of tokens.
+There may be a single Token Module that manages all PLTs, or there may be multiple Token Modules, each managing one or more PLTs.</p>
+<p>The Token Module defines a number of interfaces for interaction with PLTs.
+At each interface, data is exchanged in Concise Binary Object Representation (CBOR) format.
+The CBOR format is defined in <span class="target" id="index-1"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8949.html"><strong>RFC 8949</strong></a>.
+This document defines schemas for the data exchanged at each interface, including initialization parameters, transactions, events, reject reasons, token module state, and account state.</p>
+<p>The Token Module interacts with the state of the chain through the Token Kernel, which provides basic operations for updating account balances and state, as well as generating events.
+This document does not specify the behavior or interface of the Token Kernel.</p>
+<p>The outside world interacts with the Token Module through transactions and queries.
+This document does not specify the serialization format of transactions, or the <a class="reference external" href="https://docs.concordium.com/concordium-grpc-api/">API for querying the node</a>.
+The CreatePLT chain update transaction carries CBOR-encoded <a class="reference internal" href="#cis-7-initializationparameters"><span class="std std-ref">initialization parameters</span></a>.
+The TokenUpdate account transaction carries a CBOR-encoded <a class="reference internal" href="#cis-7-transactions"><span class="std std-ref">list of transaction operations</span></a>.
+The GetTokenInfo gRPC query returns the CBOR-encoded <a class="reference internal" href="#cis-7-tokenmodulestate"><span class="std std-ref">Token Module state</span></a>.
+The GetAccountInfo gRPC query returns the CBOR-encoded <a class="reference internal" href="#cis-7-accountstate"><span class="std std-ref">token account state</span></a>.
+The GetBlockTransactionEvents and GetBlockItemStatus gRPC queries return CBOR-encoded <a class="reference internal" href="#cis-7-tokenmoduleevents"><span class="std std-ref">events</span></a> and <a class="reference internal" href="#cis-7-rejectreasons"><span class="std std-ref">reject reasons</span></a> for TokenUpdate transactions.</p>
+<section id="terminology-and-conventions">
+<h3>Terminology and Conventions<a class="headerlink" href="#terminology-and-conventions" title="Link to this heading">¶</a></h3>
+<p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”,  “MAY”, and “OPTIONAL” in this document are to be interpreted as described in <span class="target" id="index-2"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
+<p>The schemas for CBOR data are presented using Concise Data Definition Language (CDDL) as defined in <span class="target" id="index-3"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8610.html"><strong>RFC 8610</strong></a>.</p>
+<p>Example data values are presented in CBOR diagnostic notation as described in <span class="target" id="index-4"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8949.html"><strong>RFC 8949</strong></a>.</p>
+</section>
+</section>
+<section id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
+<p>Except as otherwise specified, the Token Module MUST accept data in preferred serialization as defined in <span class="target" id="index-5"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8949.html"><strong>RFC 8949</strong></a>.
+The Token Module SHOULD accept well-formed CBOR data that is not in preferred serialization, but conforms to the required schema.
+The Token Module MUST produce data in preferred serialization, and SHOULD produce data in Deterministically Encoded CBOR.</p>
+<section id="common-types">
+<h3>Common Types<a class="headerlink" href="#common-types" title="Link to this heading">¶</a></h3>
+<section id="token-id">
+<span id="cis-7-tokenid"></span><h4>Token ID<a class="headerlink" href="#token-id" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-id = text .size (1..128) .regexp &quot;[a-zA-Z0-9\-.%]+&quot;
+</pre></div>
+</div>
+<p>A Token ID is a text string that uniquely identifies a PLT.
+It is a non-empty string of 1 to 128 characters, consisting of alphanumeric characters, as well as the characters “-”, “.”, and “%”.
+It is RECOMMENDED that Token IDs are limited to 6 characters, and are purely alphabetic.
+Implementations MUST match Token IDs in a case-insensitive manner.</p>
+<p>The Token ID is used to identify the PLT in transactions, events and queries.
+It is not typically encoded in CBOR.</p>
+</section>
+<section id="token-module-hash">
+<span id="cis-7-tokenmodulehash"></span><h4>Token Module Hash<a class="headerlink" href="#token-module-hash" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>sha256-hash = bytes .size(32)
+
+token-module-hash = sha256-hash
+</pre></div>
+</div>
+<p>A Token Module Hash identifies a particular implementation of a Token Module.
+It should be a 32-byte SHA256 hash.</p>
+<p>The Token Module Hash is used to identify the Token Module implementation in transactions, events and queries.
+It is not typically encoded in CBOR.</p>
+<p>Protocol version 9 introduces a single Token Module implementation, referred to as TokenModuleV0, which is identified by the Token Module Hash <code class="docutils literal notranslate"><span class="pre">5c5c2645db84a7026d78f2501740f60a8ccb8fae5c166dc2428077fd9a699a4a</span></code>.</p>
+</section>
+<section id="token-decimals">
+<span id="cis-7-tokendecimals"></span><h4>Token Decimals<a class="headerlink" href="#token-decimals" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-decimals = int .range (0..255)
+</pre></div>
+</div>
+<p>The token decimals for a PLT is an integer that specifies the number of decimal places in the token’s representation.
+It is a constant that is determined when the PLT is created.
+As of protocol version 9, it is constrained to be between 0 and 255 (inclusive).</p>
+</section>
+<section id="token-amount">
+<span id="cis-7-tokenamount"></span><h4>Token Amount<a class="headerlink" href="#token-amount" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-amount = decfrac
+</pre></div>
+</div>
+<p>A token amount is represented as a CBOR decimal fraction.
+A decimal fraction is a tagged pair of a base-10 exponent and significand.
+From the CDDL prelude (<span class="target" id="index-6"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8610.html"><strong>RFC 8610</strong></a>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>decfrac = #6.4([e10: int, m: integer])
+</pre></div>
+</div>
+<p>For <code class="docutils literal notranslate"><span class="pre">token-amount</span></code>, as of protocol version 9, the exponent (<code class="docutils literal notranslate"><span class="pre">e10</span></code>) must be between -255 and 0 (inclusive).
+The significand (<code class="docutils literal notranslate"><span class="pre">m</span></code>) must be between 0 and 2^64-1 = 18446744073709551615 (inclusive); that is, the significand is a 64-bit unsigned integer.</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">token-amount</span></code> for a given PLT MUST be expressed with the exponent <code class="docutils literal notranslate"><span class="pre">e10</span></code> being the negation of the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>.
+Thus, the following <code class="docutils literal notranslate"><span class="pre">token-amount</span></code>s are not equivalent:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>4([-2, 100])      -- 1.00
+4([-6, 1000000])  -- 1.000000
+</pre></div>
+</div>
+</section>
+<section id="memo">
+<h4>Memo<a class="headerlink" href="#memo" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>memo = raw-memo / cbor-memo
+
+raw-memo = bytes .size (0..256)
+
+cbor-memo = #6.24(raw-memo)
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">memo</span></code> is a byte string of up to 256 bytes.
+The <code class="docutils literal notranslate"><span class="pre">memo</span></code> can be represented either directly as a byte string (<code class="docutils literal notranslate"><span class="pre">raw-memo</span></code>), or as a byte string tagged as CBOR-encoded data (<code class="docutils literal notranslate"><span class="pre">cbor-memo</span></code>).
+The tag 24 is defined in <span class="target" id="index-7"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8949.html#section-3.4.5.1"><strong>RFC 8949 Section 3.4.5.1</strong></a> to denote that the enclosed byte string represents CBOR-encoded data.</p>
+<p>The tagged <code class="docutils literal notranslate"><span class="pre">cbor-memo</span></code> format SHOULD NOT be used unless the memo data itself is valid CBOR.
+The purpose of the tagged <code class="docutils literal notranslate"><span class="pre">cbor-memo</span></code> is to hint to a decoder that the contents is interpreted as CBOR, and allow it to displayed in decoded form, where appropriate.</p>
+</section>
+<section id="account-address">
+<h4>Account Address<a class="headerlink" href="#account-address" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>tagged-account-address = #6.40307(untagged-account-address)
+
+untagged-account-address = {
+    ; If the info (1) field is present, it must indicate CCD.
+    ? 1: tagged-ccd-coininfo,
+    ; The type (2) field is not supported.
+    ; The data (3) field must be the 32-byte representation of a Concordium address
+    3: bytes .size 32
+}
+
+; A subtype of the tagged-coininfo type from BCR-2020-007
+tagged-ccd-coininfo = #6.40305(ccd-coininfo)
+
+ccd-coininfo = {
+    ; The type (1) field is the SLIP44 code for Concordium
+    1: 919
+    ; The network (2) field is not supported.
+}
+</pre></div>
+</div>
+<p>Accounts are represented by <code class="docutils literal notranslate"><span class="pre">tagged-account-address</span></code>, which is based on the UR Type Definition for Cryptocurrency Addresses as defined in <a class="reference external" href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-009-address.md">BCR-2020-009</a>.
+The tag 40307 denotes a cryptocurrency address.
+The <code class="docutils literal notranslate"><span class="pre">untagged-account-address</span></code> consists of an optional info field (key <code class="docutils literal notranslate"><span class="pre">1</span></code>) that indicates the address is specifically a Concordium address.
+The type field (key <code class="docutils literal notranslate"><span class="pre">2</span></code>) defined by BCR-2020-009 is not supported for Concordium account addresses, and is therefore omitted.
+The data field (key <code class="docutils literal notranslate"><span class="pre">3</span></code>) is required and MUST be the 32-byte representation of the Concordium account address.</p>
+<p>When present, the info field SHOULD hold the value <code class="docutils literal notranslate"><span class="pre">40305({1:</span> <span class="pre">919})</span></code>.
+The tag 40305 denotes a coin info type as defined in <a class="reference external" href="https://github.com/BlockchainCommons/Research/blob/master/papers/bcr-2020-007-hdkey.md">BCR-2020-007</a>.
+The info field MAY be omitted.
+Decoders SHOULD assume that a tagged cryptocurrency address with no info field represents a Concordium address.</p>
+<p>The coin info structure consists of the type field (key <code class="docutils literal notranslate"><span class="pre">1</span></code>) which holds value 919 for Concordium, which is the code assigned under <a class="reference external" href="https://github.com/satoshilabs/slips/blob/master/slip-0044.md">SLIP44</a>.
+The network field (key <code class="docutils literal notranslate"><span class="pre">2</span></code>) is not supported and therefore omitted.</p>
+<p>When rendering a <code class="docutils literal notranslate"><span class="pre">tagged-account-address</span></code> in a human-readable format, it SHOULD be displayed in the standard base58 check encoding.</p>
+</section>
+<section id="smart-contract-address">
+<h4>Smart Contract Address<a class="headerlink" href="#smart-contract-address" title="Link to this heading">¶</a></h4>
+<p>A Concordium smart contract address is a pair of unsigned 64-bit integers: the <em>index</em> and <em>subindex</em>.
+A smart contract address is conventionally represented as &lt;<em>index</em>, <em>subindex</em>&gt;.
+Smart contract addresses with a subindex other than 0 are unused, but reserved for future use.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; A Concordium smart contract address.
+tagged-contract-address = #6.40919(contract-address)
+
+contract-address = contract-address-index-only / contract-address-index-subindex
+
+; A smart contract address represented as the contract index only.
+; The subindex is implied to be 0.
+contract-address-index-only = uint
+
+; A smart contract address represented as a pair of the index and subindex.
+contract-address-index-subindex = [
+    index: uint,
+    subindex: uint
+]
+</pre></div>
+</div>
+<p>A smart contract address is represented by <code class="docutils literal notranslate"><span class="pre">tagged-contract-address</span></code>.
+The tag 40919 denotes a Concordium smart contract address.
+The smart contract address is either represented as only the index, in which case the subindex is implicitly 0, or as an ordered pair of the index and subindex.</p>
+<p>A smart contract address with subindex 0 has two possible representations.
+Encoders SHOULD use the <code class="docutils literal notranslate"><span class="pre">contract-address-index-only</span></code> representation for such addresses.
+Decoders MUST accept the <code class="docutils literal notranslate"><span class="pre">contract-address-index-only</span></code> representation.
+Decoders MUST accept the <code class="docutils literal notranslate"><span class="pre">contract-address-index-subindex</span></code> representation with subindex 0, unless deterministic encoding is required.</p>
+</section>
+<section id="metadata-url">
+<span id="cis-7-metadataurl"></span><h4>Metadata URL<a class="headerlink" href="#metadata-url" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>metadata-url = {
+    ; A string field representing the URL
+    &quot;url&quot;: text,
+    ; An optional sha256 checksum value tied to the content of the URL
+    ? &quot;checksumSha256&quot;: sha256-hash
+    ; Additional fields may be included for future extensibility, e.g. another hash algorithm.
+    * text =&gt; any
+}
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">metadata-url</span></code> encodes a URL that identifies metadata, together with an optional sha256 checksum of the contents of the metadata.
+When the <code class="docutils literal notranslate"><span class="pre">checksumSha256</span></code> field is present, tools SHOULD confirm that the computed sha256 hash of the data retrieved from the URL specified by the <code class="docutils literal notranslate"><span class="pre">url</span></code> field matches the contents of the <code class="docutils literal notranslate"><span class="pre">checksumSha256</span></code> field.</p>
+</section>
+</section>
+<section id="initialization-parameters">
+<span id="cis-7-initializationparameters"></span><h3>Initialization Parameters<a class="headerlink" href="#initialization-parameters" title="Link to this heading">¶</a></h3>
+<p>The initialization parameters are used when creating a new PLT instance.
+They are included as part of the CreatePLT chain update transaction.
+They are passed to the Token Module to initialize the state.
+Note that the CreatePLT chain update includes additional parameters that are separate from the initialization parameters: the <a class="reference internal" href="#cis-7-tokenid"><span class="std std-ref">Token ID</span></a>, the <a class="reference internal" href="#cis-7-tokenmodulehash"><span class="std std-ref">Token Module Hash</span></a>, and the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>.</p>
+<p>The format and semantics of the initialization parameters may differ between Token Module implementations.
+The initializations parameters for a conforming implementation MUST be represented as a CBOR map conforming to the following schema:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-initialization-parameters = {
+    ; The name of the token
+    ? &quot;name&quot;: text,
+    ; A URL pointing to the token metadata
+    ? &quot;metadata&quot;: metadata-url,
+    ; The governance account of the token
+    ? &quot;governanceAccount&quot;: tagged-account-address,
+    ; Whether the token enforces an allow list
+    ? &quot;allowList&quot;: bool .default false,
+    ; Whether the token enforces a deny list
+    ? &quot;denyList&quot;: bool .default false,
+    ; The initial supply of the token. If not present, no tokens are minted initially.
+    ? &quot;initialSupply&quot;: token-amount,
+    ; Whether the token is mintable
+    ? &quot;mintable&quot;: bool .default false,
+    ; Whether the token is burnable
+    ? &quot;burnable&quot;: bool .default false,
+    ; Additional fields
+    * text =&gt; any
+}
+</pre></div>
+</div>
+<p>The schema defines a number of standardized fields, while allowing for additional fields that may be defined by future standards.
+The semantics of the standardized fields are defined below.</p>
+<p>The TokenModuleV0 implementation requires the <code class="docutils literal notranslate"><span class="pre">name</span></code>, <code class="docutils literal notranslate"><span class="pre">metadata</span></code>, and <code class="docutils literal notranslate"><span class="pre">governanceAccount</span></code> fields.
+The <code class="docutils literal notranslate"><span class="pre">allowList</span></code>, <code class="docutils literal notranslate"><span class="pre">denyList</span></code>, <code class="docutils literal notranslate"><span class="pre">initialSupply</span></code>, <code class="docutils literal notranslate"><span class="pre">mintable</span></code>, and <code class="docutils literal notranslate"><span class="pre">burnable</span></code> fields are optional.
+All other fields are prohibited.</p>
+<section id="name">
+<span id="cis-7-name"></span><h4><code class="docutils literal notranslate"><span class="pre">name</span></code><a class="headerlink" href="#name" title="Link to this heading">¶</a></h4>
+<p>The full name of the token.</p>
+</section>
+<section id="metadata">
+<span id="cis-7-metadata"></span><h4><code class="docutils literal notranslate"><span class="pre">metadata</span></code><a class="headerlink" href="#metadata" title="Link to this heading">¶</a></h4>
+<p>A URL pointing to the token metadata JSON object, and optionally a hash of the metadata.</p>
+</section>
+<section id="governanceaccount">
+<span id="cis-7-governanceaccount"></span><h4><code class="docutils literal notranslate"><span class="pre">governanceAccount</span></code><a class="headerlink" href="#governanceaccount" title="Link to this heading">¶</a></h4>
+<p>The singular <em>governance account</em> that is permitted to perform mint, burn, pause, and list-update governance operations, if they are enabled for the token.
+A PLT with a governance account MUST NOT allow accounts other than the governance account to perform token-governance operations.
+The <a class="reference internal" href="#cis-7-tokenmodulestate"><span class="std std-ref">token module state</span></a> MUST indicate the governance account, if it exists.</p>
+<p>Token Modules may implement different access control mechanisms (such as role-based access control) that permit different accounts to perform token-governance operations.
+Such mechanisms are not specified in the current standard, but may be incompatible with having a singular governance account as defined above.</p>
+</section>
+<section id="allowlist">
+<span id="cis-7-allowlist"></span><h4><code class="docutils literal notranslate"><span class="pre">allowList</span></code><a class="headerlink" href="#allowlist" title="Link to this heading">¶</a></h4>
+<p>Whether the PLT enforces an allow list.
+A PLT that enforces an allow list is subject to the following:</p>
+<ul class="simple">
+<li><p>Transfers MUST be rejected unless both the sender and receiver accounts belong to the allow list.</p></li>
+<li><p>The <a class="reference internal" href="#cis-7-tokenmodulestate"><span class="std std-ref">token module state</span></a> MUST indicate that the allow list is enforced.</p></li>
+<li><p>Accounts with no <a class="reference internal" href="#cis-7-accountstate"><span class="std std-ref">account state</span></a> implicitly MUST NOT belong to the allow list.</p></li>
+<li><p>Accounts that have an account state MUST report whether the account belongs to the allow list.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">addAllowList</span></code> and <code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code> operations SHOULD be implemented.</p></li>
+<li><p>When an account is added to the allow list, an <code class="docutils literal notranslate"><span class="pre">addAllowList</span></code> Token Module Event MUST be emitted.</p></li>
+<li><p>When an account is removed from the allow list, a <code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code> Token Module Event MUST be emitted.</p></li>
+</ul>
+<p>If the value is not specified, the PLT MUST NOT enforce an allow list.</p>
+</section>
+<section id="denylist">
+<span id="cis-7-denylist"></span><h4><code class="docutils literal notranslate"><span class="pre">denyList</span></code><a class="headerlink" href="#denylist" title="Link to this heading">¶</a></h4>
+<p>Whether the PLT implements a deny list.
+A PLT that implements a deny list is subject to the following:</p>
+<ul class="simple">
+<li><p>Transfers MUST be rejected if either the sender or receiver account belongs to the deny list.</p></li>
+<li><p>The <a class="reference internal" href="#cis-7-tokenmodulestate"><span class="std std-ref">token module state</span></a> MUST indicate that the deny list is enforced.</p></li>
+<li><p>Accounts with no <a class="reference internal" href="#cis-7-accountstate"><span class="std std-ref">account state</span></a> implicitly MUST NOT belong to the deny list.</p></li>
+<li><p>Accounts that have an account state MUST report whether the account belongs to the deny list.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code> and <code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code> operations SHOULD be implemented.</p></li>
+<li><p>When an account is added to the deny list, an <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code> Token Module Event MUST be emitted.</p></li>
+<li><p>When an account is removed from the deny list, a <code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code> Token Module Event MUST be emitted.</p></li>
+</ul>
+<p>If the value is not specified, the PLT MUST NOT enforce a deny list.</p>
+</section>
+<section id="initialsupply">
+<h4><code class="docutils literal notranslate"><span class="pre">initialSupply</span></code><a class="headerlink" href="#initialsupply" title="Link to this heading">¶</a></h4>
+<p>The initial supply of the PLT that is minted when the token is created.
+If this is not specified, no initial supply is minted.</p>
+</section>
+<section id="mintable">
+<span id="cis-7-mintable"></span><h4><code class="docutils literal notranslate"><span class="pre">mintable</span></code><a class="headerlink" href="#mintable" title="Link to this heading">¶</a></h4>
+<p>Whether the PLT supports the <code class="docutils literal notranslate"><span class="pre">mint</span></code> transaction operation.</p>
+</section>
+<section id="burnable">
+<span id="cis-7-burnable"></span><h4><code class="docutils literal notranslate"><span class="pre">burnable</span></code><a class="headerlink" href="#burnable" title="Link to this heading">¶</a></h4>
+<p>Whether the PLT supports the <code class="docutils literal notranslate"><span class="pre">burn</span></code> transaction operation.</p>
+</section>
+</section>
+<section id="transactions">
+<span id="cis-7-transactions"></span><h3>Transactions<a class="headerlink" href="#transactions" title="Link to this heading">¶</a></h3>
+<p>A Token Update transaction identifies a PLT by its Token ID and carries a CBOR-encoded payload that consists of a list of token operations (<code class="docutils literal notranslate"><span class="pre">token-update-transaction</span></code>).
+The Token Module MUST execute the token operations in sequence.
+If any of the token operations fails, the entire transaction SHOULD fail with the reject reason indicating the cause of failure of the first failing operation.
+Energy fees SHOULD be charged for each operation up to and including the first failing operation.</p>
+<p>If a Token Update transaction cannot be deserialized, the transaction SHOULD fail with the reject reason <code class="docutils literal notranslate"><span class="pre">deserializationFailure</span></code>.
+A token amount that does not conform to the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a> SHOULD be considered a deserialization failure.
+TokenModuleV0 deserializes the transaction in its entirety before executing any of the operations, and thus no charge is levied for any operations if deserialization fails.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-update-transaction = [ * token-operation ]
+
+token-operation = token-transfer
+    / token-mint
+    / token-burn
+    / token-update-list
+    / token-pause
+    / token-unpause
+</pre></div>
+</div>
+<p>The token operations presented here are those implemented by TokenModuleV0.
+Different Token Module implementations may implement a different set of operations.
+However, the payload MUST always consist of a CBOR list of token operations.
+Each token operation MUST consist of a map with a single key that identifies the operation type.</p>
+<p>The semantics of each token operation SHOULD be the same across all Token Modules which implements it.
+In particular, implementations MUST conform to the schema for the token operations defined in this document.
+An implementation MUST NOT use the operation types <code class="docutils literal notranslate"><span class="pre">transfer</span></code>, <code class="docutils literal notranslate"><span class="pre">mint</span></code>, <code class="docutils literal notranslate"><span class="pre">burn</span></code>, <code class="docutils literal notranslate"><span class="pre">addAllowList</span></code>, <code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code>, <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code>, <code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code>, <code class="docutils literal notranslate"><span class="pre">pause</span></code>, or <code class="docutils literal notranslate"><span class="pre">unpause</span></code> for any other operation than those defined below.</p>
+<section id="transfer">
+<h4><code class="docutils literal notranslate"><span class="pre">transfer</span></code><a class="headerlink" href="#transfer" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; A token transfer operation. This transfers a specified amount of tokens from the sender account
+; (implicit) to the recipient account.
+token-transfer = {
+    ; The operation type is &quot;transfer&quot;.
+    &quot;transfer&quot;: {
+        ; The amount of tokens to transfer.
+        &quot;amount&quot;: token-amount,
+        ; The recipient account.
+        &quot;recipient&quot;: tagged-account-address,
+        ; An optional memo.
+        ? &quot;memo&quot;: memo
+    }
+}
+</pre></div>
+</div>
+<p>The token transfer operation transfers a specified amount of tokens from the sender account to the recipient account, generating a transfer event.
+The transfer event MUST record the <code class="docutils literal notranslate"><span class="pre">memo</span></code> if one is provided.
+(Note that, while the <code class="docutils literal notranslate"><span class="pre">memo</span></code> in the transaction may be explicitly tagged as CBOR encoded, the generated transfer event does not retain this tagging.)</p>
+<p>The transfer operation MUST fail if any of the following conditions are met:</p>
+<ul class="simple">
+<li><p>the token is paused;</p></li>
+<li><p>the recipient account does not exist;</p></li>
+<li><p>the token has an allow list and the sender is not on the allow list;</p></li>
+<li><p>the token has an allow list and the recipient is not on the allow list;</p></li>
+<li><p>the token has a deny list and the sender is on the deny list;</p></li>
+<li><p>the token has a deny list and the recipient is on the deny list; or</p></li>
+<li><p>the sender’s balance is insufficient to complete the transfer.</p></li>
+</ul>
+<p>The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.</p>
+</section>
+<section id="mint-and-burn">
+<h4><code class="docutils literal notranslate"><span class="pre">mint</span></code> and <code class="docutils literal notranslate"><span class="pre">burn</span></code><a class="headerlink" href="#mint-and-burn" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; Mint a specified amount to the sender account.
+token-mint = {
+    ; The operation type is &quot;mint&quot;.
+    &quot;mint&quot;: token-supply-update-details
+}
+
+; Burn a specified amount from the sender account.
+token-burn = {
+    ; The operation type is &quot;burn&quot;.
+    &quot;burn&quot;: token-supply-update-details
+}
+
+; Specifies the details of a mint/burn operation.
+token-supply-update-details = {
+    ; The amount of tokens to either mint or burn.
+    &quot;amount&quot;: token-amount
+}
+</pre></div>
+</div>
+<p>The mint operation increases the total supply of the token by the specified amount, issuing the new tokens to the sender account.
+The burn operation decreases the total supply of the token by the specified amount, deducting the tokens from the sender account.
+These operations are considered token-governance operations, and thus are not available to all accounts.</p>
+<p>The mint operation MUST fail if any of the following conditions holds:</p>
+<ul class="simple">
+<li><p>the token has a governance account, and the sender account is not the governance account;</p></li>
+<li><p>the token is paused;</p></li>
+<li><p>the token is not mintable; or</p></li>
+<li><p>minting would cause the total supply of the token to exceed the maximum representable value for the token.</p></li>
+</ul>
+<p>The burn operation MUST fail if any of the following conditions holds:</p>
+<ul class="simple">
+<li><p>the token has a governance account, and the sender account is not the governance account;</p></li>
+<li><p>the token is paused;</p></li>
+<li><p>the token is not burnable; or</p></li>
+<li><p>the balance of the sender account is less than the specified amount to burn.</p></li>
+</ul>
+<p>The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.</p>
+</section>
+<section id="addallowlist-removeallowlist-adddenylist-and-removedenylist">
+<h4><code class="docutils literal notranslate"><span class="pre">addAllowList</span></code>, <code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code>, <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code>, and <code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code><a class="headerlink" href="#addallowlist-removeallowlist-adddenylist-and-removedenylist" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; Update an allow or a deny list by adding or removing an account from it.
+token-update-list =
+    token-add-allow-list
+    / token-remove-allow-list
+    / token-add-deny-list
+    / token-remove-deny-list
+
+; Add an account to the allow list.
+token-add-allow-list = {
+    ; The operation type is &quot;addAllowList&quot;.
+    &quot;addAllowList&quot;: token-list-update-details
+}
+
+; Remove an account from the allow list.
+token-remove-allow-list = {
+    ; The operation type is &quot;removeAllowList&quot;.
+    &quot;removeAllowList&quot;: token-list-update-details
+}
+
+; Add an account to the deny list.
+token-add-deny-list = {
+    ; The operation type is &quot;addDenyList&quot;.
+    &quot;addDenyList&quot;: token-list-update-details
+}
+
+; Remove an account from the deny list.
+token-remove-deny-list = {
+    ; The operation type is &quot;removeDenyList&quot;.
+    &quot;removeDenyList&quot;: token-list-update-details
+}
+
+; Specifies the details of a list-update operation.
+token-list-update-details = {
+    ; The account to add or remove from the list.
+    &quot;target&quot;: tagged-account-address
+}
+</pre></div>
+</div>
+<p>The list-update operations add or remove a specified account to or from the allow or deny list.
+The list-update operations are considered token-governance operations, and thus are not available to all accounts.</p>
+<p>A list-update operation MUST fail if any of the following conditions holds:</p>
+<ul class="simple">
+<li><p>the token has a governance account, and the sender account is not the governance account;</p></li>
+<li><p>the token does not implement the relevant list; or</p></li>
+<li><p>the target account does not exist.</p></li>
+</ul>
+<p>Adding an account to a list that it already belongs to, or removing it from a list that it does not belong to, SHOULD NOT be considered grounds for failure.
+Such updates MUST NOT affect the list.</p>
+<p>If the token is paused, that SHOULD NOT be considered grounds for failure of a list-update operation, since the list-update operations do not involve balance changes.</p>
+<p>The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.</p>
+</section>
+<section id="pause-and-unpause">
+<h4><code class="docutils literal notranslate"><span class="pre">pause</span></code> and <code class="docutils literal notranslate"><span class="pre">unpause</span></code><a class="headerlink" href="#pause-and-unpause" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; Suspend any current or future token operations involving
+; balance changes. If any transaction submitted includes any such operation
+; while the token is in its paused state, the transaction will fail. The
+; suspension lasts until the token is unpaused with the corresponding
+; `token-unpause` operation.
+token-pause = {
+    &quot;pause&quot;: {}
+}
+
+; Unpause the token operations described in the `token-pause` operation,
+; thus acting as an inverse of `token-pause`.
+token-unpause = {
+    &quot;unpause&quot;: {}
+}
+</pre></div>
+</div>
+<p>The pause operation sets the token into a global pause state in which no balance-changing operations can be carried out.
+The unpause operations ends the global pause.</p>
+<p>The pause and unpause operations MUST fail if any of the following conditions holds:</p>
+<ul class="simple">
+<li><p>the token has a governance account, and the sender account is not the governance account.</p></li>
+</ul>
+<p>Pausing a token that is already paused, or unpausing a token that is not paused, SHOULD NOT be considered grounds for failure.
+Such updates MUST NOT affect whether the token is paused.</p>
+<p>The reject reason SHOULD indicate which condition caused the failure.
+If multiple conditions apply, the reject reason can indicate any of them.</p>
+</section>
+<section id="forward-compatibility">
+<h4>Forward Compatibility<a class="headerlink" href="#forward-compatibility" title="Link to this heading">¶</a></h4>
+<p>Token Modules MAY implement additional token operations that are not defined in this specification.
+In order for tools such as hardware wallets to be able to handle such operations, these operations SHOULD conform to the following schema:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>generic-token-operation = {
+    short-text =&gt; generic-token-operation-details
+}
+
+short-text = text .size (1..24)
+
+generic-token-operation-details = {
+    * simple-key =&gt; details-value
+}
+
+simple-key = short-text / uint
+
+details-value = value-1
+
+value-1 = value-0
+    / list-0
+    / map-0
+
+list-0 = [ * value-0 ]
+
+map-0 = { * simple-key =&gt; value-0 }
+
+value-0 =
+    tagged-account-address      ; An account address
+    / tagged-contract-address   ; A smart contract address
+    / int                       ; An integer
+    / bigint                    ; A big integer
+    / decfrac                   ; A decimal fraction
+    / text                      ; A text string
+    / bytes                     ; A byte string
+    / epoch-time                ; An epoch time
+    / encoded-cbor              ; Encoded CBOR data
+    / base16-data               ; Data to be represented in base16
+    / base64-data               ; Data to be represented in base64
+    / bool                      ; A boolean value
+    / null                      ; The null value
+    / undefined                 ; The undefined value
+
+epoch-time = #6.1(uint)
+base16-data = #6.23(bytes)
+base64-data = #6.22(bytes)
+</pre></div>
+</div>
+<p>A <code class="docutils literal notranslate"><span class="pre">generic-token-operation</span></code> consists of a short text key (1-24 characters) that identifies the operation, and a map of simple keys to values that represent the details of the operation.
+Simple keys are either short text strings (1-24 characters) or unsigned integers.</p>
+<p>The values can be of various types:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tagged-account-address</span></code>: An account address.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tagged-contract-address</span></code>: A smart contract address.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int</span></code>: An integer value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bigint</span></code>: A big integer value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decfrac</span></code>: A decimal fraction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code>: A text string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bytes</span></code>: A byte string.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">epoch-time</span></code>: An time represented as a number of seconds since the Unix epoch (1970-01-01T00:00:00Z).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">encoded-cbor</span></code>: Encoded CBOR data. (Tooling may decode this data and display it in a human-readable format where appropriate.)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base16-data</span></code>: Data to be represented in base16 (hexadecimal) format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">base64-data</span></code>: Data to be represented in base64 format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bool</span></code>: A boolean value (true or false).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">null</span></code>: The null value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">undefined</span></code>: The undefined value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">list-0</span></code>: A list of values the above simple values.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">map-0</span></code>: A map of simple keys to simple values.</p></li>
+</ul>
+</section>
+</section>
+<section id="token-kernel-events">
+<h3>Token Kernel Events<a class="headerlink" href="#token-kernel-events" title="Link to this heading">¶</a></h3>
+<p>Token Kernel events are emitted by the Token Kernel as a consequence of transaction execution.
+These events are emitted whenever the Token Module invokes the Token Kernel to perform a balance-changing update, or when the PLT is first initialized.</p>
+<section id="tokentransfer">
+<h4>TokenTransfer<a class="headerlink" href="#tokentransfer" title="Link to this heading">¶</a></h4>
+<p>The TokenTransfer event occurs whenever an amount is transferred from one account to another.
+It indicates the Token ID involved, the sender and recipient accounts, the amount transferred, and any memo associated with the transfer.</p>
+</section>
+<section id="tokenmint">
+<h4>TokenMint<a class="headerlink" href="#tokenmint" title="Link to this heading">¶</a></h4>
+<p>The TokenMint event occurs whenever an amount of tokens is minted (i.e. introduced into circulation).
+It indicates the Token ID involved, the account that received the minted tokens, and the amount minted.</p>
+</section>
+<section id="tokenburn">
+<h4>TokenBurn<a class="headerlink" href="#tokenburn" title="Link to this heading">¶</a></h4>
+<p>The TokenBurn event occurs whenever an amount of tokens is burned (i.e. removed from circulation).
+It indicates the Token ID involved, the account that burned the tokens, and the amount burned.</p>
+</section>
+<section id="tokencreated">
+<h4>TokenCreated<a class="headerlink" href="#tokencreated" title="Link to this heading">¶</a></h4>
+<p>The TokenCreated event occurs when a new PLT is created.
+It indicates the <a class="reference internal" href="#cis-7-tokenid"><span class="std std-ref">Token ID</span></a>, the <a class="reference internal" href="#cis-7-tokenmodulehash"><span class="std std-ref">Token Module Hash</span></a>, the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>, and the <a class="reference external" href="CIS-7-InitializationParameters">initialization parameters</a>.</p>
+</section>
+</section>
+<section id="token-module-events">
+<span id="cis-7-tokenmoduleevents"></span><h3>Token Module Events<a class="headerlink" href="#token-module-events" title="Link to this heading">¶</a></h3>
+<p>The Token Module may emit Token Module Events as a consequence of transaction execution.
+These events are in addition to the <cite>Token Kernel Events</cite>, and the semantics is dependent on the Token Module implementation.</p>
+<p>Each Token Module Event type is designated by a <code class="docutils literal notranslate"><span class="pre">TokenEventType</span></code>, which is a UTF-8 encoded string of at most 255 bytes.
+Each Token Module Event has a CBOR-encoded event details.
+The <code class="docutils literal notranslate"><span class="pre">TokenEventType</span></code> determines the semantics of the event details, and in particular the schema to which it should conform.</p>
+<section id="addallowlist">
+<h4><code class="docutils literal notranslate"><span class="pre">addAllowList</span></code><a class="headerlink" href="#addallowlist" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; The details of a token &quot;addAllowList&quot; event.
+; Indicates that the account was added to the allow list.
+token-add-allow-list-event = token-list-update-details
+</pre></div>
+</div>
+</section>
+<section id="removeallowlist">
+<h4><code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code><a class="headerlink" href="#removeallowlist" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; The details of a token &quot;removeAllowList&quot; event.
+; Indicates that the account was removed from the allow list.
+token-remove-allow-list-event = token-list-update-details
+</pre></div>
+</div>
+</section>
+<section id="adddenylist">
+<h4><code class="docutils literal notranslate"><span class="pre">addDenyList</span></code><a class="headerlink" href="#adddenylist" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; The details of a token &quot;addDenyList&quot; event.
+; Indicates that the account was added to the deny list.
+token-add-deny-list-event = token-list-update-details
+</pre></div>
+</div>
+</section>
+<section id="removedenylist">
+<h4><code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code><a class="headerlink" href="#removedenylist" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; The details of a token &quot;removeDenyList&quot; event.
+; Indicates that the account was removed from the deny list.
+token-remove-deny-list-event = token-list-update-details
+</pre></div>
+</div>
+</section>
+<section id="pause">
+<h4><code class="docutils literal notranslate"><span class="pre">pause</span></code><a class="headerlink" href="#pause" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; The details of a token &quot;pause&quot; event.
+; Indicates that the token operations involving balance changes are suspended.
+token-pause-event = {}
+</pre></div>
+</div>
+</section>
+<section id="unpause">
+<h4><code class="docutils literal notranslate"><span class="pre">unpause</span></code><a class="headerlink" href="#unpause" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; The details of a token &quot;unpause&quot; event.
+; Indicates that the token operations involving balance changes are resumed.
+token-unpause-event = {}
+</pre></div>
+</div>
+</section>
+</section>
+<section id="reject-reasons">
+<span id="cis-7-rejectreasons"></span><h3>Reject Reasons<a class="headerlink" href="#reject-reasons" title="Link to this heading">¶</a></h3>
+<p>The Token Module may reject a transaction for various reasons.
+When a transaction is rejected, the reject reason identifies the PLT, the type of the reject reason (a UTF-8 encoded string of at most 255 bytes), and, optionally, the details of the reject reason (encoded as CBOR).</p>
+<p>Then the Token Module rejects a transaction, it produces a “token update transaction failed” reject reason that includes the Token ID, the reject reason type, and (optionally) CBOR-encoded reject reason details.
+A TokenUpdate transaction may also be rejected for a reason outside of the control of the Token Module.
+In particular “non existent Token ID” and “out of energy” reject reasons are possible.</p>
+<p>As with Token Module Events, the reject reason type determines the semantics of the reject reason details, and in particular the schema to which it should conform.
+The following reject reason types are defined by TokenModuleV0:</p>
+<section id="addressnotfound">
+<h4><code class="docutils literal notranslate"><span class="pre">addressNotFound</span></code><a class="headerlink" href="#addressnotfound" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; &quot;addressNotFound&quot;: an account address was not valid.
+reject-details-address-not-found = {
+    ; The index in the list of operations of the failing operation.
+    &quot;index&quot;: uint,
+    ; The address that could not be resolved.
+    &quot;address&quot;: tagged-account-address
+}
+</pre></div>
+</div>
+</section>
+<section id="tokenbalanceinsufficient">
+<h4><code class="docutils literal notranslate"><span class="pre">tokenBalanceInsufficient</span></code><a class="headerlink" href="#tokenbalanceinsufficient" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; &quot;tokenBalanceInsufficient&quot;: the balance of tokens on the sender account is insufficient
+; to perform the operation.
+reject-details-token-balance-insufficient = {
+    ; The index in the list of operations of the failing operation.
+    &quot;index&quot;: uint,
+    ; The available balance of the sender.
+    &quot;availableBalance&quot;: token-amount,
+    ; The minimum required balance to perform the operation.
+    &quot;requiredBalance&quot;: token-amount
+}
+</pre></div>
+</div>
+</section>
+<section id="deserializationfailure">
+<h4><code class="docutils literal notranslate"><span class="pre">deserializationFailure</span></code><a class="headerlink" href="#deserializationfailure" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; &quot;deserializationFailure&quot;: the transaction could not be deserialized.
+reject-details-deserialization-failure = {
+    ; Text description of the failure mode.
+    ? &quot;cause&quot;: text
+}
+</pre></div>
+</div>
+<p>Note that it is considered a deserialization failure if the transaction contains a <a class="reference internal" href="#cis-7-tokenamount"><span class="std std-ref">Token Amount</span></a> that does not conform to the <a class="reference internal" href="#cis-7-tokendecimals"><span class="std std-ref">Token Decimals</span></a>.</p>
+</section>
+<section id="unsupportedoperation">
+<h4><code class="docutils literal notranslate"><span class="pre">unsupportedOperation</span></code><a class="headerlink" href="#unsupportedoperation" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; &quot;unsupportedOperation&quot;: the operation is not supported by the token module.
+; This may be because the operation is not implemented by the module, or because the
+; token is not configured to support the operation. If the operation is not authorized
+; (i.e. the particular participants do not have the authority to perform the operation)
+; then the reject reason is &quot;operationNotPermitted&quot; instead.
+reject-details-unsupported-operation = {
+    ; The index in the list of operations of the failing operation.
+    &quot;index&quot;: uint,
+    ; The type of operation that was not supported.
+    &quot;operationType&quot;: text,
+    ; The reason why the operation was not supported.
+    ? &quot;reason&quot;: text
+}
+</pre></div>
+</div>
+</section>
+<section id="operationnotpermitted">
+<h4><code class="docutils literal notranslate"><span class="pre">operationNotPermitted</span></code><a class="headerlink" href="#operationnotpermitted" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; &quot;operationNotPermitted&quot;: the operation requires that a participating account has a certain
+; permission, but the account does not have that permission.
+reject-details-operation-not-permitted = {
+    ; The index in the list of operations of the failing operation.
+    &quot;index&quot;: uint,
+    ; (Optionally) the address that does not have the necessary permissions to perform the
+    ; operation.
+    ? &quot;address&quot;: tagged-account-address,
+    ; The reason why the operation is not permitted.
+    ? &quot;reason&quot;: text
+}
+</pre></div>
+</div>
+</section>
+<section id="mintwouldoverflow">
+<h4><code class="docutils literal notranslate"><span class="pre">mintWouldOverflow</span></code><a class="headerlink" href="#mintwouldoverflow" title="Link to this heading">¶</a></h4>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>; &quot;mintWouldOverflow&quot;: minting the requested amount would overflow the representable token amount.
+reject-details-mint-would-overflow = {
+    ; The index in the list of operations of the failing operation.
+    &quot;index&quot;: uint,
+    ; The requested amount to mint.
+    &quot;requestedAmount&quot;: token-amount,
+    ; The current supply of the token.
+    &quot;currentSupply&quot;: token-amount,
+    ; The maximum representable token amount.
+    &quot;maxRepresentableAmount&quot;: token-amount,
+}
+</pre></div>
+</div>
+</section>
+</section>
+<section id="token-module-state">
+<span id="cis-7-tokenmodulestate"></span><h3>Token Module State<a class="headerlink" href="#token-module-state" title="Link to this heading">¶</a></h3>
+<p>The Token Module state is a representation of the global state of a PLT, which is maintained by the Token Module.
+It is returned as part of a <cite>GetTokenInfo</cite> query.
+The Token Module state does not include state that is managed by the Token Kernel, such as the Token ID and global supply.
+It also does not (typically) include account-specific state, which is returned as part of <cite>GetAccountInfo</cite> instead.
+The Token Module state is represented as a CBOR map conforming to the following schema:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-module-state = {
+    ; The name of the token
+    ? &quot;name&quot;: text,
+    ; A URL pointing to the token metadata
+    ? &quot;metadata&quot;: metadata-url,
+    ; The governance account of the token
+    ? &quot;governanceAccount&quot;: tagged-account-address
+    ; Whether the token enforces an allow list.
+    ? &quot;allowList&quot;: bool,
+    ; Whether the token enforces a deny list.
+    ? &quot;denyList&quot;: bool,
+    ; Whether the token is mintable.
+    ? &quot;mintable&quot;: bool,
+    ; Whether the token is burnable.
+    ? &quot;burnable&quot;: bool,
+    ; Whether the token is paused, i.e. operations involving balance changes are suspended.
+    ? &quot;paused&quot;: bool,
+    ; Additional state information may be provided under further text keys, the meaning
+    ; of which are not defined in the present specification.
+    * text =&gt; any
+}
+</pre></div>
+</div>
+<p>All fields are optional.
+It is RECOMMENDED that Token Modules provide the <code class="docutils literal notranslate"><span class="pre">name</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata</span></code> fields.
+The structure supports additional fields for future extensibility.</p>
+<p>A Token Module MAY include non-standard fields (i.e. any fields that are not defined by a standard, and are specific to the module implementation).
+These non-standard fields SHOULD be prefixed with an underscore (“_”) to distinguish them as such.
+For example, a Token Module may include a field <code class="docutils literal notranslate"><span class="pre">&quot;_customField&quot;</span></code> with a value that is specific to the module implementation.
+The semantics of such non-standard fields are not defined by this specification, and are specific to the module implementation.</p>
+<p>The fields <a class="reference internal" href="#cis-7-name"><span class="std std-ref">name</span></a>, <a class="reference internal" href="#cis-7-metadata"><span class="std std-ref">metadata</span></a>, <a class="reference internal" href="#cis-7-governanceaccount"><span class="std std-ref">governanceAccount</span></a>, <a class="reference internal" href="#cis-7-allowlist"><span class="std std-ref">allowList</span></a>, <a class="reference internal" href="#cis-7-denylist"><span class="std std-ref">denyList</span></a>, <a class="reference internal" href="#cis-7-mintable"><span class="std std-ref">mintable</span></a>, and <a class="reference internal" href="#cis-7-burnable"><span class="std std-ref">burnable</span></a> have the same semantics as in <code class="docutils literal notranslate"><span class="pre">token-initialization-parameters</span></code>.</p>
+<section id="id2">
+<h4><code class="docutils literal notranslate"><span class="pre">pause</span></code><a class="headerlink" href="#id2" title="Link to this heading">¶</a></h4>
+<p>Whether the token is currently paused.
+When the token is paused, any transaction that includes a balance-changing operation (such as a transfer, mint, or burn) MUST fail.
+Other operations (such as adding or removing accounts from the allow or deny list) SHOULD NOT be affected by the pause state.</p>
+</section>
+</section>
+<section id="account-state">
+<span id="cis-7-accountstate"></span><h3>Account State<a class="headerlink" href="#account-state" title="Link to this heading">¶</a></h3>
+<p>The account state represents account-specific information that is maintained by the Token Module.
+It is returned as part of a <cite>GetAccountInfo</cite> query.
+The account state does not include state that is managed by the Token Kernel, such as the Token ID and account balance.
+It is represented as a CBOR map conforming to the following schema:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>token-module-account-state = {
+    ; Whether the account is on the allow list.
+    ; This is only present if the token supports an allow list; that is accounts can only
+    ; send or receive tokens if they are on the allow list.
+    ? &quot;allowList&quot;: bool,
+    ; Whether the account is on the deny list.
+    ; This is only present if the token supports a deny list; that is accounts can only
+    ; send or receive tokens if they are not on the deny list.
+    ? &quot;denyList&quot;: bool,
+    ; Additional state information may be provided under further text keys, the meaning
+    ; of which are not defined in the present specification.
+    * text =&gt; any
+}
+</pre></div>
+</div>
+<p>All fields are optional.
+The structure supports additional fields for future extensibility.</p>
+<p>A Token Module MAY include non-standard fields (i.e. any fields that are not defined by a standard, and are specific to the module implementation).
+These non-standard fields SHOULD be prefixed with an underscore (“_”) to distinguish them as such.</p>
+</section>
+<section id="token-metadata-format">
+<h3>Token Metadata Format<a class="headerlink" href="#token-metadata-format" title="Link to this heading">¶</a></h3>
+<p>While some token metadata (such as the Token ID, name and number of decimals) is stored on-chain, additional metadata is stored off-chain and referenced by the <code class="docutils literal notranslate"><span class="pre">metadata</span></code> field in the Token Module state.
+This token metadata MUST be a JSON (<span class="target" id="index-8"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc8259.html"><strong>RFC 8259</strong></a>) file.</p>
+<p>All of the fields in the JSON file are optional, and this specification reserves a number of field names, shown in the table below.</p>
+<div class="table-wrapper docutils container" id="id3">
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Token metadata JSON Object</span><a class="headerlink" href="#id3" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>JSON value type [JSON-Schema]</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">name</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>The name of the token (used for localization).</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">description</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>A description for this token type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">thumbnail</span></code> (optional)</p></td>
+<td><p>URL JSON object</p></td>
+<td><p>An image URL to a small image for displaying the asset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">display</span></code> (optional)</p></td>
+<td><p>URL JSON object</p></td>
+<td><p>An image URL to a large image for displaying the asset.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">localization</span></code> (optional)</p></td>
+<td><p>JSON object with locales as field names (<span class="target" id="index-9"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc5646.html"><strong>RFC 5646</strong></a>) and field values are URL JSON objects linking to JSON files.</p></td>
+<td><p>URLs to JSON files with localized token metadata.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>To enforce integrity of the metadata, the SHA256 hash of the JSON file MAY be included as part of the <a class="reference internal" href="#cis-7-metadataurl"><span class="std std-ref">Metadata URL</span></a>.
+Since the metadata JSON file can itself contain URLs, a SHA256 hash MAY be associated with each URL.
+To associate a hash with a URL, the JSON value is an object:</p>
+<div class="table-wrapper docutils container" id="id4">
+<table class="docutils align-default" id="id4">
+<caption><span class="caption-text">URL JSON Object</span><a class="headerlink" href="#id4" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Property</p></th>
+<th class="head"><p>JSON value type [JSON-Schema]</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">url</span></code></p></td>
+<td><p>string (<span class="target" id="index-10"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc3986.html"><strong>RFC 3986</strong></a>) [<code class="docutils literal notranslate"><span class="pre">uri-reference</span></code>]</p></td>
+<td><p>A URL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hash</span></code> (optional)</p></td>
+<td><p>string</p></td>
+<td><p>A SHA256 hash of the URL content encoded as a hex string.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../ID/concordium-did.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Concordium DID Method Version 1.1</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="cis-6.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">CIS-6: Track-and-Trace Standard</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Concordium
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">CIS-7: Protocol-level Tokens (PLTs)</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#terminology-and-conventions">Terminology and Conventions</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#specification">Specification</a><ul>
+<li><a class="reference internal" href="#common-types">Common Types</a><ul>
+<li><a class="reference internal" href="#token-id">Token ID</a></li>
+<li><a class="reference internal" href="#token-module-hash">Token Module Hash</a></li>
+<li><a class="reference internal" href="#token-decimals">Token Decimals</a></li>
+<li><a class="reference internal" href="#token-amount">Token Amount</a></li>
+<li><a class="reference internal" href="#memo">Memo</a></li>
+<li><a class="reference internal" href="#account-address">Account Address</a></li>
+<li><a class="reference internal" href="#smart-contract-address">Smart Contract Address</a></li>
+<li><a class="reference internal" href="#metadata-url">Metadata URL</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#initialization-parameters">Initialization Parameters</a><ul>
+<li><a class="reference internal" href="#name"><code class="docutils literal notranslate"><span class="pre">name</span></code></a></li>
+<li><a class="reference internal" href="#metadata"><code class="docutils literal notranslate"><span class="pre">metadata</span></code></a></li>
+<li><a class="reference internal" href="#governanceaccount"><code class="docutils literal notranslate"><span class="pre">governanceAccount</span></code></a></li>
+<li><a class="reference internal" href="#allowlist"><code class="docutils literal notranslate"><span class="pre">allowList</span></code></a></li>
+<li><a class="reference internal" href="#denylist"><code class="docutils literal notranslate"><span class="pre">denyList</span></code></a></li>
+<li><a class="reference internal" href="#initialsupply"><code class="docutils literal notranslate"><span class="pre">initialSupply</span></code></a></li>
+<li><a class="reference internal" href="#mintable"><code class="docutils literal notranslate"><span class="pre">mintable</span></code></a></li>
+<li><a class="reference internal" href="#burnable"><code class="docutils literal notranslate"><span class="pre">burnable</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transactions">Transactions</a><ul>
+<li><a class="reference internal" href="#transfer"><code class="docutils literal notranslate"><span class="pre">transfer</span></code></a></li>
+<li><a class="reference internal" href="#mint-and-burn"><code class="docutils literal notranslate"><span class="pre">mint</span></code> and <code class="docutils literal notranslate"><span class="pre">burn</span></code></a></li>
+<li><a class="reference internal" href="#addallowlist-removeallowlist-adddenylist-and-removedenylist"><code class="docutils literal notranslate"><span class="pre">addAllowList</span></code>, <code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code>, <code class="docutils literal notranslate"><span class="pre">addDenyList</span></code>, and <code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code></a></li>
+<li><a class="reference internal" href="#pause-and-unpause"><code class="docutils literal notranslate"><span class="pre">pause</span></code> and <code class="docutils literal notranslate"><span class="pre">unpause</span></code></a></li>
+<li><a class="reference internal" href="#forward-compatibility">Forward Compatibility</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#token-kernel-events">Token Kernel Events</a><ul>
+<li><a class="reference internal" href="#tokentransfer">TokenTransfer</a></li>
+<li><a class="reference internal" href="#tokenmint">TokenMint</a></li>
+<li><a class="reference internal" href="#tokenburn">TokenBurn</a></li>
+<li><a class="reference internal" href="#tokencreated">TokenCreated</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#token-module-events">Token Module Events</a><ul>
+<li><a class="reference internal" href="#addallowlist"><code class="docutils literal notranslate"><span class="pre">addAllowList</span></code></a></li>
+<li><a class="reference internal" href="#removeallowlist"><code class="docutils literal notranslate"><span class="pre">removeAllowList</span></code></a></li>
+<li><a class="reference internal" href="#adddenylist"><code class="docutils literal notranslate"><span class="pre">addDenyList</span></code></a></li>
+<li><a class="reference internal" href="#removedenylist"><code class="docutils literal notranslate"><span class="pre">removeDenyList</span></code></a></li>
+<li><a class="reference internal" href="#pause"><code class="docutils literal notranslate"><span class="pre">pause</span></code></a></li>
+<li><a class="reference internal" href="#unpause"><code class="docutils literal notranslate"><span class="pre">unpause</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#reject-reasons">Reject Reasons</a><ul>
+<li><a class="reference internal" href="#addressnotfound"><code class="docutils literal notranslate"><span class="pre">addressNotFound</span></code></a></li>
+<li><a class="reference internal" href="#tokenbalanceinsufficient"><code class="docutils literal notranslate"><span class="pre">tokenBalanceInsufficient</span></code></a></li>
+<li><a class="reference internal" href="#deserializationfailure"><code class="docutils literal notranslate"><span class="pre">deserializationFailure</span></code></a></li>
+<li><a class="reference internal" href="#unsupportedoperation"><code class="docutils literal notranslate"><span class="pre">unsupportedOperation</span></code></a></li>
+<li><a class="reference internal" href="#operationnotpermitted"><code class="docutils literal notranslate"><span class="pre">operationNotPermitted</span></code></a></li>
+<li><a class="reference internal" href="#mintwouldoverflow"><code class="docutils literal notranslate"><span class="pre">mintWouldOverflow</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#token-module-state">Token Module State</a><ul>
+<li><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">pause</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#account-state">Account State</a></li>
+<li><a class="reference internal" href="#token-metadata-format">Token Metadata Format</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>
