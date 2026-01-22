@@ -439,7 +439,6 @@ Encrypted Identity Credential DID
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 An encrypted identity credential DID can be created as part of a verifiable presentation that is directly based on the identity credential.
-See [TODO ADD LINK HERE] for more details.
 
 Read
 ----
