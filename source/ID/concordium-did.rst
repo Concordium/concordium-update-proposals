@@ -21,7 +21,7 @@ We distinguish the following types of DIDs:
 - **Smart Contract DID** refers to smart contract instances on the Concordium blockchain.
 - **Public Key DID** refers to a subject that knows the corresponding secret key.
 - **Identity Provider DID** refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.
-- **Encrypted Identity Credenital DID** refers to a subject that has registered at an identity provider with the corresponding holder identifier.
+- **Encrypted Identity Credential DID** refers to a subject that has registered at an identity provider with the corresponding holder identifier.
 
 Status of This Document
 =======================
@@ -58,7 +58,7 @@ Concordium DID identifiers are defined by the following ABNF_:
   scitype = "sci:" index *1(“:” subindex)
   idptype = "idp:" index
   credtype = "cred:" 96(base16char)
-  encidtype = "encidcred" *(base16char)
+  encidtype = "encidcred" 1*(base16char)
   index = 1*DIGIT
   subindex = 1*DIGIT
   base16char = HEXDIG
@@ -389,12 +389,12 @@ The subject can be identified via identity disclosure.
 The Encrypted Identity Credential DID Document MUST contain the following data:
 
 - ``id`` - the DID of the subject.
-- ``idp`` - specifies the identity provider that issued the identity credential
+- ``idp`` - specifies the identity provider that issued the identity credential.
 
 .. code-block:: json
 
   {
-    "id": "did:ccd:encidcredXX",
+    "id": "did:ccd:encidcred:XX",
     "idp": "did:ccd:idp:YY"
   }
 
@@ -596,9 +596,9 @@ Encrypted Identity Credential DID
 
 The DID document corresponding to a DID of the form
 
-``did:ccd:NET:encidcredENCID``
+``did:ccd:NET:encidcred:ENCID``
 
-can be constructed from a `ConcordiumIdBasedCredential` verifiable presentation that contains ``did:ccd:NET:encidcredENCID`` as the ``id`` of the `credentialSubject`.
+can be constructed from a `ConcordiumIdBasedCredential` verifiable presentation that contains ``did:ccd:NET:encidcred:ENCID`` as the ``id`` of the `credentialSubject`.
 The ``idp`` field is set to the `issuer` field of the verifiable presentation.
 
 Update
