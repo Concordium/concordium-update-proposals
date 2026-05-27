@@ -67,80 +67,50 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
 "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
 interpreted as described in :rfc:`2119`.
 
-Common Types
-------------
+General types and serialization
+-------------------------------
 
-.. _CIS-8-SerialisationConventions:
+.. note::
 
-Serialisation conventions
-^^^^^^^^^^^^^^^^^^^^^^^^^
+  Integers are encoded in little-endian unless stated otherwise.
 
-All multi-byte integers are little-endian. The wire format of each type
-below is the concatenation of its fields in the order shown, with the
-following length-prefix rules for variable-length fields:
+  Variable-length ``String`` fields carry a 2-byte little-endian length
+  prefix followed by the UTF-8 bytes. Variable-length byte sequences and
+  vectors carry a 4-byte little-endian length-or-count prefix followed
+  by the elements. This matches the default ``Serial`` derive produced
+  by ``concordium-std``.
 
-- ``String`` fields carry a ``u16`` little-endian byte-length prefix
-  followed by the UTF-8 bytes.
-- ``Bytes`` (raw ``Vec<u8>``) fields carry a ``u32`` little-endian
-  byte-length prefix followed by the raw bytes.
-- ``Vec<T>`` fields (any non-byte element type) carry a ``u32``
-  little-endian element-count prefix followed by that many serialised
-  ``T`` values.
-- ``enum`` variants are serialised as a single ``u8`` discriminant
-  (``0`` = first declared variant, ``1`` = next, etc.) followed by the
-  variant's fields (if any) in declaration order.
-- Fixed-size types: ``AccountAddress`` is 32 bytes, ``ContractAddress``
-  is 16 bytes (``index: u64 LE`` ‖ ``subindex: u64 LE``),
-  ``HashSha2256`` is 32 bytes, ``Timestamp`` is 8 bytes
-  (``u64`` little-endian, milliseconds since UNIX epoch).
+  Fixed-size types referenced below have the following widths:
 
-These are the same conventions ``concordium-std``'s default ``Serial``
-derive produces. A self-delimiting encoding is intentional: implementations
-MAY parse messages without an out-of-band schema.
+  - ``AccountAddress`` = 32 bytes
+  - ``ContractAddress`` = 16 bytes (``index: Byte⁸`` ‖ ``subindex: Byte⁸``)
+  - ``HashSha2256`` = 32 bytes
+  - ``Timestamp`` = ``u64`` little-endian = 8 bytes (milliseconds since
+    UNIX epoch)
 
 .. _CIS-8-ExternalKeyId:
 
-ExternalKeyId
-^^^^^^^^^^^^^
+``ExternalKeyId``
+^^^^^^^^^^^^^^^^^
 
 A triple identifying an external public key.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 18 18 12 52
+It is serialized as: 2 bytes for the length of the namespace (``n_ns``)
+followed by ``n_ns`` UTF-8 bytes (``namespace``), then 2 bytes for the
+length of the key type (``n_kt``) followed by ``n_kt`` UTF-8 bytes
+(``key_type``), then 4 bytes for the length of the public key (``n_pk``)
+followed by ``n_pk`` raw bytes (``public_key``)::
 
-   * - Field
-     - Type
-     - Length
-     - Description
-   * - ``namespace_len``
-     - u16 LE
-     - 2
-     - Byte length of ``namespace`` (UTF-8). MUST NOT exceed 128.
-   * - ``namespace``
-     - bytes
-     - variable
-     - CAIP-style chain namespace (e.g. ``"eip155:1"``,
-       ``"solana:mainnet"``, ``"cosmos:fetchhub-4"``). MUST be non-empty.
-   * - ``key_type_len``
-     - u16 LE
-     - 2
-     - Byte length of ``key_type`` (UTF-8). MUST NOT exceed 64.
-   * - ``key_type``
-     - bytes
-     - variable
-     - Key-type identifier (e.g. ``"secp256k1-compressed"``,
-       ``"secp256k1-uncompressed"``, ``"ed25519"``). MUST be non-empty.
-   * - ``public_key_len``
-     - u32 LE
-     - 4
-     - Byte length of ``public_key``. MUST match the size rule below.
-   * - ``public_key``
-     - bytes
-     - variable
-     - Raw external public-key bytes (NOT base58/hex encoded).
+  ExternalKeyId ::= (n_ns: Byte²) (namespace: Byteⁿ_ⁿˢ)
+                    (n_kt: Byte²) (key_type: Byteⁿ_ᵏᵗ)
+                    (n_pk: Byte⁴) (public_key: Byteⁿ_ᵖᵏ)
 
-The ``public_key`` length MUST match the declared ``key_type``:
+The ``namespace`` MUST be non-empty and MUST NOT exceed 128 bytes. It is
+a CAIP-style chain namespace (e.g. ``"eip155:1"``, ``"solana:mainnet"``,
+``"cosmos:fetchhub-4"``).
+
+The ``key_type`` MUST be non-empty and MUST NOT exceed 64 bytes. The
+``public_key`` length MUST match the declared ``key_type``:
 
 .. list-table::
    :header-rows: 1
@@ -154,114 +124,69 @@ The ``public_key`` length MUST match the declared ``key_type``:
    * - ``ed25519``
      - 32 bytes
 
-Implementations MAY support additional ``key_type`` values; if so, they MUST
-document the required ``public_key`` length for each.
+Implementations MAY support additional ``key_type`` values; if so, they
+MUST document the required ``public_key`` length for each.
 
 .. _CIS-8-Proof:
 
-Proof
-^^^^^
+``Proof``
+^^^^^^^^^
 
 A signature plus the scheme used to produce it.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 18 18 12 52
+It is serialized as: 2 bytes for the length of the scheme (``n_s``)
+followed by ``n_s`` UTF-8 bytes (``scheme``), then 4 bytes for the length
+of the signature (``n_sig``) followed by ``n_sig`` raw bytes
+(``signature``)::
 
-   * - Field
-     - Type
-     - Length
-     - Description
-   * - ``scheme_len``
-     - u16 LE
-     - 2
-     - Byte length of ``scheme`` (UTF-8).
-   * - ``scheme``
-     - bytes
-     - variable
-     - Proof scheme identifier. One of: ``"ethereum-personal-sign"``,
-       ``"solana-ed25519"``, ``"cosmos-secp256k1"``,
-       ``"fetch-ai-ed25519"``.
-   * - ``signature_len``
-     - u32 LE
-     - 4
-     - Byte length of ``signature``.
-   * - ``signature``
-     - bytes
-     - variable
-     - Raw signature bytes produced by signing the
-       :ref:`CIS-8-CanonicalMessage` with the private key corresponding
-       to ``external_key.public_key``. Length depends on the scheme
-       (see :ref:`CIS-8-Scheme-EthereumPersonalSign` etc.).
+  Proof ::= (n_s: Byte²) (scheme: Byteⁿ_ˢ) (n_sig: Byte⁴) (signature: Byteⁿ_ˢⁱᵍ)
 
-The contract MUST reject any ``Proof`` whose ``scheme`` is not in the supported
-set with reject reason :ref:`CIS-8-UnsupportedProofScheme`.
+The ``scheme`` identifier MUST be one of ``"ethereum-personal-sign"``,
+``"solana-ed25519"``, ``"cosmos-secp256k1"``, ``"fetch-ai-ed25519"``.
+The contract MUST reject any ``Proof`` whose ``scheme`` is not in the
+supported set with reject reason :ref:`CIS-8-UnsupportedProofScheme`.
+
+The ``signature`` is the raw signature bytes produced by signing the
+:ref:`CIS-8-CanonicalMessage` with the private key corresponding to
+``external_key.public_key``. Its length depends on the scheme; see the
+scheme-specific subsections under :ref:`CIS-8-ProofVerification`.
 
 .. _CIS-8-MetadataEntry:
 
-MetadataEntry
-^^^^^^^^^^^^^
+``MetadataEntry``
+^^^^^^^^^^^^^^^^^
 
 A single key/value metadata pair attached to a registration.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 18 18 12 52
+It is serialized as: 2 bytes for the length of the key (``n_k``)
+followed by ``n_k`` UTF-8 bytes (``key``), then 2 bytes for the length
+of the value (``n_v``) followed by ``n_v`` UTF-8 bytes (``value``)::
 
-   * - Field
-     - Type
-     - Length
-     - Description
-   * - ``key_len``
-     - u16 LE
-     - 2
-     - Byte length of ``key`` (UTF-8). MUST be non-zero and MUST NOT
-       exceed 64.
-   * - ``key``
-     - bytes
-     - variable
-     - UTF-8 bytes.
-   * - ``value_len``
-     - u16 LE
-     - 2
-     - Byte length of ``value`` (UTF-8). MUST NOT exceed 512.
-   * - ``value``
-     - bytes
-     - variable
-     - UTF-8 bytes.
+  MetadataEntry ::= (n_k: Byte²) (key: Byteⁿ_ᵏ) (n_v: Byte²) (value: Byteⁿ_ᵛ)
 
-A registration MAY carry up to 32 ``MetadataEntry`` items (see the
-``Vec<MetadataEntry>`` element-count limit in :ref:`CIS-8-Registration`).
-No keys are reserved at the standard level; applications define their
-own conventions.
+The ``key`` MUST be non-empty and MUST NOT exceed 64 bytes. The
+``value`` MUST NOT exceed 512 bytes. No keys are reserved at the standard
+level; applications define their own conventions.
 
 .. _CIS-8-RegistrationStatus:
 
-RegistrationStatus
-^^^^^^^^^^^^^^^^^^
+``RegistrationStatus``
+^^^^^^^^^^^^^^^^^^^^^^
 
-A single-byte enum tag.
+A single-byte enum tag::
 
-.. list-table::
-   :header-rows: 1
-   :widths: 18 18 64
+  RegistrationStatus ::= (0: Byte)   // Active
+                       | (1: Byte)   // Revoked
 
-   * - Tag
-     - Variant
-     - Meaning
-   * - ``0x00``
-     - ``Active``
-     - The registration is the current authoritative binding for its
-       ``ExternalKeyId``.
-   * - ``0x01``
-     - ``Revoked``
-     - The registration has been revoked (by its owner) or replaced (by
-       a new owner) and is no longer authoritative.
+``Active`` indicates the registration is the current authoritative binding
+for its ``ExternalKeyId``. ``Revoked`` indicates the registration has
+been revoked (by its owner) or replaced (by a new owner) and is no longer
+authoritative.
 
 .. _CIS-8-Registration:
 
-Registration
-^^^^^^^^^^^^
+``Registration``
+^^^^^^^^^^^^^^^^
 
 The full record returned for a registered external key. Only the
 ``scheme`` of the proof presented at registration is retained; the
@@ -270,52 +195,27 @@ keeps state minimal — consumers that want post-hoc signature
 verification SHOULD watch :ref:`CIS-8-ExternalKeyRegistered` events,
 which carry the same ``proof_scheme`` field.
 
-.. list-table::
-   :header-rows: 1
-   :widths: 18 22 12 48
+It is serialized as: 32 bytes for the ``owner`` ``AccountAddress``,
+followed by a serialised :ref:`CIS-8-ExternalKeyId` (``external_key``),
+then 2 bytes for the length of the proof scheme (``n_ps``) followed by
+``n_ps`` UTF-8 bytes (``proof_scheme``), then 4 bytes for the number of
+metadata entries (``n_m``) followed by ``n_m`` serialised
+:ref:`CIS-8-MetadataEntry`\ s (``metadata``), then a single
+:ref:`CIS-8-RegistrationStatus` byte (``status``), then 8 bytes for the
+``last_updated`` ``Timestamp``::
 
-   * - Field
-     - Type
-     - Length
-     - Description
-   * - ``owner``
-     - AccountAddress
-     - 32
-     - The Concordium account that last proved control of the external
-       key.
-   * - ``external_key``
-     - ExternalKeyId
-     - variable
-     - The external key — serialised per :ref:`CIS-8-ExternalKeyId`.
-   * - ``proof_scheme_len``
-     - u16 LE
-     - 2
-     - Byte length of ``proof_scheme`` (UTF-8).
-   * - ``proof_scheme``
-     - bytes
-     - variable
-     - Proof scheme identifier used at the latest successful
-       ``register`` call. Same string set as :ref:`CIS-8-Proof`.
-   * - ``metadata_count``
-     - u32 LE
-     - 4
-     - Number of ``MetadataEntry`` items. MUST NOT exceed 32.
-   * - ``metadata``
-     - MetadataEntry[]
-     - variable
-     - Zero or more :ref:`CIS-8-MetadataEntry` records, concatenated.
-   * - ``status``
-     - RegistrationStatus
-     - 1
-     - ``0x00`` Active or ``0x01`` Revoked
-       (see :ref:`CIS-8-RegistrationStatus`).
-   * - ``last_updated``
-     - Timestamp
-     - 8
-     - ``u64`` LE milliseconds since UNIX epoch — slot time of the
-       block containing the most recent state-modifying transaction for
-       this registration.
+  Registration ::= (owner: Byte³²)
+                   (external_key: ExternalKeyId)
+                   (n_ps: Byte²) (proof_scheme: Byteⁿ_ᵖˢ)
+                   (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
+                   (status: RegistrationStatus)
+                   (last_updated: Byte⁸)
 
+The ``metadata`` element count ``n_m`` MUST NOT exceed 32.
+
+The ``last_updated`` ``Timestamp`` is the ``u64`` little-endian slot
+time, in milliseconds since the UNIX epoch, of the block containing the
+most recent state-modifying transaction for this registration.
 
 By design only the current state needs to be stored. Historical
 transitions MUST be recoverable from emitted events.
@@ -331,64 +231,44 @@ binding to a specific Concordium account on a specific contract on a specific
 network. The contract reconstructs the canonical message; it MUST NEVER accept
 the message bytes as a parameter.
 
-The signed message is the concatenation, in the order shown, of the following
-fields. All integer widths are little-endian. All ``String`` and ``Bytes``
-fields carry an explicit ``u16`` little-endian length prefix so the encoding
-is unambiguous and self-delimiting.
+The signed message is serialized as: the 18-byte UTF-8 literal
+``"CIS-8/v1/canonical"`` (``prefix``); followed by the 32-byte
+``AccountAddress`` of the bound account (``concordium_account``);
+followed by the 16-byte ``ContractAddress`` of the registry contract
+(``contract_address``); followed by the 32-byte ``HashSha2256`` chain
+genesis (``concordium_genesis_hash``); followed by 2 bytes for the
+namespace length (``n_ens``) and ``n_ens`` UTF-8 bytes
+(``external_namespace``); followed by a serialised :ref:`CIS-8-ExternalKeyId`
+(``external_key``); followed by 2 bytes for the proof scheme length
+(``n_ps``) and ``n_ps`` UTF-8 bytes (``proof_scheme``)::
 
-.. list-table::
-   :header-rows: 1
-   :widths: 18 18 12 52
+  CanonicalMessage ::= (prefix: Byte¹⁸)                              // "CIS-8/v1/canonical"
+                       (concordium_account: Byte³²)
+                       (contract_address: Byte¹⁶)                    // index ‖ subindex, each u64 LE
+                       (concordium_genesis_hash: Byte³²)
+                       (n_ens: Byte²) (external_namespace: Byteⁿ_ᵉⁿˢ)
+                       (external_key: ExternalKeyId)
+                       (n_ps: Byte²)  (proof_scheme: Byteⁿ_ᵖˢ)
 
-   * - Field
-     - Type
-     - Length
-     - Description
-   * - ``prefix``
-     - bytes
-     - 18
-     - The 18-byte UTF-8 literal ``"CIS-8/v1/canonical"``. Domain-separation
-       tag; prevents signatures produced for any other purpose from being
-       replayed against CIS-8.
-   * - ``concordium_account``
-     - AccountAddress
-     - 32
-     - Raw 32-byte account address. Set by the contract to
-       ``ctx.sender()`` (transactions from contracts MUST be rejected with
-       :ref:`CIS-8-Unauthorized`).
-   * - ``contract_address``
-     - ContractAddress
-     - 16
-     - ``index`` (``u64`` LE, 8 bytes) followed by ``subindex`` (``u64`` LE,
-       8 bytes). Pins the signature to a single contract instance.
-   * - ``concordium_genesis_hash``
-     - HashSha2256
-     - 32
-     - The chain's genesis hash. The contract MUST retrieve this from the
-       receive-context metadata; it MUST NOT trust a value supplied as a
-       parameter. Pins the signature to a single network.
-   * - ``external_namespace_len``
-     - u16 LE
-     - 2
-     - Byte length of ``external_namespace`` (UTF-8). MUST equal
-       ``external_key.namespace`` (see below).
-   * - ``external_namespace``
-     - bytes
-     - variable
-     - UTF-8 bytes of the external chain namespace.
-   * - ``external_key``
-     - ExternalKeyId
-     - variable
-     - Serialised per :ref:`CIS-8-ExternalKeyId`.
-   * - ``proof_scheme_len``
-     - u16 LE
-     - 2
-     - Byte length of ``proof_scheme`` (UTF-8).
-   * - ``proof_scheme``
-     - bytes
-     - variable
-     - UTF-8 bytes of the proof scheme identifier
-       (e.g. ``"ethereum-personal-sign"``).
+The 18-byte UTF-8 prefix ``"CIS-8/v1/canonical"`` provides domain
+separation: signatures produced for any other purpose cannot be replayed
+against CIS-8. The ``contract_address`` and ``concordium_genesis_hash``
+fields pin the signature to a single contract instance on a single
+network.
+
+The contract MUST retrieve ``concordium_genesis_hash`` from the receive
+context's metadata; it MUST NOT trust a genesis hash supplied as a
+parameter.
+
+The contract MUST set ``concordium_account = ctx.sender()`` (an
+``AccountAddress``); calls from contract senders MUST be rejected with
+:ref:`CIS-8-Unauthorized`.
+
+The ``external_namespace`` field MUST equal ``external_key.namespace``;
+it is included as a separate field so that the signed bytes commit to
+the namespace independently of the ExternalKeyId framing.
+
+.. _CIS-8-ProofVerification:
 
 Proof Verification
 ------------------
@@ -487,154 +367,167 @@ Verification: identical to :ref:`CIS-8-Scheme-SolanaEd25519`.
    public key bytes only.
 
 
-Entrypoints
------------
+Contract functions
+------------------
+
+A smart contract implementing CIS-8 MUST export the following functions:
+:ref:`CIS-8-register`, :ref:`CIS-8-updateMetadata`, :ref:`CIS-8-revoke`,
+:ref:`CIS-8-ownerOfKey`, and the :ref:`CIS-0` :ref:`CIS-8-supports`
+standard-detection function.
 
 .. _CIS-8-register:
 
-register
-^^^^^^^^
+``register``
+^^^^^^^^^^^^
 
 Register a new active owner for an external key, proving control via a
 cryptographic signature over the :ref:`CIS-8-CanonicalMessage`.
 
-.. code-block:: rust
+.. _CIS-8-RegisterParameter:
 
-    #[derive(Serialize, SchemaType)]
-    pub struct RegisterParams {
-        pub external_key: ExternalKeyId,
-        pub proof:        Proof,
-        pub metadata:     Vec<MetadataEntry>,
-    }
+Parameter
+~~~~~~~~~
 
-Wire format: ``external_key`` (:ref:`CIS-8-ExternalKeyId`) ‖
-``proof`` (:ref:`CIS-8-Proof`) ‖ ``metadata_count`` (``u32`` LE) ‖
-zero or more :ref:`CIS-8-MetadataEntry` records concatenated.
+A serialised :ref:`CIS-8-ExternalKeyId` (``external_key``), followed by
+a serialised :ref:`CIS-8-Proof` (``proof``), followed by 4 bytes for the
+number of metadata entries (``n_m``) and ``n_m`` serialised
+:ref:`CIS-8-MetadataEntry`\ s (``metadata``)::
 
-**Authorisation.** The transaction sender MUST be an account (not a
-contract); contract callers MUST be rejected with
-:ref:`CIS-8-Unauthorized`. The ``concordium_account`` field of the
-reconstructed canonical message is always equal to ``ctx.sender()``.
+  RegisterParameter ::= (external_key: ExternalKeyId)
+                        (proof: Proof)
+                        (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
 
-**Validation.** The contract MUST:
+Requirements
+~~~~~~~~~~~~
 
-1. Validate ``external_key`` per :ref:`CIS-8-ExternalKeyId`.
-2. Reject any ``proof.scheme`` not in the supported set with
-   :ref:`CIS-8-UnsupportedProofScheme`.
-3. Validate ``metadata`` per :ref:`CIS-8-MetadataEntry`.
-4. Reconstruct the :ref:`CIS-8-CanonicalMessage` and verify the proof
-   per the appropriate scheme; reject with :ref:`CIS-8-InvalidProof`
-   on failure.
+- The transaction sender MUST be an account (not a contract). Contract
+  callers MUST be rejected with :ref:`CIS-8-Unauthorized`.
+- The ``concordium_account`` field of the reconstructed
+  :ref:`CIS-8-CanonicalMessage` is always equal to ``ctx.sender()``.
+- The contract MUST validate ``external_key`` per
+  :ref:`CIS-8-ExternalKeyId` (length limits, ``public_key`` size
+  matching ``key_type``).
+- The contract MUST reject any ``proof.scheme`` not in the supported
+  set with :ref:`CIS-8-UnsupportedProofScheme`.
+- The contract MUST validate ``metadata`` per
+  :ref:`CIS-8-MetadataEntry`.
+- The contract MUST reconstruct the :ref:`CIS-8-CanonicalMessage` and
+  verify the proof per the scheme-specific verification under
+  :ref:`CIS-8-ProofVerification`; reject with :ref:`CIS-8-InvalidProof`
+  on failure.
+- The contract MUST then apply the replacement rule:
 
-**Effect.** The contract MUST then apply the replacement rule:
-
-a. If no existing registration for the ``ExternalKeyId``: insert a new
-   ``Active`` ``Registration`` and emit
-   :ref:`CIS-8-ExternalKeyRegistered`.
-b. If an existing ``Active`` registration is owned by the sender:
-   replace it in place (same owner re-registering) and emit
-   :ref:`CIS-8-ExternalKeyRegistered`.
-c. If an existing ``Active`` registration is owned by a different
-   account: emit :ref:`CIS-8-ExternalKeyRevoked` (for the previous
-   owner) first, then replace the registration and emit
-   :ref:`CIS-8-ExternalKeyRegistered` (for the new owner). Events MUST
-   be emitted in this order.
+  a. If no existing registration for the ``ExternalKeyId``: insert a
+     new ``Active`` ``Registration`` and emit
+     :ref:`CIS-8-ExternalKeyRegistered`.
+  b. If an existing ``Active`` registration is owned by the sender:
+     replace it in place (same owner re-registering) and emit
+     :ref:`CIS-8-ExternalKeyRegistered`.
+  c. If an existing ``Active`` registration is owned by a different
+     account: emit :ref:`CIS-8-ExternalKeyRevoked` (for the previous
+     owner) first, then replace the registration and emit
+     :ref:`CIS-8-ExternalKeyRegistered` (for the new owner). Events
+     MUST be emitted in this order.
 
 .. _CIS-8-updateMetadata:
 
-updateMetadata
-^^^^^^^^^^^^^^
+``updateMetadata``
+^^^^^^^^^^^^^^^^^^
 
 Update the metadata attached to an existing active registration.
 
-.. code-block:: rust
+.. _CIS-8-UpdateMetadataParameter:
 
-    #[derive(Serialize, SchemaType)]
-    pub struct UpdateMetadataParams {
-        pub identifier: ExternalKeyId,
-        pub metadata:   Vec<MetadataEntry>,
-    }
+Parameter
+~~~~~~~~~
 
-Wire format: ``identifier`` (:ref:`CIS-8-ExternalKeyId`) ‖
-``metadata_count`` (``u32`` LE) ‖ zero or more
-:ref:`CIS-8-MetadataEntry` records concatenated.
+A serialised :ref:`CIS-8-ExternalKeyId` (``identifier``) followed by 4
+bytes for the number of metadata entries (``n_m``) and ``n_m``
+serialised :ref:`CIS-8-MetadataEntry`\ s (``metadata``)::
 
-**Authorisation.** Sender MUST be the active owner of the resolved
-registration; otherwise reject with :ref:`CIS-8-Unauthorized`.
+  UpdateMetadataParameter ::= (identifier: ExternalKeyId)
+                              (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
 
-**Effect.** Replace ``registration.metadata`` in place; update
-``last_updated``. Emit :ref:`CIS-8-UpdateMetadata`.
+Requirements
+~~~~~~~~~~~~
 
-Reject with :ref:`CIS-8-NotRegistered` if no active registration exists
-for the identifier.
+- The sender MUST be the active owner of the resolved registration;
+  otherwise reject with :ref:`CIS-8-Unauthorized`.
+- If no active registration exists for the identifier, reject with
+  :ref:`CIS-8-NotRegistered`.
+- On success, replace ``registration.metadata`` in place; update
+  ``last_updated``; emit :ref:`CIS-8-UpdateMetadata`.
 
 .. _CIS-8-revoke:
 
-revoke
-^^^^^^
+``revoke``
+^^^^^^^^^^
 
 Revoke the caller's active registration of an external key.
 
-.. code-block:: rust
+.. _CIS-8-RevokeParameter:
 
-    #[derive(Serialize, SchemaType)]
-    pub struct RevokeParams {
-        pub identifier: ExternalKeyId,
-    }
+Parameter
+~~~~~~~~~
 
-Wire format: ``identifier`` (:ref:`CIS-8-ExternalKeyId`).
+A serialised :ref:`CIS-8-ExternalKeyId` (``identifier``)::
 
-**Authorisation.** Sender MUST be the active owner; otherwise reject
-with :ref:`CIS-8-Unauthorized`.
+  RevokeParameter ::= (identifier: ExternalKeyId)
 
-**Effect.** Set ``status = Revoked``; update ``last_updated``. Emit
-:ref:`CIS-8-ExternalKeyRevoked`.
+Requirements
+~~~~~~~~~~~~
+
+- The sender MUST be the active owner; otherwise reject with
+  :ref:`CIS-8-Unauthorized`.
+- If no active registration exists for the identifier, reject with
+  :ref:`CIS-8-NotRegistered`.
+- On success, set ``status = Revoked``; update ``last_updated``; emit
+  :ref:`CIS-8-ExternalKeyRevoked`.
 
 .. _CIS-8-ownerOfKey:
 
-ownerOfKey
-^^^^^^^^^^
+``ownerOfKey``
+^^^^^^^^^^^^^^
 
 A read-only view returning the current :ref:`CIS-8-Registration` for the
 given ``ExternalKeyId``, or ``None`` if no entry exists.
 
-.. code-block:: rust
+This entrypoint is the integration point used by :ref:`CIS-8004`
+cross-contract verification (see
+:ref:`CIS-8004-CrossContractVerification`).
 
-    #[derive(Serialize, SchemaType)]
-    pub struct OwnerOfKeyParams {
-        pub external_key: ExternalKeyId,
-    }
+Parameter
+~~~~~~~~~
 
-    #[derive(Serialize, SchemaType)]
-    pub enum OwnerQueryResult {
-        None,
-        Some(Registration),
-    }
+A serialised :ref:`CIS-8-ExternalKeyId` (``external_key``)::
 
-Parameter wire format: ``external_key`` (:ref:`CIS-8-ExternalKeyId`).
+  OwnerOfKeyParameter ::= (external_key: ExternalKeyId)
 
-Return wire format: a single ``u8`` discriminant — ``0x00`` for ``None``
-(no further bytes), ``0x01`` for ``Some`` followed by a serialised
-:ref:`CIS-8-Registration`.
+Response
+~~~~~~~~
 
-This entrypoint is the integration point used by :ref:`CIS-8004` cross-
-contract verification (see :ref:`CIS-8004-CrossContractVerification`).
+A single byte discriminant — ``0`` for the absent case (no further
+bytes), or ``1`` followed by a serialised :ref:`CIS-8-Registration`::
+
+  OwnerQueryResult ::= (0: Byte)
+                     | (1: Byte) (registration: Registration)
 
 .. _CIS-8-supports:
 
-supports
-^^^^^^^^
+``supports``
+^^^^^^^^^^^^
 
 A CIS-8 contract MUST implement :ref:`CIS-0` standard detection and MUST
 return ``Support`` for both ``CIS-0`` and ``CIS-8``.
 
 
-Events
-------
+Logged events
+-------------
 
-A CIS-8 contract MUST emit the events defined in this section, each prefixed
-with its tag byte. The custom ``Serial`` implementation writes the tag byte
-first, then the typed payload.
+The events defined by this specification are serialized using one byte
+to discriminate the different events. A custom event SHOULD NOT have a
+first byte colliding with any of the events defined by this
+specification.
 
 .. list-table::
    :header-rows: 1
@@ -649,75 +542,71 @@ first, then the typed payload.
      - 233
 
 These tag values intentionally avoid the 251..255 range reserved by
-:ref:`CIS-2`, so a single contract MAY implement both CIS-8 and CIS-2 without
-event-tag collisions.
+:ref:`CIS-2`, so a single contract MAY implement both CIS-8 and CIS-2
+without event-tag collisions.
 
 .. _CIS-8-ExternalKeyRegistered:
 
-ExternalKeyRegistered
-^^^^^^^^^^^^^^^^^^^^^
+``ExternalKeyRegistered``
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Emitted when a new registration is created, when an existing owner
-re-registers, or when a new owner replaces a previous one (in which case it
-is preceded by an :ref:`CIS-8-ExternalKeyRevoked` for the previous owner).
+re-registers, or when a new owner replaces a previous one (in which case
+it is preceded by an :ref:`CIS-8-ExternalKeyRevoked` for the previous
+owner).
 
-.. code-block:: rust
+It is serialized as: 1 byte for the event tag, followed by the 32-byte
+``owner`` ``AccountAddress``, followed by a serialised
+:ref:`CIS-8-ExternalKeyId` (``external_key``), followed by 2 bytes for
+the proof scheme length (``n_ps``) and ``n_ps`` UTF-8 bytes
+(``proof_scheme``), followed by 4 bytes for the number of metadata
+entries (``n_m``) and ``n_m`` serialised
+:ref:`CIS-8-MetadataEntry`\ s::
 
-    pub struct ExternalKeyRegisteredEvent {
-        pub owner:        AccountAddress,
-        pub external_key: ExternalKeyId,
-        pub proof_scheme: String,
-        pub metadata:     Vec<MetadataEntry>,
-    }
-
-Wire format: ``0xE7`` (tag 231) ‖ ``owner`` (32 bytes ``AccountAddress``) ‖
-``external_key`` (:ref:`CIS-8-ExternalKeyId`) ‖ ``proof_scheme_len``
-(``u16`` LE) ‖ ``proof_scheme`` (UTF-8 bytes) ‖ ``metadata_count``
-(``u32`` LE) ‖ zero or more :ref:`CIS-8-MetadataEntry` records.
+  ExternalKeyRegisteredEvent ::= (231: Byte)
+                                 (owner: Byte³²)
+                                 (external_key: ExternalKeyId)
+                                 (n_ps: Byte²) (proof_scheme: Byteⁿ_ᵖˢ)
+                                 (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
 
 .. _CIS-8-ExternalKeyRevoked:
 
-ExternalKeyRevoked
-^^^^^^^^^^^^^^^^^^
+``ExternalKeyRevoked``
+^^^^^^^^^^^^^^^^^^^^^^
 
 Emitted when the active owner revokes their own registration, or when a
 new owner replaces them via :ref:`CIS-8-register`.
 
-.. code-block:: rust
+It is serialized as: 1 byte for the event tag, followed by the 32-byte
+``owner`` ``AccountAddress``, followed by a serialised
+:ref:`CIS-8-ExternalKeyId` (``external_key``)::
 
-    pub struct ExternalKeyRevokedEvent {
-        pub owner:        AccountAddress,
-        pub external_key: ExternalKeyId,
-    }
-
-Wire format: ``0xE8`` (tag 232) ‖ ``owner`` (32 bytes ``AccountAddress``)
-‖ ``external_key`` (:ref:`CIS-8-ExternalKeyId`).
+  ExternalKeyRevokedEvent ::= (232: Byte)
+                              (owner: Byte³²)
+                              (external_key: ExternalKeyId)
 
 .. _CIS-8-UpdateMetadata:
 
-UpdateMetadata
-^^^^^^^^^^^^^^
+``UpdateMetadata``
+^^^^^^^^^^^^^^^^^^
 
 Emitted on a successful :ref:`CIS-8-updateMetadata` call.
 
-.. code-block:: rust
+It is serialized as: 1 byte for the event tag, followed by a serialised
+:ref:`CIS-8-ExternalKeyId` (``external_key``), followed by 4 bytes for
+the number of metadata entries (``n_m``) and ``n_m`` serialised
+:ref:`CIS-8-MetadataEntry`\ s::
 
-    pub struct UpdateMetadataEvent {
-        pub external_key: ExternalKeyId,
-        pub metadata:     Vec<MetadataEntry>,
-    }
-
-Wire format: ``0xE9`` (tag 233) ‖ ``external_key``
-(:ref:`CIS-8-ExternalKeyId`) ‖ ``metadata_count`` (``u32`` LE) ‖ zero
-or more :ref:`CIS-8-MetadataEntry` records.
+  UpdateMetadataEvent ::= (233: Byte)
+                          (external_key: ExternalKeyId)
+                          (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
 
 
 Errors
 ------
 
-Reject codes are mapped explicitly via ``From<Cis8Error> for Reject`` to the
-numeric values listed below; implementations MUST NOT rely on derived
-sequential numbering.
+Reject codes MUST take the explicit numeric values listed below;
+implementations MUST NOT rely on derived sequential numbering.
 
 The ``-7100..`` range was chosen so CIS-8 reject codes do not collide
 with other CIS standards (``-42000..`` for CIS-2 etc.) when a single
