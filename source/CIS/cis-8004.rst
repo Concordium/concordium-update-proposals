@@ -283,16 +283,6 @@ events:
     fe 08 0a00000000000000 ...   ← tag 254 (CIS-2 Mint)
     f0 08 0a00000000000000 ...   ← tag 240 (CIS-8004 Registered)
 
-.. note::
-
-   Earlier draft deployments of this contract (pre 2026-05-25) incorrectly
-   typed the CIS-8004-native entrypoints as bare ``u64`` LE (8 bytes,
-   no length prefix). That deviation was a contract bug, not a spec
-   decision; the redeployed reference instances listed in
-   :ref:`CIS-8004-DeploymentStatus` use the spec-correct ``TokenIdU64``
-   form throughout. Off-chain tooling that talked to the pre-redeploy
-   instances will need updating.
-
 
 Contract State
 --------------
