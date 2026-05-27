@@ -15,6 +15,8 @@ CIS-8: External Key Registry Standard
      - | Smart contract version 1 (concordium-std v10+)
    * - Standard identifier
      - ``CIS-8``
+   * - Requires
+     - :ref:`CIS-0<CIS-0>`
 
 
 Abstract
@@ -46,17 +48,6 @@ domain-separated message and, on success, records the binding.
 The contract maintains only the current state of each registration. Full
 history is recoverable from the emitted events.
 
-Terminology and Conventions
----------------------------
-
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
-"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
-interpreted as described in :rfc:`2119`.
-
-Rust types are expressed using ``concordium-std`` conventions (``Serialize``,
-``SchemaType``, ``Reject``). Schemas embedded in deployed modules are
-serialised in the Concordium binary schema format.
-
 Relationship to Other CIS Standards
 -----------------------------------
 
@@ -71,6 +62,10 @@ CIS-8 does not depend on any other standard.
 
 Specification
 =============
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in :rfc:`2119`.
 
 Common Types
 ------------
@@ -184,24 +179,8 @@ Registration
     }
 
 
-Contract State
---------------
-
-A CIS-8 contract MUST maintain at least the following state:
-
-.. code-block:: rust
-
-    #[derive(Serial, DeserialWithState)]
-    #[concordium(state_parameter = "S")]
-    pub struct State<S: HasStateApi> {
-        /// Current registration keyed by ExternalKeyId.
-        pub registrations: StateMap<ExternalKeyId, Registration, S>,
-        /// Single-account admin model (see Admin section).
-        pub admin: Option<AccountAddress>,
-    }
-
-Only the current state is stored. Historical transitions MUST be recoverable
-from emitted events.
+By design only the current state needs to be stored. Historical
+transitions MUST be recoverable from emitted events.
 
 
 Canonical Signed Message
@@ -214,37 +193,102 @@ binding to a specific Concordium account on a specific contract on a specific
 network. The contract reconstructs the canonical message; it MUST NEVER accept
 the message bytes as a parameter.
 
-.. code-block:: rust
+The signed message is the concatenation, in the order shown, of the following
+fields. All integer widths are little-endian. All ``String`` and ``Bytes``
+fields carry an explicit ``u16`` little-endian length prefix so the encoding
+is unambiguous and self-delimiting.
 
-    pub struct CanonicalMessage {
-        pub concordium_account:      AccountAddress,
-        pub contract_address:        ContractAddress,
-        pub concordium_genesis_hash: HashSha2256,
-        pub external_namespace:      String,
-        pub external_key:            ExternalKeyId,
-        pub proof_scheme:            String,
-    }
+.. list-table::
+   :header-rows: 1
+   :widths: 18 18 12 52
 
-    impl CanonicalMessage {
-        pub fn to_signed_bytes(&self) -> Vec<u8> {
-            let mut buf = Vec::new();
-            buf.extend_from_slice(b"CIS-8/v1/canonical");  // 18 bytes UTF-8
-            self.serial(&mut buf).expect("serialize canonical message");
-            buf
-        }
-    }
+   * - Field
+     - Type
+     - Length
+     - Description
+   * - ``prefix``
+     - bytes
+     - 18
+     - The 18-byte UTF-8 literal ``"CIS-8/v1/canonical"``. Domain-separation
+       tag; prevents signatures produced for any other purpose from being
+       replayed against CIS-8.
+   * - ``concordium_account``
+     - AccountAddress
+     - 32
+     - Raw 32-byte account address. Set by the contract to
+       ``ctx.sender()`` (transactions from contracts MUST be rejected with
+       :ref:`CIS-8-Unauthorized`).
+   * - ``contract_address``
+     - ContractAddress
+     - 16
+     - ``index`` (``u64`` LE, 8 bytes) followed by ``subindex`` (``u64`` LE,
+       8 bytes). Pins the signature to a single contract instance.
+   * - ``concordium_genesis_hash``
+     - HashSha2256
+     - 32
+     - The chain's genesis hash. The contract MUST retrieve this from the
+       receive-context metadata; it MUST NOT trust a value supplied as a
+       parameter. Pins the signature to a single network.
+   * - ``external_namespace_len``
+     - u16 LE
+     - 2
+     - Byte length of ``external_namespace`` (UTF-8). MUST equal
+       ``external_key.namespace`` (see below).
+   * - ``external_namespace``
+     - bytes
+     - variable
+     - UTF-8 bytes of the external chain namespace.
+   * - ``external_key``
+     - ExternalKeyId
+     - variable
+     - Serialised per :ref:`CIS-8-ExternalKeyId-Wire`.
+   * - ``proof_scheme_len``
+     - u16 LE
+     - 2
+     - Byte length of ``proof_scheme`` (UTF-8).
+   * - ``proof_scheme``
+     - bytes
+     - variable
+     - UTF-8 bytes of the proof scheme identifier
+       (e.g. ``"ethereum-personal-sign"``).
 
-The 18-byte UTF-8 prefix ``CIS-8/v1/canonical`` provides domain separation:
-signatures produced for any other purpose cannot be replayed against CIS-8.
-The ``contract_address`` and ``concordium_genesis_hash`` fields pin the
-signature to a single contract instance on a single network.
+.. _CIS-8-ExternalKeyId-Wire:
 
-The contract MUST retrieve ``concordium_genesis_hash`` from the receive
-context's metadata; it MUST NOT trust a genesis hash supplied as a parameter.
+ExternalKeyId is serialised as the concatenation of:
 
-The contract MUST set ``concordium_account = ctx.sender()`` (an
-``AccountAddress``); calls from contract senders MUST be rejected with
-:ref:`CIS-8-Unauthorized`.
+.. list-table::
+   :header-rows: 1
+   :widths: 18 18 12 52
+
+   * - Field
+     - Type
+     - Length
+     - Description
+   * - ``namespace_len``
+     - u16 LE
+     - 2
+     - Byte length of ``namespace`` (UTF-8).
+   * - ``namespace``
+     - bytes
+     - variable
+     - UTF-8 bytes.
+   * - ``key_type_len``
+     - u16 LE
+     - 2
+     - Byte length of ``key_type`` (UTF-8).
+   * - ``key_type``
+     - bytes
+     - variable
+     - UTF-8 bytes.
+   * - ``public_key_len``
+     - u16 LE
+     - 2
+     - Byte length of ``public_key``. MUST match the size rule in
+       :ref:`CIS-8-ExternalKeyId`.
+   * - ``public_key``
+     - bytes
+     - variable
+     - Raw public-key bytes (NOT base58/hex encoded).
 
 
 Proof Verification
@@ -304,9 +348,10 @@ For Cosmos-SDK chains including Fetch.ai accounts.
 
 Verification:
 
-1. Wrap ``message`` in the ADR-036 off-chain signing envelope. The exact
-   envelope shape MUST be fixed by the deploying implementation and
-   documented in a contract-instance README; off-chain signers and the
+1. Wrap ``message`` in the `ADR-036 off-chain signing envelope
+   <https://github.com/cosmos/cosmos-sdk/blob/main/docs/architecture/adr-036-arbitrary-signature.md>`_.
+   The exact envelope shape MUST be fixed by the deploying implementation
+   and documented in a contract-instance README; off-chain signers and the
    on-chain verifier MUST agree byte-for-byte.
 2. Compute ``digest = sha256(envelope)``.
 3. Verify the ECDSA signature against ``digest`` using
@@ -318,7 +363,10 @@ Verification:
    This standard does not mandate the ADR-036 envelope bytes; it requires
    only that the deployed implementation pin a choice and document it.
    Implementations that need cross-implementation interoperability SHOULD
-   coordinate on a single canonical envelope.
+   coordinate on a single canonical envelope. See ADR-036_ for the
+   normative envelope shape.
+
+.. _ADR-036: https://github.com/cosmos/cosmos-sdk/blob/main/docs/architecture/adr-036-arbitrary-signature.md
 
 .. _CIS-8-Scheme-FetchAiEd25519:
 
@@ -343,27 +391,13 @@ Verification: identical to :ref:`CIS-8-Scheme-SolanaEd25519`.
 Entrypoints
 -----------
 
-.. _CIS-8-init:
-
-init
-^^^^
-
-.. code-block:: rust
-
-    #[derive(Serialize, SchemaType)]
-    pub struct InitParams {
-        /// Single-account admin; MAY be transferred or renounced via
-        /// transferAdmin (see Admin section).
-        pub admin: AccountAddress,
-    }
-
-Initialises an empty ``registrations`` map and stores ``state.admin =
-Some(params.admin)``.
-
 .. _CIS-8-register:
 
 register
 ^^^^^^^^
+
+Register a new active owner for an external key, proving control via a
+cryptographic signature over the :ref:`CIS-8-CanonicalMessage`.
 
 .. code-block:: rust
 
@@ -374,42 +408,41 @@ register
         pub metadata:     Vec<MetadataEntry>,
     }
 
-Authorisation
-    The transaction sender MUST be an account (not a contract); contract
-    callers MUST be rejected with :ref:`CIS-8-Unauthorized`. The
-    ``concordium_account`` field of the reconstructed canonical message is
-    always equal to ``ctx.sender()``.
+**Authorisation.** The transaction sender MUST be an account (not a
+contract); contract callers MUST be rejected with
+:ref:`CIS-8-Unauthorized`. The ``concordium_account`` field of the
+reconstructed canonical message is always equal to ``ctx.sender()``.
 
-Validation
-    The contract MUST:
+**Validation.** The contract MUST:
 
-    1. Validate ``external_key`` per :ref:`CIS-8-ExternalKeyId`.
-    2. Reject any ``proof.scheme`` not in the supported set with
-       :ref:`CIS-8-UnsupportedProofScheme`.
-    3. Validate ``metadata`` per :ref:`CIS-8-MetadataEntry`.
-    4. Reconstruct the :ref:`CIS-8-CanonicalMessage` and verify the proof
-       per the appropriate scheme; reject with :ref:`CIS-8-InvalidProof`
-       on failure.
+1. Validate ``external_key`` per :ref:`CIS-8-ExternalKeyId`.
+2. Reject any ``proof.scheme`` not in the supported set with
+   :ref:`CIS-8-UnsupportedProofScheme`.
+3. Validate ``metadata`` per :ref:`CIS-8-MetadataEntry`.
+4. Reconstruct the :ref:`CIS-8-CanonicalMessage` and verify the proof
+   per the appropriate scheme; reject with :ref:`CIS-8-InvalidProof`
+   on failure.
 
-Effect
-    The contract MUST then apply the replacement rule:
+**Effect.** The contract MUST then apply the replacement rule:
 
-    a. If no existing registration for the ``ExternalKeyId``: insert a new
-       ``Active`` ``Registration`` and emit
-       :ref:`CIS-8-ExternalKeyRegistered`.
-    b. If an existing ``Active`` registration is owned by the sender:
-       replace it in place (same owner re-registering) and emit
-       :ref:`CIS-8-ExternalKeyRegistered`.
-    c. If an existing ``Active`` registration is owned by a different
-       account: emit :ref:`CIS-8-ExternalKeyRevoked` (for the previous
-       owner) first, then replace the registration and emit
-       :ref:`CIS-8-ExternalKeyRegistered` (for the new owner). Events MUST
-       be emitted in this order.
+a. If no existing registration for the ``ExternalKeyId``: insert a new
+   ``Active`` ``Registration`` and emit
+   :ref:`CIS-8-ExternalKeyRegistered`.
+b. If an existing ``Active`` registration is owned by the sender:
+   replace it in place (same owner re-registering) and emit
+   :ref:`CIS-8-ExternalKeyRegistered`.
+c. If an existing ``Active`` registration is owned by a different
+   account: emit :ref:`CIS-8-ExternalKeyRevoked` (for the previous
+   owner) first, then replace the registration and emit
+   :ref:`CIS-8-ExternalKeyRegistered` (for the new owner). Events MUST
+   be emitted in this order.
 
 .. _CIS-8-updateMetadata:
 
 updateMetadata
 ^^^^^^^^^^^^^^
+
+Update the metadata attached to an existing active registration.
 
 .. code-block:: rust
 
@@ -419,21 +452,21 @@ updateMetadata
         pub metadata:   Vec<MetadataEntry>,
     }
 
-Authorisation
-    Sender MUST be the active owner of the resolved registration; otherwise
-    reject with :ref:`CIS-8-Unauthorized`.
+**Authorisation.** Sender MUST be the active owner of the resolved
+registration; otherwise reject with :ref:`CIS-8-Unauthorized`.
 
-Effect
-    Replace ``registration.metadata`` in place; update ``last_updated``.
-    Emit :ref:`CIS-8-UpdateMetadata`.
+**Effect.** Replace ``registration.metadata`` in place; update
+``last_updated``. Emit :ref:`CIS-8-UpdateMetadata`.
 
-    Reject with :ref:`CIS-8-NotRegistered` if no active registration exists
-    for the identifier.
+Reject with :ref:`CIS-8-NotRegistered` if no active registration exists
+for the identifier.
 
 .. _CIS-8-revoke:
 
 revoke
 ^^^^^^
+
+Revoke the caller's active registration of an external key.
 
 .. code-block:: rust
 
@@ -442,13 +475,11 @@ revoke
         pub identifier: ExternalKeyId,
     }
 
-Authorisation
-    Sender MUST be the active owner; otherwise reject with
-    :ref:`CIS-8-Unauthorized`.
+**Authorisation.** Sender MUST be the active owner; otherwise reject
+with :ref:`CIS-8-Unauthorized`.
 
-Effect
-    Set ``status = Revoked``; update ``last_updated``. Emit
-    :ref:`CIS-8-ExternalKeyRevoked`.
+**Effect.** Set ``status = Revoked``; update ``last_updated``. Emit
+:ref:`CIS-8-ExternalKeyRevoked`.
 
 .. _CIS-8-ownerOfKey:
 
@@ -482,15 +513,6 @@ supports
 A CIS-8 contract MUST implement :ref:`CIS-0` standard detection and MUST
 return ``Support`` for both ``CIS-0`` and ``CIS-8``.
 
-.. _CIS-8-getAdmin:
-
-getAdmin
-^^^^^^^^
-
-A read-only view returning ``Option<AccountAddress>``. Returns ``Some(admin)``
-when an admin is set, ``None`` after the admin has been renounced (see
-:ref:`CIS-8-Admin`).
-
 
 Events
 ------
@@ -505,15 +527,15 @@ first, then the typed payload.
    * - Event
      - Tag
    * - :ref:`CIS-8-ExternalKeyRegistered`
-     - 250
+     - 231
    * - :ref:`CIS-8-ExternalKeyRevoked`
-     - 251
+     - 232
    * - :ref:`CIS-8-UpdateMetadata`
-     - 252
-   * - :ref:`CIS-8-Upgraded`
-     - 253
-   * - :ref:`CIS-8-AdminTransferred`
-     - 254
+     - 233
+
+These tag values intentionally avoid the 251..255 range reserved by
+:ref:`CIS-2`, so a single contract MAY implement both CIS-8 and CIS-2 without
+event-tag collisions.
 
 .. _CIS-8-ExternalKeyRegistered:
 
@@ -619,89 +641,11 @@ sequential numbering.
        -7108
      - ``InvalidMetadata``
      - ``metadata`` fails the validation rules in :ref:`CIS-8-MetadataEntry`.
-   * - .. _CIS-8-NotAdmin:
-
-       -7109
-     - ``NotAdmin``
-     - Sender is not the contract admin.
-   * - .. _CIS-8-UpgradeFailed:
-
-       -7110
-     - ``UpgradeFailed``
-     - ``host.upgrade`` returned an error, or the post-upgrade migration
-       invocation failed.
-
-
-.. _CIS-8-Admin:
-
-Admin and Upgradeability
-------------------------
-
-The contract supports upgradeability via Concordium's native ``host.upgrade``
-primitive under a single-account admin model.
-
-State
-^^^^^
-
-``state.admin: Option<AccountAddress>`` — set from ``InitParams.admin`` at
-deployment.
-
-upgrade
-^^^^^^^
-
-.. code-block:: rust
-
-    #[derive(Serialize, SchemaType)]
-    pub struct UpgradeParams {
-        pub new_module: ModuleReference,
-        pub migrate:    Option<(OwnedEntrypointName, OwnedParameter)>,
-    }
-
-Sender MUST equal ``state.admin``; otherwise reject with
-:ref:`CIS-8-NotAdmin`. The contract MUST call ``host.upgrade(new_module)``
-and, if ``migrate`` is supplied, invoke the named entrypoint on ``self`` in
-the new module. Emit :ref:`CIS-8-Upgraded`.
-
-transferAdmin
-^^^^^^^^^^^^^
-
-.. code-block:: rust
-
-    #[derive(Serialize, SchemaType)]
-    pub struct TransferAdminParams {
-        /// None permanently locks the contract (admin renounced).
-        pub new_admin: Option<AccountAddress>,
-    }
-
-Sender MUST equal ``state.admin``; otherwise reject with
-:ref:`CIS-8-NotAdmin`. Emit :ref:`CIS-8-AdminTransferred`.
-
-Renouncing the admin (``new_admin = None``) is irreversible.
-
-.. _CIS-8-Upgraded:
-
-Upgraded (event)
-^^^^^^^^^^^^^^^^
-
-.. code-block:: rust
-
-    pub struct UpgradedEvent {
-        pub new_module:  ModuleReference,
-        pub upgraded_at: Timestamp,
-    }
-
-.. _CIS-8-AdminTransferred:
-
-AdminTransferred (event)
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. code-block:: rust
-
-    pub struct AdminTransferredEvent {
-        pub previous:    Option<AccountAddress>,
-        pub new:         Option<AccountAddress>,
-        pub updated_at:  Timestamp,
-    }
+Administrative concerns — contract upgradeability, ownership transfer of
+the contract instance itself, and any associated reject codes — are out
+of scope for CIS-8 and left to the implementation. Implementations
+SHOULD follow whatever conventions are appropriate for their deployment
+context.
 
 
 Schema Embedding
@@ -744,12 +688,6 @@ Domain separation
     for any other context from being replayed against CIS-8. The
     ``contract_address`` and ``concordium_genesis_hash`` fields further pin
     the signature to a single instance on a single network.
-
-Admin powers
-    The admin can replace the contract code with arbitrary logic via
-    ``upgrade``. Deployers SHOULD use a multi-credential Concordium account
-    so that admin actions require multi-party authorisation at the account
-    layer. There is no upgrade timelock in this version.
 
 Replacement semantics
     The replacement rule in :ref:`CIS-8-register` allows a new account to
