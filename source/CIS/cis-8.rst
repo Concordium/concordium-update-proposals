@@ -221,10 +221,10 @@ By design only the current state needs to be stored. Historical
 transitions MUST be recoverable from emitted events.
 
 
+.. _CIS-8-CanonicalMessage:
+
 Canonical Signed Message
 ------------------------
-
-.. _CIS-8-CanonicalMessage:
 
 CIS-8 verifies that the holder of the external private key has authorised the
 binding to a specific Concordium account on a specific contract on a specific
@@ -456,7 +456,7 @@ Requirements
 - If no active registration exists for the identifier, reject with
   :ref:`CIS-8-NotRegistered`.
 - On success, replace ``registration.metadata`` in place; update
-  ``last_updated``; emit :ref:`CIS-8-UpdateMetadata`.
+  ``last_updated``; emit :ref:`CIS-8-UpdateMetadataEvent`.
 
 .. _CIS-8-revoke:
 
@@ -492,9 +492,8 @@ Requirements
 A read-only view returning the current :ref:`CIS-8-Registration` for the
 given ``ExternalKeyId``, or ``None`` if no entry exists.
 
-This entrypoint is the integration point used by :ref:`CIS-8004`
-cross-contract verification (see
-:ref:`CIS-8004-CrossContractVerification`).
+This entrypoint MAY be used by external contracts to look up the current
+registration for a given key.
 
 Parameter
 ~~~~~~~~~
@@ -538,7 +537,7 @@ specification.
      - 231
    * - :ref:`CIS-8-ExternalKeyRevoked`
      - 232
-   * - :ref:`CIS-8-UpdateMetadata`
+   * - :ref:`CIS-8-UpdateMetadataEvent`
      - 233
 
 These tag values intentionally avoid the 251..255 range reserved by
@@ -585,7 +584,7 @@ It is serialized as: 1 byte for the event tag, followed by the 32-byte
                               (owner: Byte³²)
                               (external_key: ExternalKeyId)
 
-.. _CIS-8-UpdateMetadata:
+.. _CIS-8-UpdateMetadataEvent:
 
 ``UpdateMetadata``
 ^^^^^^^^^^^^^^^^^^
@@ -612,31 +611,30 @@ The ``-7100..`` range was chosen so CIS-8 reject codes do not collide
 with other CIS standards (``-42000..`` for CIS-2 etc.) when a single
 contract implements multiple standards.
 
-.. list-table::
+.. _CIS-8-InvalidProof:
+.. _CIS-8-UnsupportedProofScheme:
+.. _CIS-8-MalformedExternalKey:
+.. _CIS-8-Unauthorized:
+.. _CIS-8-NotRegistered:
+.. _CIS-8-InvalidMetadata:
+
+.. list-table:: Reject Codes
    :header-rows: 1
 
    * - Code
      - Name
      - Meaning
-   * - .. _CIS-8-InvalidProof:
-
-       -7100
+   * - -7100
      - ``InvalidProof``
      - Signature does not verify against the reconstructed canonical message.
-   * - .. _CIS-8-UnsupportedProofScheme:
-
-       -7101
+   * - -7101
      - ``UnsupportedProofScheme``
      - ``proof.scheme`` is not in the contract's supported set.
-   * - .. _CIS-8-MalformedExternalKey:
-
-       -7102
+   * - -7102
      - ``MalformedExternalKey``
      - ``external_key`` fails the validation rules in
        :ref:`CIS-8-ExternalKeyId`.
-   * - .. _CIS-8-Unauthorized:
-
-       -7103
+   * - -7103
      - ``Unauthorized``
      - Caller is not authorised — typically: caller is a contract, or caller
        is not the active owner for ``updateMetadata`` / ``revoke``.
@@ -645,9 +643,7 @@ contract implements multiple standards.
      - Reserved; redundant re-registration MAY use this code, though the
        replacement rule in :ref:`CIS-8-register` instead handles same-owner
        re-registration as an in-place replacement.
-   * - .. _CIS-8-NotRegistered:
-
-       -7105
+   * - -7105
      - ``NotRegistered``
      - No active registration exists for the supplied identifier.
    * - -7106
@@ -656,26 +652,9 @@ contract implements multiple standards.
    * - -7107
      - ``UnsupportedKeyType``
      - ``external_key.key_type`` is not supported by this contract.
-   * - .. _CIS-8-InvalidMetadata:
-
-       -7108
+   * - -7108
      - ``InvalidMetadata``
      - ``metadata`` fails the validation rules in :ref:`CIS-8-MetadataEntry`.
-Administrative concerns — contract upgradeability, ownership transfer of
-the contract instance itself, and any associated reject codes — are out
-of scope for CIS-8 and left to the implementation. Implementations
-SHOULD follow whatever conventions are appropriate for their deployment
-context.
-
-
-Schema Embedding
-----------------
-
-A CIS-8 contract module MUST embed its Concordium schema in the compiled
-``.wasm.v1`` artifact (``cargo concordium build --schema-embed``). All
-parameter, return, error, and event types MUST derive ``SchemaType``. This
-ensures wallets and explorers can render contract interactions as structured
-JSON.
 
 
 Reference Deployments
