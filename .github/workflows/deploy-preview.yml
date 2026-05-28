@@ -10,6 +10,8 @@ jobs:
   build-and-deploy-preview:
     if: github.event.label.name == 'preview'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     container: sphinxdoc/sphinx:8.1.3
     steps:
       - name: Install 🔧
