@@ -1,0 +1,818 @@
+.. _CIS-8004:
+
+===========================
+CIS-8004: Agent Registry
+===========================
+
+.. list-table::
+   :stub-columns: 1
+
+   * - Created
+     - May 21, 2026
+   * - Draft
+     - May 25, 2026
+   * - Supported versions
+     - | Smart contract version 1 or newer
+       | (Protocol version 4 or newer)
+   * - Standard identifier
+     - ``CIS-8004``
+   * - Requires
+     - | :ref:`CIS-0<CIS-0>`
+       | :ref:`CIS-2<CIS-2>`
+
+
+Abstract
+========
+
+CIS-8004 is the Concordium implementation of `ERC-8004 Trustless Agents`_ (Identity Registry).
+It defines a smart contract interface for registering autonomous software agents as :ref:`CIS-2<CIS-2>` non-fungible tokens on the Concordium blockchain.
+
+Each agent is minted as a CIS-2 NFT and identified by an ``AgentTokenId``.
+A registration may optionally attach an external reference pointing to a CIS-8 cryptographic external-key binding.
+
+The interface defines the following:
+
+- Data structures for agent records, external references, and agent status.
+- Entrypoints for registering, updating, revoking, and querying agents.
+- Logged events for each mutating operation.
+- Standard rejection error codes.
+
+.. _ERC-8004 Trustless Agents: https://eips.ethereum.org/EIPS/eip-8004
+
+
+Specification
+=============
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in :rfc:`2119`.
+
+
+General types and serialization
+--------------------------------
+
+.. note::
+
+   Integers are encoded in little-endian unless stated otherwise.
+
+.. _CIS-8004-String:
+
+``String``
+^^^^^^^^^^
+
+A variable-length UTF-8 encoded string.
+
+It is serialized as: 2 bytes for the length (``n``) in little-endian, followed by ``n`` bytes for the UTF-8 encoding of the string::
+
+  String ::= (n: Byte²) (value: Byteⁿ)
+
+.. _CIS-8004-Bytestring:
+
+``Bytestring``
+^^^^^^^^^^^^^^
+
+A variable-length byte array.
+
+It is serialized as: 2 bytes for the length (``n``) in little-endian, followed by ``n`` bytes::
+
+  Bytestring ::= (n: Byte²) (value: Byteⁿ)
+
+.. _CIS-8004-AccountAddress:
+
+``AccountAddress``
+^^^^^^^^^^^^^^^^^^
+
+An address of a Concordium account.
+
+It is serialized as 32 bytes::
+
+  AccountAddress ::= (address: Byte³²)
+
+.. _CIS-8004-ContractAddress:
+
+``ContractAddress``
+^^^^^^^^^^^^^^^^^^^
+
+An address of a Concordium smart contract instance.
+It consists of an index and a subindex, both unsigned 64-bit integers.
+
+It is serialized as: 8 bytes for the index (``index``) followed by 8 bytes for the subindex (``subindex``), both little-endian::
+
+  ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
+
+.. _CIS-8004-BlockHash:
+
+``BlockHash``
+^^^^^^^^^^^^^
+
+A 32-byte block hash identifying a Concordium block.
+Used in the :ref:`setAgentWallet signed message<CIS-8004-setAgentWallet-signing>` to prevent cross-network replay.
+
+It is serialized as 32 bytes::
+
+  BlockHash ::= (hash: Byte³²)
+
+.. _CIS-8004-Timestamp:
+
+``Timestamp``
+^^^^^^^^^^^^^
+
+A point in time given in milliseconds since Unix epoch, represented as an unsigned 64-bit integer.
+
+It is serialized as 8 bytes in little-endian::
+
+  Timestamp ::= (milliseconds: Byte⁸)
+
+.. _CIS-8004-AgentTokenId:
+
+``AgentTokenId``
+^^^^^^^^^^^^^^^^
+
+A token identifier for an agent NFT, using the CIS-2 ``TokenIdU64`` wire form.
+
+It is serialized as 1 byte with value 8 (the length prefix), followed by 8 bytes for the token id in little-endian::
+
+  AgentTokenId ::= (8: Byte) (id: Byte⁸)
+
+Schema-driven tooling renders an ``AgentTokenId`` as a 16-character lowercase hex string
+(e.g. ``"0a00000000000000"`` for token id 10).
+
+.. _CIS-8004-ExternalKeyId:
+
+``ExternalKeyId``
+^^^^^^^^^^^^^^^^^
+
+As defined in :ref:`CIS-8<CIS-8>`.
+
+.. _CIS-8004-ExternalRefKind:
+
+``ExternalRefKind``
+^^^^^^^^^^^^^^^^^^^
+
+Discriminates between supported external reference types.
+Currently the only defined kind is ``Cis8``, which carries a :ref:`CIS-8004-ExternalKeyId`.
+Additional kinds may be defined in future revisions of this standard.
+
+It is serialized as 1 byte with value 0 for ``Cis8``, followed by the :ref:`CIS-8004-ExternalKeyId`::
+
+  ExternalRefKind ::= (0: Byte) (key: ExternalKeyId) // Cis8
+
+.. _CIS-8004-ExternalReference:
+
+``ExternalReference``
+^^^^^^^^^^^^^^^^^^^^^
+
+A reference to an active entry in a CIS-8 external key registry.
+The ``contract_address`` field identifies the registry contract instance.
+The ``kind`` field carries the external reference type and identifier.
+
+It is serialized as a :ref:`CIS-8004-ContractAddress` (``contract_address``) followed by an
+:ref:`CIS-8004-ExternalRefKind` (``kind``)::
+
+  ExternalReference ::= (contract_address: ContractAddress) (kind: ExternalRefKind)
+
+.. _CIS-8004-AgentStatus:
+
+``AgentStatus``
+^^^^^^^^^^^^^^^
+
+The lifecycle status of a registered agent.
+
+It is serialized as 1 byte with value 0 for ``Active`` and 1 for ``Revoked``::
+
+  AgentStatus ::= (0: Byte) // Active
+               | (1: Byte) // Revoked
+
+.. _CIS-8004-MetadataEntry:
+
+``MetadataEntry``
+^^^^^^^^^^^^^^^^^
+
+A key-value pair for on-chain metadata associated with an agent.
+The key is a string and the value is an arbitrary byte array.
+
+It is serialized as a :ref:`CIS-8004-String` (``key``) followed by a :ref:`CIS-8004-Bytestring` (``value``)::
+
+  MetadataEntry ::= (key: String) (value: Bytestring)
+
+.. _CIS-8004-AgentView:
+
+``AgentView``
+^^^^^^^^^^^^^
+
+The full observable record for a registered agent, as returned by
+:ref:`agentOf<CIS-8004-functions-agentOf>` and
+:ref:`agentByExternalReference<CIS-8004-functions-agentByExternalReference>`.
+
+The ``owner_account`` is derived from the CIS-2 ownership state and is not stored in the agent record itself.
+
+Optional fields are each prefixed by 1 byte: value 0 means absent (no further bytes follow for that field),
+value 1 means present (followed by the field value).
+
+The following helper types are used::
+
+  OptionalString    ::= (0: Byte) | (1: Byte) (s: String)
+  OptionalHash256   ::= (0: Byte) | (1: Byte) (h: Byte³²)
+  OptionalExtRef    ::= (0: Byte) | (1: Byte) (r: ExternalReference)
+  OptionalAddress   ::= (0: Byte) | (1: Byte) (a: AccountAddress)
+  OptionalTimestamp ::= (0: Byte) | (1: Byte) (t: Timestamp)
+
+It is serialized as::
+
+  AgentView ::= (token_id: AgentTokenId) (owner_account: AccountAddress)
+                (agent_uri: OptionalString) (metadata_hash: OptionalHash256)
+                (external_reference: OptionalExtRef) (agent_wallet: OptionalAddress)
+                (status: AgentStatus) (registered_at: Timestamp)
+                (revoked_at: OptionalTimestamp) (revocation_reason: OptionalString)
+
+
+.. _CIS-8004-setAgentWallet-signing:
+
+``setAgentWallet`` signed message
+----------------------------------
+
+The ``setAgentWallet`` entrypoint requires the new wallet account to prove control by providing a
+Concordium account signature over a canonical signed message.
+
+The message is a fixed 123-byte sequence constructed as follows.
+The contract MUST derive ``contract_address`` from its own address and ``genesis_hash`` from the chain
+metadata; neither value may be supplied as a parameter.
+
+It is serialized as the 26 raw ASCII bytes of the domain separation tag ``CIS-8004/v1/setAgentWallet``,
+followed by an :ref:`CIS-8004-AgentTokenId` (``token_id``),
+an :ref:`CIS-8004-AccountAddress` (``new_wallet``),
+a :ref:`CIS-8004-Timestamp` (``deadline``),
+a :ref:`CIS-8004-ContractAddress` (``contract_address``),
+and a :ref:`CIS-8004-BlockHash` (``genesis_hash``)::
+
+  SetAgentWalletSigningData ::= ("CIS-8004/v1/setAgentWallet": Byte²⁶)
+                                 (token_id: AgentTokenId)
+                                 (new_wallet: AccountAddress)
+                                 (deadline: Timestamp)
+                                 (contract_address: ContractAddress)
+                                 (genesis_hash: BlockHash)
+
+
+.. _CIS-8004-cross-contract-verification:
+
+Cross-contract verification
+----------------------------
+
+When :ref:`register<CIS-8004-functions-register>` or
+:ref:`setExternalReference<CIS-8004-functions-setExternalReference>` is called with a present
+``external_reference``, the contract MUST perform the following steps.
+
+1. **Validate the registry address.** The ``external_reference.contract_address`` MUST match
+   the configured CIS-8 dependency address.
+   A mismatch MUST cause the contract to reject with ``InvalidExternalReference``.
+
+2. **Verify ownership.** Call ``ownerOfKey`` on the CIS-8 registry with the supplied
+   :ref:`CIS-8004-ExternalKeyId`.
+   The response MUST be a present ``Registration`` with ``status = Active`` and
+   ``owner`` equal to the transaction sender.
+   Any other response MUST cause the contract to reject with ``InvalidExternalReference``.
+
+3. **Check uniqueness.** No other active agent MUST already hold the same external reference.
+   The contract MUST reject with ``ExternalReferenceTaken`` if a conflict is found.
+
+
+Logged events
+-------------
+
+CIS-8004-specific events use tags 240–245.
+A custom event SHOULD NOT have a first byte colliding with any of the events defined by this specification.
+CIS-2 inherited events are emitted directly as specified in :ref:`CIS-2<CIS-2>`.
+
+.. _CIS-8004-events-Registered:
+
+``Registered``
+^^^^^^^^^^^^^^
+
+A ``Registered`` event MUST be logged whenever a new agent is successfully registered.
+
+It is serialized as: first a byte with the value of 240, followed by the
+:ref:`CIS-8004-AgentTokenId` (``token_id``), the :ref:`CIS-8004-AccountAddress` (``owner``),
+an ``OptionalString`` (``agent_uri``), and an ``OptionalExtRef`` (``external_reference``)::
+
+  Registered ::= (240: Byte) (token_id: AgentTokenId) (owner: AccountAddress)
+                 (agent_uri: OptionalString) (external_reference: OptionalExtRef)
+
+.. _CIS-8004-events-URIUpdated:
+
+``URIUpdated``
+^^^^^^^^^^^^^^
+
+A ``URIUpdated`` event MUST be logged whenever the agent URI of an existing agent is updated.
+
+It is serialized as: first a byte with the value of 241, followed by the
+:ref:`CIS-8004-AgentTokenId` (``token_id``) and an ``OptionalString`` (``agent_uri``)::
+
+  URIUpdated ::= (241: Byte) (token_id: AgentTokenId) (agent_uri: OptionalString)
+
+.. _CIS-8004-events-ExternalReferenceSet:
+
+``ExternalReferenceSet``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+An ``ExternalReferenceSet`` event MUST be logged whenever the external reference of an agent is
+set, updated, or cleared.
+This includes both explicit :ref:`setExternalReference<CIS-8004-functions-setExternalReference>`
+calls and transfer-induced clears.
+
+It is serialized as: first a byte with the value of 242, followed by the
+:ref:`CIS-8004-AgentTokenId` (``token_id``) and an ``OptionalExtRef`` (``external_reference``)::
+
+  ExternalReferenceSet ::= (242: Byte) (token_id: AgentTokenId)
+                            (external_reference: OptionalExtRef)
+
+.. _CIS-8004-events-MetadataSet:
+
+``MetadataSet``
+^^^^^^^^^^^^^^^
+
+A ``MetadataSet`` event MUST be logged whenever an on-chain metadata value is set or updated.
+
+It is serialized as: first a byte with the value of 243, followed by the
+:ref:`CIS-8004-AgentTokenId` (``token_id``), a :ref:`CIS-8004-String` (``key``),
+and a :ref:`CIS-8004-Bytestring` (``value``)::
+
+  MetadataSet ::= (243: Byte) (token_id: AgentTokenId) (key: String) (value: Bytestring)
+
+.. _CIS-8004-events-Revoked:
+
+``Revoked``
+^^^^^^^^^^^
+
+A ``Revoked`` event MUST be logged whenever an agent is revoked.
+
+It is serialized as: first a byte with the value of 244, followed by the
+:ref:`CIS-8004-AgentTokenId` (``token_id``), the :ref:`CIS-8004-AccountAddress` (``owner``),
+and an ``OptionalString`` (``reason``)::
+
+  Revoked ::= (244: Byte) (token_id: AgentTokenId) (owner: AccountAddress)
+              (reason: OptionalString)
+
+.. _CIS-8004-events-AgentWalletSet:
+
+``AgentWalletSet``
+^^^^^^^^^^^^^^^^^^
+
+An ``AgentWalletSet`` event MUST be logged whenever the agent wallet is set, updated, or cleared.
+This includes both explicit :ref:`setAgentWallet<CIS-8004-functions-setAgentWallet>` calls and
+transfer-induced resets.
+
+It is serialized as: first a byte with the value of 245, followed by the
+:ref:`CIS-8004-AgentTokenId` (``token_id``) and an ``OptionalAddress`` (``new_wallet``)::
+
+  AgentWalletSet ::= (245: Byte) (token_id: AgentTokenId) (new_wallet: OptionalAddress)
+
+
+.. _CIS-8004-functions:
+
+Contract functions
+------------------
+
+A smart contract implementing this standard MUST export the following functions:
+
+- :ref:`CIS-8004-functions-supports`
+- :ref:`CIS-8004-functions-register`
+- :ref:`CIS-8004-functions-setAgentURI`
+- :ref:`CIS-8004-functions-setExternalReference`
+- :ref:`CIS-8004-functions-setAgentWallet`
+- :ref:`CIS-8004-functions-getAgentWallet`
+- :ref:`CIS-8004-functions-setMetadata`
+- :ref:`CIS-8004-functions-getMetadata`
+- :ref:`CIS-8004-functions-agentOf`
+- :ref:`CIS-8004-functions-agentByExternalReference`
+- :ref:`CIS-8004-functions-isActive`
+- :ref:`CIS-8004-functions-revoke`
+
+A contract implementing this standard MUST also export the complete :ref:`CIS-2<CIS-2>` interface
+(``transfer``, ``balanceOf``, ``operatorOf``, ``updateOperator``, ``tokenMetadata``).
+
+.. _CIS-8004-functions-supports:
+
+``supports``
+^^^^^^^^^^^^
+
+As specified in :ref:`CIS-0<CIS-0>`.
+
+.. _CIS-8004-functions-register:
+
+``register``
+^^^^^^^^^^^^
+
+Mint a new agent NFT and optionally attach a URI, a metadata hash, an external reference,
+and initial on-chain metadata.
+The sender MUST be an account; contract callers MUST be rejected with ``Unauthorized``.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an ``OptionalString`` (``agent_uri``), an ``OptionalHash256``
+(``metadata_hash``), an ``OptionalExtRef`` (``external_reference``), a 2-byte little-endian
+count (``m``) of initial metadata entries, and then ``m`` :ref:`CIS-8004-MetadataEntry`
+records (``initial_metadata``)::
+
+  RegisterParam ::= (agent_uri: OptionalString) (metadata_hash: OptionalHash256)
+                    (external_reference: OptionalExtRef)
+                    (m: Byte²) (initial_metadata: MetadataEntryᵐ)
+
+Requirements
+~~~~~~~~~~~~
+
+- The ``agent_uri``, if present, MUST NOT exceed 4096 bytes.
+- If ``external_reference`` is present, the contract MUST perform
+  :ref:`cross-contract verification<CIS-8004-cross-contract-verification>`.
+- The ``initial_metadata`` MUST NOT contain the reserved key ``agentWallet``;
+  the contract MUST reject with ``ReservedKey`` if it does.
+- On success the contract MUST assign the next available ``AgentTokenId``, mint a CIS-2 NFT
+  to the sender, set ``agent_wallet = Some(sender)``, and emit :ref:`Registered<CIS-8004-events-Registered>`.
+
+.. _CIS-8004-functions-setAgentURI:
+
+``setAgentURI``
+^^^^^^^^^^^^^^^
+
+Update the agent URI for an existing agent.
+The caller MUST be the current CIS-2 owner of the token.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an :ref:`CIS-8004-AgentTokenId` (``token_id``) and an
+``OptionalString`` (``agent_uri``)::
+
+  SetAgentURIParam ::= (token_id: AgentTokenId) (agent_uri: OptionalString)
+
+Requirements
+~~~~~~~~~~~~
+
+- The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
+- The contract MUST reject with ``AgentRevoked`` if the agent's status is ``Revoked``.
+- The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
+- The ``agent_uri``, if present, MUST NOT exceed 4096 bytes.
+- On success the contract MUST emit :ref:`URIUpdated<CIS-8004-events-URIUpdated>`.
+
+.. _CIS-8004-functions-setExternalReference:
+
+``setExternalReference``
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Set or update the external reference for an existing agent.
+The caller MUST be the current CIS-2 owner of the token.
+Supplying an absent ``external_reference`` clears any existing reference.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an :ref:`CIS-8004-AgentTokenId` (``token_id``) and an
+``OptionalExtRef`` (``external_reference``)::
+
+  SetExternalReferenceParam ::= (token_id: AgentTokenId)
+                                 (external_reference: OptionalExtRef)
+
+Requirements
+~~~~~~~~~~~~
+
+- The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
+- The contract MUST reject with ``AgentRevoked`` if the agent's status is ``Revoked``.
+- The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
+- If ``external_reference`` is present, the contract MUST perform
+  :ref:`cross-contract verification<CIS-8004-cross-contract-verification>`.
+- On success the contract MUST emit
+  :ref:`ExternalReferenceSet<CIS-8004-events-ExternalReferenceSet>`.
+
+.. _CIS-8004-functions-setAgentWallet:
+
+``setAgentWallet``
+^^^^^^^^^^^^^^^^^^
+
+Change the payment address associated with an agent.
+The caller MUST be the current CIS-2 owner of the token.
+The new wallet MUST prove control by providing a Concordium account signature over the
+:ref:`setAgentWallet signed message<CIS-8004-setAgentWallet-signing>`.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an :ref:`CIS-8004-AgentTokenId` (``token_id``), an
+:ref:`CIS-8004-AccountAddress` (``new_wallet``), a :ref:`CIS-8004-Timestamp` (``deadline``),
+and the serialized Concordium account signature of ``new_wallet`` over the canonical signed
+message (``signature``)::
+
+  SetAgentWalletParam ::= (token_id: AgentTokenId) (new_wallet: AccountAddress)
+                           (deadline: Timestamp) (signature: AccountSignature)
+
+where ``AccountSignature`` is the standard Concordium account signature serialization.
+
+Requirements
+~~~~~~~~~~~~
+
+- The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
+- The contract MUST reject with ``AgentRevoked`` if the agent's status is ``Revoked``.
+- The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
+- The contract MUST reject with ``AgentWalletDeadlinePassed`` if ``deadline`` is in the past.
+- The contract MUST verify the signature against the
+  :ref:`setAgentWallet signed message<CIS-8004-setAgentWallet-signing>` using
+  ``new_wallet``'s account credentials.
+  The contract MUST reject with ``InvalidAgentWalletProof`` if verification fails.
+- On success the contract MUST emit :ref:`AgentWalletSet<CIS-8004-events-AgentWalletSet>`.
+
+.. _CIS-8004-functions-getAgentWallet:
+
+``getAgentWallet``
+^^^^^^^^^^^^^^^^^^
+
+Return the current payment address associated with an agent.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of the :ref:`CIS-8004-AgentTokenId` (``token_id``) to query::
+
+  GetAgentWalletParam ::= (token_id: AgentTokenId)
+
+Response
+~~~~~~~~
+
+The response is an ``OptionalAddress``::
+
+  GetAgentWalletResponse ::= (0: Byte)                         // not set
+                            | (1: Byte) (wallet: AccountAddress) // current wallet
+
+.. _CIS-8004-functions-setMetadata:
+
+``setMetadata``
+^^^^^^^^^^^^^^^
+
+Set an on-chain metadata value for an existing agent.
+The caller MUST be the current CIS-2 owner of the token.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an :ref:`CIS-8004-AgentTokenId` (``token_id``), a
+:ref:`CIS-8004-String` (``key``), and a :ref:`CIS-8004-Bytestring` (``value``)::
+
+  SetMetadataParam ::= (token_id: AgentTokenId) (key: String) (value: Bytestring)
+
+Requirements
+~~~~~~~~~~~~
+
+- The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
+- The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
+- The contract MUST reject with ``ReservedKey`` if ``key`` is ``agentWallet``.
+- If ``value`` violates implementation-defined limits the contract MUST reject with ``InvalidMetadata``.
+- On success the contract MUST emit :ref:`MetadataSet<CIS-8004-events-MetadataSet>`.
+
+.. _CIS-8004-functions-getMetadata:
+
+``getMetadata``
+^^^^^^^^^^^^^^^
+
+Return the on-chain metadata value for a given agent and key.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an :ref:`CIS-8004-AgentTokenId` (``token_id``) and a
+:ref:`CIS-8004-String` (``key``)::
+
+  GetMetadataParam ::= (token_id: AgentTokenId) (key: String)
+
+Response
+~~~~~~~~
+
+The response is an ``OptionalBytestring``::
+
+  OptionalBytestring    ::= (0: Byte) | (1: Byte) (v: Bytestring)
+
+  GetMetadataResponse   ::= (0: Byte)                     // key not set
+                           | (1: Byte) (value: Bytestring) // current value
+
+.. _CIS-8004-functions-agentOf:
+
+``agentOf``
+^^^^^^^^^^^
+
+Return the full agent record for a given token id.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of the :ref:`CIS-8004-AgentTokenId` (``token_id``) to query::
+
+  AgentOfParam ::= (token_id: AgentTokenId)
+
+Response
+~~~~~~~~
+
+Returns the :ref:`CIS-8004-AgentView` for the agent.
+The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
+
+.. _CIS-8004-functions-agentByExternalReference:
+
+``agentByExternalReference``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Return the agent record that holds a given external reference.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of the :ref:`CIS-8004-ExternalReference` (``external_reference``) to
+resolve::
+
+  AgentByExternalReferenceParam ::= (external_reference: ExternalReference)
+
+Response
+~~~~~~~~
+
+Returns the :ref:`CIS-8004-AgentView` for the matching agent.
+The contract MUST reject with ``AgentNotFound`` if no active agent holds the supplied
+external reference.
+
+.. _CIS-8004-functions-isActive:
+
+``isActive``
+^^^^^^^^^^^^
+
+Return whether an agent exists and has ``Active`` status.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of the :ref:`CIS-8004-AgentTokenId` (``token_id``) to query::
+
+  IsActiveParam ::= (token_id: AgentTokenId)
+
+Response
+~~~~~~~~
+
+The response is 1 byte with value 0 for false and 1 for true::
+
+  IsActiveResponse ::= (0: Byte) // false
+                     | (1: Byte) // true
+
+.. _CIS-8004-functions-revoke:
+
+``revoke``
+^^^^^^^^^^
+
+Mark an agent's status as ``Revoked``.
+The caller MUST be the current CIS-2 owner of the token.
+
+Parameter
+~~~~~~~~~
+
+The parameter consists of an :ref:`CIS-8004-AgentTokenId` (``token_id``) and an
+``OptionalString`` (``reason``)::
+
+  RevokeParam ::= (token_id: AgentTokenId) (reason: OptionalString)
+
+Requirements
+~~~~~~~~~~~~
+
+- The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
+- The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
+- The contract MUST reject with ``AgentAlreadyRevoked`` if the agent's status is already
+  ``Revoked``.
+- On success the contract MUST set the agent's status to ``Revoked``, clear the
+  ``external_reference`` if present, and emit :ref:`Revoked<CIS-8004-events-Revoked>`.
+
+
+Transfer semantics
+------------------
+
+A CIS-2 transfer of a CIS-8004 agent NFT MUST perform the following additional steps atomically
+with the transfer:
+
+1. **Clear the external reference.** The agent's ``external_reference`` MUST be set to absent.
+   The contract MUST emit :ref:`ExternalReferenceSet<CIS-8004-events-ExternalReferenceSet>` with
+   ``external_reference`` absent.
+
+2. **Reset the agent wallet.** The agent's ``agent_wallet`` MUST be set to absent.
+   The contract MUST emit :ref:`AgentWalletSet<CIS-8004-events-AgentWalletSet>` with
+   ``new_wallet`` absent.
+
+All other fields of the agent record (``agent_uri``, ``metadata_hash``, ``on_chain_metadata``,
+``status``, ``registered_at``) are preserved across transfers.
+
+The new owner MUST call :ref:`setAgentWallet<CIS-8004-functions-setAgentWallet>` to re-establish
+a payment address.
+
+
+.. _CIS-8004-errors:
+
+Rejection errors
+----------------
+
+A smart contract following this specification MUST use the following error codes to reject under
+the described conditions:
+
+.. list-table::
+  :header-rows: 1
+
+  * - Name
+    - Error code
+    - Description
+  * - ``AgentNotFound``
+    - -7200
+    - No agent exists for the supplied ``token_id`` or ``external_reference``.
+  * - ``Unauthorized``
+    - -7201
+    - The sender is not authorized for the operation.
+  * - ``AgentRevoked``
+    - -7202
+    - The agent is ``Revoked``; the operation requires ``Active`` status.
+  * - ``ExternalReferenceTaken``
+    - -7204
+    - An active agent already holds the supplied ``external_reference``.
+  * - ``InvalidExternalReference``
+    - -7206
+    - The supplied ``external_reference`` does not resolve to an active CIS-8 entry owned by the
+      sender, or the registry address does not match the configured dependency.
+  * - ``InvalidMetadata``
+    - -7208
+    - The metadata value violates implementation-defined limits or encoding requirements.
+  * - ``AgentAlreadyRevoked``
+    - -7209
+    - ``revoke`` was called on an agent that is already ``Revoked``.
+  * - ``ReservedKey``
+    - -7211
+    - ``setMetadata`` was called with the reserved key ``agentWallet``.
+  * - ``InvalidAgentWalletProof``
+    - -7212
+    - The signature in ``setAgentWallet`` does not verify against ``new_wallet``'s account
+      credentials.
+  * - ``AgentWalletDeadlinePassed``
+    - -7213
+    - The ``deadline`` in ``setAgentWallet`` has passed.
+
+Rejecting using an error code from the table above MUST only occur in a situation as described
+in the corresponding error description.
+
+The smart contract implementing this specification MAY introduce custom error codes other than
+the ones specified in the table above.
+
+
+Departures from ERC-8004
+=========================
+
+CIS-8004 departs from `ERC-8004 Trustless Agents`_ in the following ways:
+
+1. **NFT base standard.** ERC-721 is replaced by :ref:`CIS-2<CIS-2>`.
+2. **Signature verification.** EIP-712 / ERC-1271 is replaced by Concordium ed25519 account
+   signatures verified via the host ``check_account_signature`` function.
+3. **Identifier convention.** CAIP-19 canonical form is used:
+   ``ccd:<network>/cis-2:<token_address>``.
+4. **External reference.** A new on-chain ``external_reference`` field links the agent to a
+   CIS-8 cryptographic external-key binding.
+5. **Receive hook.** The CIS-2 receive hook replaces ERC-721 ``safeTransferFrom`` and
+   ``onERC721Received``.
+6. **Native revocation.** A dedicated ``revoke`` entrypoint is provided.
+7. **ID-backed accountability.** Owner identity is backed by the Concordium protocol invariant
+   that accounts are associated with verified real-world identities.
+8. **Reputation and Validation Registries.** These are out of scope.
+
+
+CAIP-19 Resolution
+==================
+
+An agent NFT is identified in CAIP-19 notation as::
+
+  ccd:<network>/cis-2:<token_address>
+
+where ``token_address`` is the Base58Check encoding of: version byte ``0x02``, followed by the
+ULEB128 encoding of the contract index, the ULEB128 encoding of the contract subindex, and the
+8 bytes of the ``AgentTokenId`` payload (the token id without its length prefix).
+
+
+Registration File Schema
+========================
+
+The off-chain JSON document referenced by ``agent_uri`` MUST conform to the ERC-8004 v2
+registration type with the following CIS-8004 additions and constraints.
+
+When an ``externalReference`` is present, the ``kind.variant`` field MUST be ``"Cis8"`` and
+the ``kind.payload`` MUST be a CIS-8 ``ExternalKeyId`` object.
+Support for additional reference kinds may be added in future revisions of this standard.
+
+The ``agent_uri`` length limit is 4096 bytes to accommodate small data: URIs.
+
+.. code-block:: json
+
+   {
+     "type": "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
+     "name": "<agent display name>",
+     "externalReference": {
+       "contract_address": "<CIS-8 contract address>",
+       "kind": {
+         "variant": "Cis8",
+         "payload": { }
+       }
+     },
+     "supportedTrust": [
+       "concordium-id-backed",
+       "cis8-ownership-proof"
+     ]
+   }

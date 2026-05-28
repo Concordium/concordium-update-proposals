@@ -29,9 +29,5 @@ Concordium Interoperability Specifications
    CIS/cis-6
    CIS/cis-7
    CIS/cis-8
-<<<<<<< HEAD
    CIS/cis-8004
-=======
->>>>>>> b3d0078 (Revamp CIS-8)
    ID/concordium-did.rst
-

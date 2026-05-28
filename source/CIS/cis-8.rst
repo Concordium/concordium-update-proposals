@@ -193,17 +193,6 @@ It is serialized as an :ref:`CIS-8-AccountAddress` (``owner``), an :ref:`CIS-8-E
                    (last_updated: Timestamp)
 
 
-<<<<<<< HEAD
-.. _CIS-8-CanonicalMessage:
-
-Canonical Signed Message
-------------------------
-
-CIS-8 verifies that the holder of the external private key has authorised the
-binding to a specific Concordium account on a specific contract on a specific
-network. The contract reconstructs the canonical message; it MUST NEVER accept
-the message bytes as a parameter.
-=======
 .. _CIS-8-CanonicalSignedMessage:
 
 Canonical signed message
@@ -214,7 +203,6 @@ The canonical signed message is the message that MUST be signed with the externa
 The message MUST NOT include a nonce or expiry timestamp.
 Replay protection is provided by the Concordium transaction itself, which is bound to the sender account, a sequential nonce, and an expiry time at the protocol level.
 Cross-contract and cross-network replay is prevented by the inclusion of the ``contract_address`` and ``concordium_genesis_hash`` fields.
->>>>>>> b3d0078 (Revamp CIS-8)
 
 The message bytes MUST be prefixed with the 18-byte ASCII domain separation tag ``CIS-8/v1/canonical``.
 
@@ -250,153 +238,7 @@ A contract MAY support additional proof schemes beyond those listed here.
 
 .. _CIS-8-proof-solana-ed25519:
 
-<<<<<<< HEAD
-1. Build the personal-sign wrapper:
-   ``prefixed = b"\x19Ethereum Signed Message:\n" + ascii(len(message)) + message``
-2. Compute ``digest = keccak256(prefixed)``.
-3. Recover the secp256k1 public key from ``signature`` and ``digest``.
-4. Compare the recovered key against ``external_key.public_key``. If
-   ``key_type = "secp256k1-compressed"``, compress the recovered key before
-   comparison.
-5. Reject with :ref:`CIS-8-InvalidProof` on mismatch.
-
-.. _CIS-8-Scheme-SolanaEd25519:
-
-solana-ed25519
-^^^^^^^^^^^^^^
-
-| Algorithm: Ed25519
-| Public key encoding: ``ed25519`` (32 bytes)
-| Signature format: 64 bytes ``R || S``
-
-Verification:
-
-1. Use ``message`` directly as the signed payload (no additional wrapping).
-2. Verify the Ed25519 signature against ``external_key.public_key``.
-3. Reject with :ref:`CIS-8-InvalidProof` on failure.
-
-.. _CIS-8-Scheme-CosmosSecp256k1:
-
-cosmos-secp256k1
-^^^^^^^^^^^^^^^^
-
-For Cosmos-SDK chains including Fetch.ai accounts.
-
-| Algorithm: ECDSA over secp256k1
-| Hash: SHA-256
-| Public key encoding: ``secp256k1-compressed`` (33 bytes)
-| Signature format: 64 bytes ``r || s`` (no recovery byte)
-
-Verification:
-
-1. Wrap ``message`` in the `ADR-036 off-chain signing envelope
-   <https://github.com/cosmos/cosmos-sdk/blob/main/docs/architecture/adr-036-arbitrary-signature.md>`_.
-   The exact envelope shape MUST be fixed by the deploying implementation
-   and documented in a contract-instance README; off-chain signers and the
-   on-chain verifier MUST agree byte-for-byte.
-2. Compute ``digest = sha256(envelope)``.
-3. Verify the ECDSA signature against ``digest`` using
-   ``external_key.public_key``.
-4. Reject with :ref:`CIS-8-InvalidProof` on failure.
-
-.. note::
-
-   This standard does not mandate the ADR-036 envelope bytes; it requires
-   only that the deployed implementation pin a choice and document it.
-   Implementations that need cross-implementation interoperability SHOULD
-   coordinate on a single canonical envelope. See ADR-036_ for the
-   normative envelope shape.
-
-.. _ADR-036: https://github.com/cosmos/cosmos-sdk/blob/main/docs/architecture/adr-036-arbitrary-signature.md
-
-.. _CIS-8-Scheme-FetchAiEd25519:
-
-fetch-ai-ed25519
-^^^^^^^^^^^^^^^^
-
-For Fetch.ai uagent framework identities (distinct from Cosmos account keys).
-
-| Algorithm: Ed25519
-| Public key encoding: ``ed25519`` (32 bytes)
-| Signature format: 64 bytes
-
-Verification: identical to :ref:`CIS-8-Scheme-SolanaEd25519`.
-
-.. note::
-
-   uagent addresses are derived as ``agent1`` + bech32(public_key). The
-   bech32 form is informational; the contract verifies against the raw
-   public key bytes only.
-
-
-Contract functions
-------------------
-
-A smart contract implementing CIS-8 MUST export the following functions:
-:ref:`CIS-8-registerExternalKey`, :ref:`CIS-8-updateMetadata`, :ref:`CIS-8-revoke`,
-:ref:`CIS-8-ownerOfKey`, and the :ref:`CIS-0` :ref:`CIS-8-supports`
-standard-detection function.
-
-.. _CIS-8-registerExternalKey:
-
-``registerExternalKey``
-^^^^^^^^^^^^^^^^^^^^^^^
-
-Register a new active owner for an external key, proving control via a
-cryptographic signature over the :ref:`CIS-8-CanonicalMessage`.
-
-.. _CIS-8-RegisterExternalKeyParameter:
-
-Parameter
-~~~~~~~~~
-
-A serialised :ref:`CIS-8-ExternalKeyId` (``external_key``), followed by
-a serialised :ref:`CIS-8-Proof` (``proof``), followed by 4 bytes for the
-number of metadata entries (``n_m``) and ``n_m`` serialised
-:ref:`CIS-8-MetadataEntry`\ s (``metadata``)::
-
-  RegisterExternalKeyParameter ::= (external_key: ExternalKeyId)
-                        (proof: Proof)
-                        (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
-
-Requirements
-~~~~~~~~~~~~
-
-- The transaction sender MUST be an account (not a contract). Contract
-  callers MUST be rejected with :ref:`CIS-8-Unauthorized`.
-- The ``concordium_account`` field of the reconstructed
-  :ref:`CIS-8-CanonicalMessage` is always equal to ``ctx.sender()``.
-- The contract MUST validate ``external_key`` per
-  :ref:`CIS-8-ExternalKeyId` (length limits, ``public_key`` size
-  matching ``key_type``).
-- The contract MUST reject any ``proof.scheme`` not in the supported
-  set with :ref:`CIS-8-UnsupportedProofScheme`.
-- The contract MUST validate ``metadata`` per
-  :ref:`CIS-8-MetadataEntry`.
-- The contract MUST reconstruct the :ref:`CIS-8-CanonicalMessage` and
-  verify the proof per the scheme-specific verification under
-  :ref:`CIS-8-ProofVerification`; reject with :ref:`CIS-8-InvalidProof`
-  on failure.
-- The contract MUST then apply the replacement rule:
-
-  a. If no existing registration for the ``ExternalKeyId``: insert a
-     new ``Active`` ``Registration`` and emit
-     :ref:`CIS-8-ExternalKeyRegistered`.
-  b. If an existing ``Active`` registration is owned by the sender:
-     replace it in place (same owner re-registering) and emit
-     :ref:`CIS-8-ExternalKeyRegistered`.
-  c. If an existing ``Active`` registration is owned by a different
-     account: emit :ref:`CIS-8-ExternalKeyRevoked` (for the previous
-     owner) first, then replace the registration and emit
-     :ref:`CIS-8-ExternalKeyRegistered` (for the new owner). Events
-     MUST be emitted in this order.
-
-.. _CIS-8-updateMetadata:
-
-``updateMetadata``
-=======
 ``solana-ed25519``
->>>>>>> b3d0078 (Revamp CIS-8)
 ^^^^^^^^^^^^^^^^^^
 
 - **Algorithm**: Ed25519.
@@ -422,81 +264,10 @@ Requirements
 ``fetch-ai-ed25519``
 ^^^^^^^^^^^^^^^^^^^^
 
-<<<<<<< HEAD
-- The sender MUST be the active owner of the resolved registration;
-  otherwise reject with :ref:`CIS-8-Unauthorized`.
-- If no active registration exists for the identifier, reject with
-  :ref:`CIS-8-NotRegistered`.
-- On success, replace ``registration.metadata`` in place; update
-  ``last_updated``; emit :ref:`CIS-8-UpdateMetadataEvent`.
-
-.. _CIS-8-revoke:
-
-``revoke``
-^^^^^^^^^^
-
-Revoke the caller's active registration of an external key.
-
-.. _CIS-8-RevokeParameter:
-
-Parameter
-~~~~~~~~~
-
-A serialised :ref:`CIS-8-ExternalKeyId` (``identifier``)::
-
-  RevokeParameter ::= (identifier: ExternalKeyId)
-
-Requirements
-~~~~~~~~~~~~
-
-- The sender MUST be the active owner; otherwise reject with
-  :ref:`CIS-8-Unauthorized`.
-- If no active registration exists for the identifier, reject with
-  :ref:`CIS-8-NotRegistered`.
-- On success, set ``status = Revoked``; update ``last_updated``; emit
-  :ref:`CIS-8-ExternalKeyRevoked`.
-
-.. _CIS-8-ownerOfKey:
-
-``ownerOfKey``
-^^^^^^^^^^^^^^
-
-A read-only view returning the current :ref:`CIS-8-Registration` for the
-given ``ExternalKeyId``, or ``None`` if no entry exists.
-
-This entrypoint MAY be used by external contracts to look up the current
-registration for a given key.
-
-Parameter
-~~~~~~~~~
-
-A serialised :ref:`CIS-8-ExternalKeyId` (``external_key``)::
-
-  OwnerOfKeyParameter ::= (external_key: ExternalKeyId)
-
-Response
-~~~~~~~~
-
-A single byte discriminant — ``0`` for the absent case (no further
-bytes), or ``1`` followed by a serialised :ref:`CIS-8-Registration`::
-
-  OwnerQueryResult ::= (0: Byte)
-                     | (1: Byte) (registration: Registration)
-
-.. _CIS-8-supports:
-
-``supports``
-^^^^^^^^^^^^
-
-A CIS-8 contract MUST implement :ref:`CIS-0` standard detection and MUST
-return ``Support`` for both ``CIS-0`` and ``CIS-8``.
-=======
 - **Algorithm**: Ed25519.
 - **Public key encoding**: 32 bytes (Fetch.ai uagent ed25519 public key).
 - **Signature**: 64 bytes (R || S).
 - **Message construction**: Identical to :ref:`solana-ed25519<CIS-8-proof-solana-ed25519>`.
->>>>>>> b3d0078 (Revamp CIS-8)
-
 
 Logged events
 -------------
@@ -507,24 +278,7 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 If account B replaces account A as the active owner of an external key, the contract MUST emit
 ``ExternalKeyRevoked`` for account A before emitting ``ExternalKeyRegistered`` for account B.
 
-<<<<<<< HEAD
-   * - Event
-     - Tag
-   * - :ref:`CIS-8-ExternalKeyRegistered`
-     - 231
-   * - :ref:`CIS-8-ExternalKeyRevoked`
-     - 232
-   * - :ref:`CIS-8-UpdateMetadataEvent`
-     - 233
-
-These tag values intentionally avoid the 251..255 range reserved by
-:ref:`CIS-2`, so a single contract MAY implement both CIS-8 and CIS-2
-without event-tag collisions.
-
-.. _CIS-8-ExternalKeyRegistered:
-=======
 .. _CIS-8-events-ExternalKeyRegistered:
->>>>>>> b3d0078 (Revamp CIS-8)
 
 ``ExternalKeyRegistered``
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -540,22 +294,13 @@ It is serialized as: first a byte with the value of 231, followed by the :ref:`C
 ``ExternalKeyRevoked``
 ^^^^^^^^^^^^^^^^^^^^^^
 
-<<<<<<< HEAD
-Emitted when the active owner revokes their own registration, or when a
-new owner replaces them via :ref:`CIS-8-registerExternalKey`.
-=======
 An ``ExternalKeyRevoked`` event MUST be logged whenever an active registration is revoked, whether by an explicit :ref:`revoke<CIS-8-functions-revoke>` call or by displacement through a new :ref:`registerExternalKey<CIS-8-functions-registerExternalKey>` call.
->>>>>>> b3d0078 (Revamp CIS-8)
 
 It is serialized as: first a byte with the value of 232, followed by the :ref:`CIS-8-AccountAddress` (``owner``) and the :ref:`CIS-8-ExternalKeyId` (``external_key``)::
 
   ExternalKeyRevoked ::= (232: Byte) (owner: AccountAddress) (external_key: ExternalKeyId)
 
-<<<<<<< HEAD
-.. _CIS-8-UpdateMetadataEvent:
-=======
 .. _CIS-8-events-UpdateMetadata:
->>>>>>> b3d0078 (Revamp CIS-8)
 
 ``UpdateMetadata``
 ^^^^^^^^^^^^^^^^^^
@@ -566,74 +311,6 @@ It is serialized as: first a byte with the value of 233, followed by the :ref:`C
 
   UpdateMetadata ::= (233: Byte) (owner: AccountAddress) (external_key: ExternalKeyId)
                      (m: Byte2) (metadata: MetadataEntrym)
-
-
-<<<<<<< HEAD
-Errors
-------
-
-Reject codes MUST take the explicit numeric values listed below;
-implementations MUST NOT rely on derived sequential numbering.
-
-The ``-7100..`` range was chosen so CIS-8 reject codes do not collide
-with other CIS standards (``-42000..`` for CIS-2 etc.) when a single
-contract implements multiple standards.
-
-.. _CIS-8-InvalidProof:
-.. _CIS-8-UnsupportedProofScheme:
-.. _CIS-8-MalformedExternalKey:
-.. _CIS-8-Unauthorized:
-.. _CIS-8-NotRegistered:
-.. _CIS-8-InvalidMetadata:
-
-.. list-table:: Reject Codes
-   :header-rows: 1
-
-   * - Code
-     - Name
-     - Meaning
-   * - -7100
-     - ``InvalidProof``
-     - Signature does not verify against the reconstructed canonical message.
-   * - -7101
-     - ``UnsupportedProofScheme``
-     - ``proof.scheme`` is not in the contract's supported set.
-   * - -7102
-     - ``MalformedExternalKey``
-     - ``external_key`` fails the validation rules in
-       :ref:`CIS-8-ExternalKeyId`.
-   * - -7103
-     - ``Unauthorized``
-     - Caller is not authorised — typically: caller is a contract, or caller
-       is not the active owner for ``updateMetadata`` / ``revoke``.
-   * - -7104
-     - ``AlreadyRegistered``
-     - Reserved; redundant re-registration MAY use this code, though the
-       replacement rule in :ref:`CIS-8-registerExternalKey` instead handles same-owner
-       re-registration as an in-place replacement.
-   * - -7105
-     - ``NotRegistered``
-     - No active registration exists for the supplied identifier.
-   * - -7106
-     - ``AmbiguousIdentifier``
-     - Reserved for future use.
-   * - -7107
-     - ``UnsupportedKeyType``
-     - ``external_key.key_type`` is not supported by this contract.
-   * - -7108
-     - ``InvalidMetadata``
-     - ``metadata`` fails the validation rules in :ref:`CIS-8-MetadataEntry`.
-
-
-Reference Deployments
-=====================
-
-This section is informative.
-
-The following contract instances implement this specification on
-Concordium-operated networks:
-=======
-
 
 .. _CIS-8-functions:
 
@@ -762,7 +439,6 @@ Rejection errors
 ----------------
 
 A smart contract following this specification MUST use the following error codes to reject under the described conditions:
->>>>>>> b3d0078 (Revamp CIS-8)
 
 .. list-table::
   :header-rows: 1
@@ -800,28 +476,4 @@ A smart contract following this specification MUST use the following error codes
 
 Rejecting using an error code from the table above MUST only occur in a situation as described in the corresponding error description.
 
-<<<<<<< HEAD
-Security Considerations
-=======================
-
-Domain separation
-    The 18-byte ``CIS-8/v1/canonical`` prefix prevents a signature produced
-    for any other context from being replayed against CIS-8. The
-    ``contract_address`` and ``concordium_genesis_hash`` fields further pin
-    the signature to a single instance on a single network.
-
-Replacement semantics
-    The replacement rule in :ref:`CIS-8-registerExternalKey` allows a new account to
-    take over an external key by presenting a valid signature for it. This
-    is the intended semantics: control of the private key is the
-    authoritative ground truth. Consumers MUST NOT treat a CIS-8 entry as
-    proof of historical ownership — only as proof of current control.
-
-
-Copyright
-=========
-
-This document is placed in the public domain.
-=======
 The smart contract implementing this specification MAY introduce custom error codes other than the ones specified in the table above.
->>>>>>> b3d0078 (Revamp CIS-8)
