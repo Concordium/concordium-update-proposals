@@ -371,19 +371,19 @@ Contract functions
 ------------------
 
 A smart contract implementing CIS-8 MUST export the following functions:
-:ref:`CIS-8-register`, :ref:`CIS-8-updateMetadata`, :ref:`CIS-8-revoke`,
+:ref:`CIS-8-registerExternalKey`, :ref:`CIS-8-updateMetadata`, :ref:`CIS-8-revoke`,
 :ref:`CIS-8-ownerOfKey`, and the :ref:`CIS-0` :ref:`CIS-8-supports`
 standard-detection function.
 
-.. _CIS-8-register:
+.. _CIS-8-registerExternalKey:
 
-``register``
-^^^^^^^^^^^^
+``registerExternalKey``
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Register a new active owner for an external key, proving control via a
 cryptographic signature over the :ref:`CIS-8-CanonicalMessage`.
 
-.. _CIS-8-RegisterParameter:
+.. _CIS-8-RegisterExternalKeyParameter:
 
 Parameter
 ~~~~~~~~~
@@ -393,7 +393,7 @@ a serialised :ref:`CIS-8-Proof` (``proof``), followed by 4 bytes for the
 number of metadata entries (``n_m``) and ``n_m`` serialised
 :ref:`CIS-8-MetadataEntry`\ s (``metadata``)::
 
-  RegisterParameter ::= (external_key: ExternalKeyId)
+  RegisterExternalKeyParameter ::= (external_key: ExternalKeyId)
                         (proof: Proof)
                         (n_m: Byte⁴) (metadata: MetadataEntryⁿ_ᵐ)
 
@@ -574,7 +574,7 @@ entries (``n_m``) and ``n_m`` serialised
 ^^^^^^^^^^^^^^^^^^^^^^
 
 Emitted when the active owner revokes their own registration, or when a
-new owner replaces them via :ref:`CIS-8-register`.
+new owner replaces them via :ref:`CIS-8-registerExternalKey`.
 
 It is serialized as: 1 byte for the event tag, followed by the 32-byte
 ``owner`` ``AccountAddress``, followed by a serialised
@@ -641,7 +641,7 @@ contract implements multiple standards.
    * - -7104
      - ``AlreadyRegistered``
      - Reserved; redundant re-registration MAY use this code, though the
-       replacement rule in :ref:`CIS-8-register` instead handles same-owner
+       replacement rule in :ref:`CIS-8-registerExternalKey` instead handles same-owner
        re-registration as an in-place replacement.
    * - -7105
      - ``NotRegistered``
@@ -689,7 +689,7 @@ Domain separation
     the signature to a single instance on a single network.
 
 Replacement semantics
-    The replacement rule in :ref:`CIS-8-register` allows a new account to
+    The replacement rule in :ref:`CIS-8-registerExternalKey` allows a new account to
     take over an external key by presenting a valid signature for it. This
     is the intended semantics: control of the private key is the
     authoritative ground truth. Consumers MUST NOT treat a CIS-8 entry as
