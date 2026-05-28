@@ -1,0 +1,25 @@
+===========================================
+Protocol Update 10 - Sponsored Transactions
+===========================================
+
+.. list-table::
+   :stub-columns: 1
+
+   * - Effective on Testnet
+     - TBD
+   * - Effective on Mainnet
+     - TBD
+   * - Specification hash
+     - 6d84de01ccda394638459daa6b9e374094236d3e2e8fd19a51e7136abe77b06d
+
+Specification
+=============
+
+.. include:: ../../updates/P10.txt
+   :literal:
+
+Commentary
+==========
+
+.. include:: ../../commentary/P10-commentary.txt
+   :literal:
