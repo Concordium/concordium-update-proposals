@@ -1,0 +1,1241 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Concordium DID Method Version 1.1" href="../ID/concordium-did.html" /><link rel="prev" title="CIS-8: External Key Registry Standard" href="cis-8.html" />
+
+    <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
+        <title>CIS-8004: Agent Registry - Interoperability Specifications</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=8806b39e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Interoperability Specifications</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/concordium-logo-black.svg" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/concordium-logo-white.svg" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Interoperability Specifications</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Protocol Updates</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P2.html">Protocol Update 2 - Alpha Centauri 2.0 - Transaction Memos</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P3.html">Protocol Update 3 - Alpha Centauri 3.0 - Account Aliases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P4.html">Protocol Update 4 - Sirius - Delegation and new contract state</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P5.html">Protocol Update 5 - Smart contract upgradability, performance improvements</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P6.html">Protocol Update 6 - Concordium BFT consensus protocol, changes in Wasm validation and execution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P7.html">Protocol Update 7 - Smart contract costs and new queries, stake cooldown changes, disabling shielded transfers, revised block hashing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P8.html">Protocol Update 8 - Suspension of inactive validators</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P9.html">Protocol Update 9 - Protocol-Level Tokens</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../updates/P10.html">Protocol Update 10 - Sponsored Transactions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Standards</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="cis-0.html">CIS-0: Standard Detection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-1.html">CIS-1: Concordium Token Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-2.html">CIS-2: Concordium Token Standard 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-3.html">CIS-3: Sponsored Transaction Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-4.html">CIS-4: Credential Registry Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-5.html">CIS-5: Smart Contract Wallet Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-7.html">CIS-7: Protocol-level Tokens (PLTs)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cis-8.html">CIS-8: External Key Registry Standard</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">CIS-8004: Agent Registry</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../ID/concordium-did.html">Concordium DID Method Version 1.1</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/CIS/cis-8004.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="cis-8004-agent-registry">
+<span id="cis-8004"></span><h1>CIS-8004: Agent Registry<a class="headerlink" href="#cis-8004-agent-registry" title="Link to this heading">¶</a></h1>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><th class="stub"><p>Created</p></th>
+<td><p>May 22, 2026</p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Draft</p></th>
+<td><p>May 25, 2026</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Supported versions</p></th>
+<td><div class="line-block">
+<div class="line">Smart contract version 1 (concordium-std v10+) with concordium-cis2</div>
+</div>
+</td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Standard identifier</p></th>
+<td><p><code class="docutils literal notranslate"><span class="pre">CIS-8004</span></code></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Related</p></th>
+<td><div class="line-block">
+<div class="line">ERC-8004 v2 (Trustless Agents — Identity Registry)</div>
+<div class="line"><a class="reference internal" href="cis-0.html#cis-0"><span class="std std-ref">CIS-0: Standard Detection</span></a>, <a class="reference internal" href="cis-2.html#cis-2"><span class="std std-ref">CIS-2: Concordium Token Standard 2</span></a>, <a class="reference internal" href="cis-8.html#cis-8"><span class="std std-ref">CIS-8: External Key Registry Standard</span></a></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="abstract">
+<h2>Abstract<a class="headerlink" href="#abstract" title="Link to this heading">¶</a></h2>
+<p>A standard interface for an Agent Registry contract that records the identity
+of autonomous software agents as transferable CIS-2 NFTs.</p>
+<p>CIS-8004 is the Concordium implementation of the Identity Registry component
+of <a class="reference external" href="https://eips.ethereum.org/EIPS/eip-8004">ERC-8004 v2 (Trustless Agents)</a>.
+The Reputation Registry and Validation Registry components of ERC-8004 v2 are
+out of scope for this version.</p>
+<p>Each agent is identified on chain by a 64-bit token id. The canonical
+off-chain identifier is the CIS-2 token address (Base58Check encoding of
+<code class="docutils literal notranslate"><span class="pre">(version=0x02,</span> <span class="pre">ULEB128(index),</span> <span class="pre">ULEB128(subindex),</span> <span class="pre">TokenIdU64</span> <span class="pre">bytes)</span></code>).</p>
+<p>Each agent record carries an optional <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> that points
+at a <a class="reference internal" href="cis-8.html#cis-8"><span class="std std-ref">CIS-8: External Key Registry Standard</span></a> cryptographic-key binding (<code class="docutils literal notranslate"><span class="pre">Cis8</span></code> variant); the enum
+may be extended with additional variants in future versions of this standard.</p>
+</section>
+<section id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h2>
+<p>CIS-8004 is the on-chain registry that mints a CIS-2 NFT for each agent and
+records:</p>
+<ul class="simple">
+<li><p>A pointer to the agent’s off-chain card (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code> + <code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code>).</p></li>
+<li><p>An optional <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> proving control of an off-chain identity.</p></li>
+<li><p>A payment-routing field (<code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code>) with its own independent
+lifecycle from CIS-2 ownership.</p></li>
+<li><p>An open key/value metadata map.</p></li>
+</ul>
+<p>CIS-8004 mirrors ERC-8004’s Identity Registry as closely as Concordium chain
+semantics allow. Section <a class="reference internal" href="#cis-8004-departuresfromerc8004"><span class="std std-ref">Departures from ERC-8004 v2</span></a> summarises the
+deliberate differences.</p>
+<section id="terminology-and-conventions">
+<h3>Terminology and Conventions<a class="headerlink" href="#terminology-and-conventions" title="Link to this heading">¶</a></h3>
+<p>The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”,
+“SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be
+interpreted as described in <span class="target" id="index-0"></span><a class="rfc reference external" href="https://datatracker.ietf.org/doc/html/rfc2119.html"><strong>RFC 2119</strong></a>.</p>
+</section>
+<section id="relationship-to-other-cis-standards">
+<h3>Relationship to Other CIS Standards<a class="headerlink" href="#relationship-to-other-cis-standards" title="Link to this heading">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="cis-0.html#cis-0"><span class="std std-ref">CIS-0: Standard Detection</span></a> — CIS-8004 contracts MUST advertise support for <code class="docutils literal notranslate"><span class="pre">CIS-0</span></code>,
+<code class="docutils literal notranslate"><span class="pre">CIS-2</span></code>, and <code class="docutils literal notranslate"><span class="pre">CIS-8004</span></code>.</p></li>
+<li><p><a class="reference internal" href="cis-2.html#cis-2"><span class="std std-ref">CIS-2: Concordium Token Standard 2</span></a> — CIS-8004 agent NFTs are CIS-2 tokens. CIS-2 transfer,
+balance, operator, and token-metadata entrypoints are inherited; the
+transfer entrypoint additionally runs two CIS-8004 reset hooks (see
+<a class="reference internal" href="#cis-8004-transfer"><span class="std std-ref">transfer (CIS-2) — dual-reset hook</span></a>).</p></li>
+<li><p><a class="reference internal" href="cis-8.html#cis-8"><span class="std std-ref">CIS-8: External Key Registry Standard</span></a> — Agents MAY carry a <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> of variant
+<code class="docutils literal notranslate"><span class="pre">Cis8(_)</span></code> pointing at a CIS-8 cryptographic-key registration. The
+CIS-8004 contract verifies the binding at mint time via a cross-contract
+<code class="docutils literal notranslate"><span class="pre">ownerOfKey</span></code> call.</p></li>
+</ul>
+</section>
+</section>
+<section id="specification">
+<h2>Specification<a class="headerlink" href="#specification" title="Link to this heading">¶</a></h2>
+<section id="common-types">
+<h3>Common Types<a class="headerlink" href="#common-types" title="Link to this heading">¶</a></h3>
+<section id="agenttokenid">
+<span id="cis-8004-agenttokenid"></span><h4>AgentTokenId<a class="headerlink" href="#agenttokenid" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="nc">AgentTokenId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TokenIdU64</span><span class="p">;</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">type</span><span class="w"> </span><span class="nc">AgentTokenAmount</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">TokenAmountU8</span><span class="p">;</span><span class="w">  </span><span class="c1">// always 1 for NFTs</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">AgentTokenId</span></code> uses the standard CIS-2 <code class="docutils literal notranslate"><span class="pre">TokenIdU64</span></code> wire form
+(<code class="docutils literal notranslate"><span class="pre">[u8</span> <span class="pre">length=8][8</span> <span class="pre">LE</span> <span class="pre">bytes]</span></code>, 9 bytes total) on every entrypoint —
+both CIS-8004-native (<code class="docutils literal notranslate"><span class="pre">agentOf</span></code>, <code class="docutils literal notranslate"><span class="pre">setAgentURI</span></code>, …) and CIS-2 inherited
+(<code class="docutils literal notranslate"><span class="pre">transfer</span></code>, <code class="docutils literal notranslate"><span class="pre">balanceOf</span></code>, <code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code>). See
+<a class="reference internal" href="#cis-8004-tokenidwireformat"><span class="std std-ref">Token ID Wire Format</span></a>.</p>
+</section>
+<section id="externalkeyid">
+<span id="cis-8004-externalkeyid"></span><h4>ExternalKeyId<a class="headerlink" href="#externalkeyid" title="Link to this heading">¶</a></h4>
+<p>Imported from <a class="reference internal" href="cis-8.html#cis-8"><span class="std std-ref">CIS-8: External Key Registry Standard</span></a>. The CIS-8004 contract MUST define a
+byte-compatible local copy of this type:</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType, Clone, PartialEq, Eq, Debug)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExternalKeyId</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">namespace</span><span class="p">:</span><span class="w">  </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">key_type</span><span class="p">:</span><span class="w">   </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">public_key</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="externalidentifier">
+<span id="cis-8004-externalidentifier"></span><h4>ExternalIdentifier<a class="headerlink" href="#externalidentifier" title="Link to this heading">¶</a></h4>
+<p>For verifier-anchored external-identifier bindings (e.g. social-media
+handles bound to a Concordium account by an off-chain verifier):</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType, Clone, PartialEq, Eq, Debug)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExternalIdentifier</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">namespace</span><span class="p">:</span><span class="w">       </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">identifier_type</span><span class="p">:</span><span class="w"> </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">identifier</span><span class="p">:</span><span class="w">      </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The field name is <code class="docutils literal notranslate"><span class="pre">identifier_type</span></code>, not <code class="docutils literal notranslate"><span class="pre">id_type</span></code>. Schema-driven
+serialisers reject payloads with <code class="docutils literal notranslate"><span class="pre">id_type</span></code> as an unknown field.</p>
+</div>
+</section>
+<section id="externalrefkind">
+<span id="cis-8004-externalrefkind"></span><h4>ExternalRefKind<a class="headerlink" href="#externalrefkind" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType, Clone, PartialEq, Eq, Debug)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">ExternalRefKind</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Cis8</span><span class="p">(</span><span class="n">ExternalKeyId</span><span class="p">),</span>
+<span class="w">    </span><span class="c1">// Additional variants may be added in future versions.</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">Cis8</span></code> variant points at a <a class="reference internal" href="cis-8.html#cis-8"><span class="std std-ref">CIS-8: External Key Registry Standard</span></a> cryptographic-key
+registration.</p>
+</section>
+<section id="externalreference">
+<span id="cis-8004-externalreference"></span><h4>ExternalReference<a class="headerlink" href="#externalreference" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType, Clone, PartialEq, Eq, Debug)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExternalReference</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">contract_address</span><span class="p">:</span><span class="w"> </span><span class="nc">ContractAddress</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">kind</span><span class="p">:</span><span class="w">             </span><span class="nc">ExternalRefKind</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The contract MUST validate <code class="docutils literal notranslate"><span class="pre">contract_address</span></code> against the configured
+<code class="docutils literal notranslate"><span class="pre">state.cis8_contract</span></code>. A mismatch MUST
+reject with <a class="reference internal" href="#cis-8004-invalidexternalreference"><span class="std std-ref">Reject Codes</span></a>.</p>
+</section>
+<section id="agentstatus">
+<span id="cis-8004-agentstatus"></span><h4>AgentStatus<a class="headerlink" href="#agentstatus" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType, Clone, Copy, PartialEq, Eq, Debug)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">AgentStatus</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Active</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Revoked</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="metadataentry">
+<span id="cis-8004-metadataentry"></span><h4>MetadataEntry<a class="headerlink" href="#metadataentry" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType, Clone, Debug)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">MetadataEntry</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">key</span><span class="p">:</span><span class="w">   </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Each <code class="docutils literal notranslate"><span class="pre">key</span></code> MUST be non-empty and MUST NOT exceed 64 bytes. Each <code class="docutils literal notranslate"><span class="pre">value</span></code>
+MUST NOT exceed 1024 bytes. The key <code class="docutils literal notranslate"><span class="pre">&quot;agentWallet&quot;</span></code> is reserved (see
+<a class="reference internal" href="#cis-8004-reserved-agentwallet"><span class="std std-ref">agentWallet — reserved metadata key</span></a>).</p>
+</section>
+<section id="agentrecord-on-chain">
+<span id="cis-8004-agentrecord"></span><h4>AgentRecord (on-chain)<a class="headerlink" href="#agentrecord-on-chain" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serial, DeserialWithState, Clone)]</span>
+<span class="cp">#[concordium(state_parameter = </span><span class="s">&quot;S&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">AgentRecord</span><span class="o">&lt;</span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="nc">HasStateApi</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_uri</span><span class="p">:</span><span class="w">          </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">metadata_hash</span><span class="p">:</span><span class="w">      </span><span class="nb">Option</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">u8</span><span class="p">;</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">external_reference</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">ExternalReference</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_wallet</span><span class="p">:</span><span class="w">       </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">AccountAddress</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">status</span><span class="p">:</span><span class="w">             </span><span class="nc">AgentStatus</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">registered_at</span><span class="p">:</span><span class="w">      </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">revoked_at</span><span class="p">:</span><span class="w">         </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">Timestamp</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">revocation_reason</span><span class="p">:</span><span class="w">  </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">on_chain_metadata</span><span class="p">:</span><span class="w">  </span><span class="nc">StateMap</span><span class="o">&lt;</span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">owner_account</span></code> is <strong>not stored</strong> on the record; it is derived from the
+CIS-2 ownership state (<code class="docutils literal notranslate"><span class="pre">cis2_state.token_owner(token_id)</span></code>) at query time.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code> <strong>is</strong> stored. It has an independent lifecycle from
+CIS-2 ownership: initialised to <code class="docutils literal notranslate"><span class="pre">Some(sender)</span></code> on register, updated via
+<a class="reference internal" href="#cis-8004-setagentwallet"><span class="std std-ref">setAgentWallet</span></a> with cryptographic proof, and reset to <code class="docutils literal notranslate"><span class="pre">None</span></code>
+on every CIS-2 transfer.</p>
+</section>
+<section id="agentview-returned">
+<span id="cis-8004-agentview"></span><h4>AgentView (returned)<a class="headerlink" href="#agentview-returned" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">AgentView</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">           </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">owner_account</span><span class="p">:</span><span class="w">      </span><span class="nc">AccountAddress</span><span class="p">,</span><span class="w">  </span><span class="c1">// derived from CIS-2</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_uri</span><span class="p">:</span><span class="w">          </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">metadata_hash</span><span class="p">:</span><span class="w">      </span><span class="nb">Option</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">u8</span><span class="p">;</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">external_reference</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">ExternalReference</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_wallet</span><span class="p">:</span><span class="w">       </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">AccountAddress</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">status</span><span class="p">:</span><span class="w">             </span><span class="nc">AgentStatus</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">registered_at</span><span class="p">:</span><span class="w">      </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">revoked_at</span><span class="p">:</span><span class="w">         </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">Timestamp</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">revocation_reason</span><span class="p">:</span><span class="w">  </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="token-id-wire-format">
+<span id="cis-8004-tokenidwireformat"></span><h3>Token ID Wire Format<a class="headerlink" href="#token-id-wire-format" title="Link to this heading">¶</a></h3>
+<p>This section is normative. <code class="docutils literal notranslate"><span class="pre">AgentTokenId</span></code> is an alias for
+<code class="docutils literal notranslate"><span class="pre">concordium_cis2::TokenIdU64</span></code>, with the on-the-wire encoding
+<code class="docutils literal notranslate"><span class="pre">[u8</span> <span class="pre">length=8][8</span> <span class="pre">LE</span> <span class="pre">bytes]</span></code> (9 bytes total). Every CIS-8004 entrypoint
+that takes a <code class="docutils literal notranslate"><span class="pre">token_id</span></code> parameter — both CIS-8004-native
+(<code class="docutils literal notranslate"><span class="pre">agentOf</span></code>, <code class="docutils literal notranslate"><span class="pre">setAgentURI</span></code>, <code class="docutils literal notranslate"><span class="pre">setExternalReference</span></code>, <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code>,
+<code class="docutils literal notranslate"><span class="pre">getAgentWallet</span></code>, <code class="docutils literal notranslate"><span class="pre">setMetadata</span></code>, <code class="docutils literal notranslate"><span class="pre">getMetadata</span></code>, <code class="docutils literal notranslate"><span class="pre">revoke</span></code>) and CIS-2
+inherited (<code class="docutils literal notranslate"><span class="pre">transfer</span></code>, <code class="docutils literal notranslate"><span class="pre">balanceOf</span></code>, <code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code>) — MUST use this
+single wire form. Schema-driven JSON renders it as a hex string of 16
+characters (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;0a00000000000000&quot;</span></code> for <code class="docutils literal notranslate"><span class="pre">token_id</span> <span class="pre">=</span> <span class="pre">10</span></code>).</p>
+<p>Event payloads carrying a <code class="docutils literal notranslate"><span class="pre">token_id</span></code> field MUST use the same
+<code class="docutils literal notranslate"><span class="pre">TokenIdU64</span></code> wire form: CIS-8004-native events (tags 240..247) and CIS-2
+inherited events (tags 251..255) are byte-compatible on the <code class="docutils literal notranslate"><span class="pre">token_id</span></code>
+field. From one <code class="docutils literal notranslate"><span class="pre">register</span></code> transaction the same bytes appear in both
+events:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>fe 08 0a00000000000000 ...   ← tag 254 (CIS-2 Mint)
+f0 08 0a00000000000000 ...   ← tag 240 (CIS-8004 Registered)
+</pre></div>
+</div>
+</section>
+<section id="contract-state">
+<h3>Contract State<a class="headerlink" href="#contract-state" title="Link to this heading">¶</a></h3>
+<p>The following is an example state layout. Implementations MAY organise state
+differently provided they satisfy the behavioural requirements of this
+specification.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serial, DeserialWithState)]</span>
+<span class="cp">#[concordium(state_parameter = </span><span class="s">&quot;S&quot;</span><span class="cp">)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">State</span><span class="o">&lt;</span><span class="n">S</span><span class="p">:</span><span class="w"> </span><span class="nc">HasStateApi</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="sd">/// CIS-8 registry contract address.</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">cis8_contract</span><span class="p">:</span><span class="w"> </span><span class="nc">ContractAddress</span><span class="p">,</span>
+
+<span class="w">    </span><span class="sd">/// Agent records keyed by token_id.</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agents</span><span class="p">:</span><span class="w"> </span><span class="nc">StateMap</span><span class="o">&lt;</span><span class="n">AgentTokenId</span><span class="p">,</span><span class="w"> </span><span class="n">AgentRecord</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+
+<span class="w">    </span><span class="sd">/// Reverse lookup: (namespace, identifier-or-public-key bytes) -&gt; token_id.</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">refs_index</span><span class="p">:</span><span class="w"> </span><span class="nc">StateMap</span><span class="o">&lt;</span><span class="p">(</span><span class="nb">String</span><span class="p">,</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">),</span><span class="w"> </span><span class="n">AgentTokenId</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+
+<span class="w">    </span><span class="sd">/// Next token_id to assign.</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">next_token_id</span><span class="p">:</span><span class="w"> </span><span class="kt">u64</span><span class="p">,</span>
+
+<span class="w">    </span><span class="sd">/// CIS-2 ownership / operator state.</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">cis2_state</span><span class="p">:</span><span class="w"> </span><span class="nc">Cis2State</span><span class="o">&lt;</span><span class="n">AgentTokenId</span><span class="p">,</span><span class="w"> </span><span class="n">AgentTokenAmount</span><span class="p">,</span><span class="w"> </span><span class="n">S</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A token_id MUST appear in <code class="docutils literal notranslate"><span class="pre">refs_index</span></code> if and only if its agent record has
+an <code class="docutils literal notranslate"><span class="pre">Active</span></code> status and a <code class="docutils literal notranslate"><span class="pre">Some</span></code> <code class="docutils literal notranslate"><span class="pre">external_reference</span></code>. <code class="docutils literal notranslate"><span class="pre">revoke</span></code> and
+the transfer hook (<a class="reference internal" href="#cis-8004-transfer"><span class="std std-ref">transfer (CIS-2) — dual-reset hook</span></a>) MUST release the index entry.</p>
+</section>
+<section id="entrypoints">
+<h3>Entrypoints<a class="headerlink" href="#entrypoints" title="Link to this heading">¶</a></h3>
+<section id="register">
+<span id="cis-8004-register"></span><h4>register<a class="headerlink" href="#register" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">RegisterParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_uri</span><span class="p">:</span><span class="w">          </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">metadata_hash</span><span class="p">:</span><span class="w">      </span><span class="nb">Option</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">u8</span><span class="p">;</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">external_reference</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">ExternalReference</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">initial_metadata</span><span class="p">:</span><span class="w">   </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="n">MetadataEntry</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Authorisation</dt><dd><p>The sender MUST be an account (<code class="docutils literal notranslate"><span class="pre">Address::Account(_)</span></code>). Contract
+callers MUST be rejected with <a class="reference internal" href="#cis-8004-unauthorized"><span class="std std-ref">Reject Codes</span></a>.</p>
+</dd>
+<dt>Validation</dt><dd><p>The contract MUST:</p>
+<ol class="arabic simple">
+<li><p>Validate <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code> length ≤ 4096 bytes (allows <code class="docutils literal notranslate"><span class="pre">data:</span></code> URIs).</p></li>
+<li><p>Validate every <code class="docutils literal notranslate"><span class="pre">initial_metadata</span></code> entry per
+<a class="reference internal" href="#cis-8004-metadataentry"><span class="std std-ref">MetadataEntry</span></a>. Reject any entry with
+<code class="docutils literal notranslate"><span class="pre">key</span> <span class="pre">==</span> <span class="pre">&quot;agentWallet&quot;</span></code> with <a class="reference internal" href="#cis-8004-reservedkey"><span class="std std-ref">Reject Codes</span></a>.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> is <code class="docutils literal notranslate"><span class="pre">Some</span></code>, check uniqueness in
+<code class="docutils literal notranslate"><span class="pre">refs_index</span></code>; reject with <a class="reference internal" href="#cis-8004-externalreferencetaken"><span class="std std-ref">Reject Codes</span></a>
+if already held by another agent.</p></li>
+</ol>
+</dd>
+<dt>Effect</dt><dd><p>Assign <code class="docutils literal notranslate"><span class="pre">token_id</span> <span class="pre">=</span> <span class="pre">state.next_token_id</span></code>; increment the counter. Mint
+one CIS-2 NFT to the sender (emits CIS-2 <code class="docutils literal notranslate"><span class="pre">Mint</span></code>). Insert the
+<code class="docutils literal notranslate"><span class="pre">AgentRecord</span></code> with <code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">Active</span></code>, <code class="docutils literal notranslate"><span class="pre">agent_wallet</span> <span class="pre">=</span>
+<span class="pre">Some(sender)</span></code>, <code class="docutils literal notranslate"><span class="pre">registered_at</span> <span class="pre">=</span> <span class="pre">ctx.metadata().slot_time()</span></code>, and
+each <code class="docutils literal notranslate"><span class="pre">initial_metadata</span></code> entry inserted into <code class="docutils literal notranslate"><span class="pre">on_chain_metadata</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> is <code class="docutils literal notranslate"><span class="pre">Some</span></code>, insert the corresponding
+<code class="docutils literal notranslate"><span class="pre">refs_index</span></code> entry. Emit <a class="reference internal" href="#cis-8004-registered"><span class="std std-ref">Registered (tag 240)</span></a>.</p>
+</dd>
+<dt>Return</dt><dd><p><code class="docutils literal notranslate"><span class="pre">AgentTokenId</span></code> (the newly minted token id).</p>
+</dd>
+</dl>
+</section>
+<section id="setagenturi">
+<span id="cis-8004-setagenturi"></span><h4>setAgentURI<a class="headerlink" href="#setagenturi" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">SetAgentURIParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">      </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_uri</span><span class="p">:</span><span class="w">     </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">metadata_hash</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">u8</span><span class="p">;</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Authorisation</dt><dd><p>Sender MUST equal the current CIS-2 token owner; otherwise reject with
+<a class="reference internal" href="#cis-8004-unauthorized"><span class="std std-ref">Reject Codes</span></a>.</p>
+</dd>
+<dt>Validation</dt><dd><p>Reject if the agent is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code> with <a class="reference internal" href="#cis-8004-agentrevoked"><span class="std std-ref">Reject Codes</span></a>.
+Validate <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code> length per <a class="reference internal" href="#cis-8004-register"><span class="std std-ref">register</span></a>.</p>
+</dd>
+<dt>Effect</dt><dd><p>Replace <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code> (each <code class="docutils literal notranslate"><span class="pre">Some</span></code> value
+replaces; <code class="docutils literal notranslate"><span class="pre">None</span></code> MAY be a documented “leave unchanged” or
+“clear” semantic — implementations MUST pick one and document it).
+Emit <a class="reference internal" href="#cis-8004-uriupdated"><span class="std std-ref">URIUpdated (tag 241)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="setexternalreference">
+<span id="cis-8004-setexternalreference"></span><h4>setExternalReference<a class="headerlink" href="#setexternalreference" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">SetExternalReferenceParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">           </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">external_reference</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">ExternalReference</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Authorisation</dt><dd><p>Sender MUST equal the current CIS-2 owner. Reject if the agent is
+<code class="docutils literal notranslate"><span class="pre">Revoked</span></code> with <a class="reference internal" href="#cis-8004-agentrevoked"><span class="std std-ref">Reject Codes</span></a>.</p>
+</dd>
+<dt>Effect</dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> is <code class="docutils literal notranslate"><span class="pre">Some</span></code>, check <code class="docutils literal notranslate"><span class="pre">refs_index</span></code> uniqueness;
+reject with <a class="reference internal" href="#cis-8004-externalreferencetaken"><span class="std std-ref">Reject Codes</span></a> if already held by
+another agent. Release any previous <code class="docutils literal notranslate"><span class="pre">refs_index</span></code> entry,
+set the new value, and insert the new index entry. Emit
+<a class="reference internal" href="#cis-8004-externalreferenceset"><span class="std std-ref">ExternalReferenceSet (tag 242)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="setagentwallet">
+<span id="cis-8004-setagentwallet"></span><h4>setAgentWallet<a class="headerlink" href="#setagentwallet" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">SetAgentWalletParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">   </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">new_wallet</span><span class="p">:</span><span class="w"> </span><span class="nc">AccountAddress</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">deadline</span><span class="p">:</span><span class="w">   </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">signature</span><span class="p">:</span><span class="w">  </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span><span class="w">         </span><span class="c1">// flat byte array</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Authorisation (dual)</dt><dd><p>Both of the following MUST hold:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">ctx.sender()</span></code> equals the current CIS-2 token owner; otherwise
+reject with <a class="reference internal" href="#cis-8004-unauthorized"><span class="std std-ref">Reject Codes</span></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">signature</span></code> verifies against <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>’s on-chain
+credentials over the <a class="reference internal" href="#cis-8004-setagentwallet-canonicalmessage"><span class="std std-ref">setAgentWallet — canonical signed message</span></a>
+bytes; otherwise reject with
+<a class="reference internal" href="#cis-8004-invalidagentwalletproof"><span class="std std-ref">Reject Codes</span></a>.</p></li>
+</ol>
+</dd>
+<dt>Validation</dt><dd><p>Reject if the agent is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code> (<a class="reference internal" href="#cis-8004-agentrevoked"><span class="std std-ref">Reject Codes</span></a>).
+Reject if <code class="docutils literal notranslate"><span class="pre">ctx.metadata().slot_time()</span> <span class="pre">&gt;</span> <span class="pre">deadline</span></code>
+(<a class="reference internal" href="#cis-8004-agentwalletdeadlinepassed"><span class="std std-ref">Reject Codes</span></a>).</p>
+</dd>
+<dt>Effect</dt><dd><p>Set <code class="docutils literal notranslate"><span class="pre">agent_wallet</span> <span class="pre">=</span> <span class="pre">Some(new_wallet)</span></code>. Emit
+<a class="reference internal" href="#cis-8004-agentwalletset"><span class="std std-ref">AgentWalletSet (tag 245)</span></a> with <code class="docutils literal notranslate"><span class="pre">new_wallet</span> <span class="pre">=</span> <span class="pre">Some(new_wallet)</span></code>.</p>
+</dd>
+</dl>
+<section id="setagentwallet-canonical-signed-message">
+<span id="cis-8004-setagentwallet-canonicalmessage"></span><h5>setAgentWallet — canonical signed message<a class="headerlink" href="#setagentwallet-canonical-signed-message" title="Link to this heading">¶</a></h5>
+<p>The contract reconstructs the exact bytes the off-chain signer signed and
+verifies the signature against them. The off-chain signer MUST produce these
+bytes verbatim.</p>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">fn</span><span class="w"> </span><span class="nf">set_agent_wallet_signing_bytes</span><span class="p">(</span>
+<span class="w">    </span><span class="n">token_id</span><span class="p">:</span><span class="w">         </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="n">new_wallet</span><span class="p">:</span><span class="w">       </span><span class="nc">AccountAddress</span><span class="p">,</span>
+<span class="w">    </span><span class="n">deadline</span><span class="p">:</span><span class="w">         </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="w">    </span><span class="n">contract_address</span><span class="p">:</span><span class="w"> </span><span class="nc">ContractAddress</span><span class="p">,</span>
+<span class="w">    </span><span class="n">genesis_hash</span><span class="p">:</span><span class="w">     </span><span class="nc">HashSha2256</span><span class="p">,</span>
+<span class="p">)</span><span class="w"> </span><span class="p">-&gt;</span><span class="w"> </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">Vec</span><span class="p">::</span><span class="n">new</span><span class="p">();</span>
+<span class="w">    </span><span class="n">bytes</span><span class="p">.</span><span class="n">extend_from_slice</span><span class="p">(</span><span class="s">b&quot;CIS-8004/v1/setAgentWallet&quot;</span><span class="p">);</span><span class="w">  </span><span class="c1">// 26 bytes UTF-8</span>
+<span class="w">    </span><span class="n">token_id</span><span class="p">.</span><span class="n">serial</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bytes</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;ser&quot;</span><span class="p">);</span><span class="w">                </span><span class="c1">// 8 bytes</span>
+<span class="w">    </span><span class="n">new_wallet</span><span class="p">.</span><span class="n">serial</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bytes</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;ser&quot;</span><span class="p">);</span><span class="w">              </span><span class="c1">// 32 bytes</span>
+<span class="w">    </span><span class="n">deadline</span><span class="p">.</span><span class="n">serial</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bytes</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;ser&quot;</span><span class="p">);</span><span class="w">                </span><span class="c1">// 8 bytes</span>
+<span class="w">    </span><span class="n">contract_address</span><span class="p">.</span><span class="n">serial</span><span class="p">(</span><span class="o">&amp;</span><span class="k">mut</span><span class="w"> </span><span class="n">bytes</span><span class="p">).</span><span class="n">expect</span><span class="p">(</span><span class="s">&quot;ser&quot;</span><span class="p">);</span><span class="w">        </span><span class="c1">// 16 bytes</span>
+<span class="w">    </span><span class="n">bytes</span><span class="p">.</span><span class="n">extend_from_slice</span><span class="p">(</span><span class="n">genesis_hash</span><span class="p">.</span><span class="n">as_ref</span><span class="p">());</span><span class="w">           </span><span class="c1">// 32 bytes</span>
+<span class="w">    </span><span class="n">bytes</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Total payload size: 122 bytes. The 26-byte UTF-8 prefix provides
+domain separation; <code class="docutils literal notranslate"><span class="pre">contract_address</span></code> and <code class="docutils literal notranslate"><span class="pre">genesis_hash</span></code> pin the
+signature to a single contract instance on a single network.</p>
+<p>The contract MUST retrieve <code class="docutils literal notranslate"><span class="pre">contract_address</span></code> via <code class="docutils literal notranslate"><span class="pre">ctx.self_address()</span></code>
+and <code class="docutils literal notranslate"><span class="pre">genesis_hash</span></code> via <code class="docutils literal notranslate"><span class="pre">ctx.metadata().genesis_hash()</span></code>. Neither value
+may be supplied as a parameter.</p>
+</section>
+</section>
+<section id="revoke">
+<span id="cis-8004-revoke"></span><h4>revoke<a class="headerlink" href="#revoke" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">RevokeParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w"> </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">reason</span><span class="p">:</span><span class="w">   </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl>
+<dt>Authorisation</dt><dd><p>Sender MUST equal the current CIS-2 owner.</p>
+</dd>
+<dt>Effect</dt><dd><p>Set <code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">=</span> <span class="pre">Revoked</span></code>, <code class="docutils literal notranslate"><span class="pre">revoked_at</span> <span class="pre">=</span> <span class="pre">Some(now)</span></code>,
+<code class="docutils literal notranslate"><span class="pre">revocation_reason</span> <span class="pre">=</span> <span class="pre">reason</span></code>, <code class="docutils literal notranslate"><span class="pre">external_reference</span> <span class="pre">=</span> <span class="pre">None</span></code>,
+<code class="docutils literal notranslate"><span class="pre">agent_wallet</span> <span class="pre">=</span> <span class="pre">None</span></code>. Release any <code class="docutils literal notranslate"><span class="pre">refs_index</span></code> entry. The NFT is
+NOT burned. Emit <a class="reference internal" href="#cis-8004-revoked"><span class="std std-ref">Revoked (tag 244)</span></a>.</p>
+<p>Reject if already <code class="docutils literal notranslate"><span class="pre">Revoked</span></code> with
+<a class="reference internal" href="#cis-8004-agentalreadyrevoked"><span class="std std-ref">Reject Codes</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="setmetadata">
+<span id="cis-8004-setmetadata"></span><h4>setMetadata<a class="headerlink" href="#setmetadata" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">SetMetadataParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w"> </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">key</span><span class="p">:</span><span class="w">      </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w">    </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="simple">
+<dt>Authorisation</dt><dd><p>Sender MUST equal the current CIS-2 owner.</p>
+</dd>
+<dt>Validation</dt><dd><p>Reject if the agent is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>. Reject the reserved key
+<code class="docutils literal notranslate"><span class="pre">&quot;agentWallet&quot;</span></code> with <a class="reference internal" href="#cis-8004-reservedkey"><span class="std std-ref">Reject Codes</span></a>. Reject
+out-of-range key/value sizes with <a class="reference internal" href="#cis-8004-invalidmetadata"><span class="std std-ref">Reject Codes</span></a>.</p>
+</dd>
+<dt>Effect</dt><dd><p>Insert / replace <code class="docutils literal notranslate"><span class="pre">on_chain_metadata[key]</span> <span class="pre">=</span> <span class="pre">value</span></code>. Emit
+<a class="reference internal" href="#cis-8004-metadataset"><span class="std std-ref">MetadataSet (tag 243)</span></a>.</p>
+</dd>
+</dl>
+</section>
+<section id="getmetadata">
+<span id="cis-8004-getmetadata"></span><h4>getMetadata<a class="headerlink" href="#getmetadata" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="cp">#[derive(Serialize, SchemaType)]</span>
+<span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">GetMetadataParams</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w"> </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">key</span><span class="p">:</span><span class="w">      </span><span class="nb">String</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1">// returns Option&lt;Vec&lt;u8&gt;&gt;</span>
+</pre></div>
+</div>
+<p>Read-only view. For the reserved key <code class="docutils literal notranslate"><span class="pre">&quot;agentWallet&quot;</span></code> the contract MUST
+return the current <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code> value (if <code class="docutils literal notranslate"><span class="pre">Some</span></code>) serialised as the
+<code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code> byte form; otherwise look up <code class="docutils literal notranslate"><span class="pre">key</span></code> in the agent’s
+<code class="docutils literal notranslate"><span class="pre">on_chain_metadata</span></code> map.</p>
+<section id="agentwallet-reserved-metadata-key">
+<span id="cis-8004-reserved-agentwallet"></span><h5>agentWallet — reserved metadata key<a class="headerlink" href="#agentwallet-reserved-metadata-key" title="Link to this heading">¶</a></h5>
+<p>The key <code class="docutils literal notranslate"><span class="pre">&quot;agentWallet&quot;</span></code> is reserved. <code class="docutils literal notranslate"><span class="pre">setMetadata</span></code> with this key MUST
+reject with <a class="reference internal" href="#cis-8004-reservedkey"><span class="std std-ref">Reject Codes</span></a> — callers MUST use
+<a class="reference internal" href="#cis-8004-setagentwallet"><span class="std std-ref">setAgentWallet</span></a> instead, which carries the required
+cryptographic proof.</p>
+</section>
+</section>
+<section id="agentof">
+<span id="cis-8004-agentof"></span><h4>agentOf<a class="headerlink" href="#agentof" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// parameter: AgentTokenId</span>
+<span class="c1">// returns:   Option&lt;AgentView&gt;</span>
+</pre></div>
+</div>
+<p>Read-only. Returns the full <a class="reference internal" href="#cis-8004-agentview"><span class="std std-ref">AgentView (returned)</span></a> for the given token
+id, with <code class="docutils literal notranslate"><span class="pre">owner_account</span></code> derived from the CIS-2 ownership state. Returns
+<code class="docutils literal notranslate"><span class="pre">None</span></code> if no agent exists.</p>
+</section>
+<section id="agentbyexternalreference">
+<span id="cis-8004-agentbyexternalreference"></span><h4>agentByExternalReference<a class="headerlink" href="#agentbyexternalreference" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// parameter: ExternalReference</span>
+<span class="c1">// returns:   Option&lt;AgentView&gt;</span>
+</pre></div>
+</div>
+<p>Read-only. Looks up via <code class="docutils literal notranslate"><span class="pre">refs_index</span></code> keyed by <code class="docutils literal notranslate"><span class="pre">(namespace,</span> <span class="pre">bytes)</span></code>
+extracted from the supplied <code class="docutils literal notranslate"><span class="pre">external_reference.kind</span></code>, returning the
+full <a class="reference internal" href="#cis-8004-agentview"><span class="std std-ref">AgentView (returned)</span></a> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</section>
+<section id="getagentwallet">
+<span id="cis-8004-getagentwallet"></span><h4>getAgentWallet<a class="headerlink" href="#getagentwallet" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// parameter: AgentTokenId</span>
+<span class="c1">// returns:   Option&lt;AccountAddress&gt;</span>
+</pre></div>
+</div>
+<p>Read-only. Returns <code class="docutils literal notranslate"><span class="pre">Some(addr)</span></code> when <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code> is set (after
+register or <a class="reference internal" href="#cis-8004-setagentwallet"><span class="std std-ref">setAgentWallet</span></a>), <code class="docutils literal notranslate"><span class="pre">None</span></code> otherwise (after
+transfer or revoke).</p>
+</section>
+<section id="isactive">
+<span id="cis-8004-isactive"></span><h4>isActive<a class="headerlink" href="#isactive" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="c1">// parameter: AgentTokenId</span>
+<span class="c1">// returns:   bool</span>
+</pre></div>
+</div>
+<p>Convenience read-only wrapper: <code class="docutils literal notranslate"><span class="pre">true</span></code> if the agent exists and
+<code class="docutils literal notranslate"><span class="pre">status</span> <span class="pre">==</span> <span class="pre">Active</span></code>; <code class="docutils literal notranslate"><span class="pre">false</span></code> otherwise.</p>
+</section>
+</section>
+<section id="transfer-cis-2-dual-reset-hook">
+<span id="cis-8004-transfer"></span><h3>transfer (CIS-2) — dual-reset hook<a class="headerlink" href="#transfer-cis-2-dual-reset-hook" title="Link to this heading">¶</a></h3>
+<p>The CIS-2 <code class="docutils literal notranslate"><span class="pre">transfer</span></code> entrypoint MUST run two CIS-8004-specific hooks in
+addition to the standard CIS-2 ownership move:</p>
+<ol class="arabic simple">
+<li><p><strong>Clear ``external_reference``.</strong> If the agent had a <code class="docutils literal notranslate"><span class="pre">Some</span></code>
+<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>, set it to <code class="docutils literal notranslate"><span class="pre">None</span></code> and release the
+<code class="docutils literal notranslate"><span class="pre">refs_index</span></code> entry. Emit
+<a class="reference internal" href="#cis-8004-externalreferenceset"><span class="std std-ref">ExternalReferenceSet (tag 242)</span></a> with <code class="docutils literal notranslate"><span class="pre">external_reference</span> <span class="pre">=</span> <span class="pre">None</span></code>.</p></li>
+<li><p><strong>Reset ``agent_wallet``.</strong> If the agent had a <code class="docutils literal notranslate"><span class="pre">Some</span></code> <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code>,
+set it to <code class="docutils literal notranslate"><span class="pre">None</span></code>. Emit <a class="reference internal" href="#cis-8004-agentwalletset"><span class="std std-ref">AgentWalletSet (tag 245)</span></a> with
+<code class="docutils literal notranslate"><span class="pre">new_wallet</span> <span class="pre">=</span> <span class="pre">None</span></code>.</p></li>
+</ol>
+<p>Both reset events MUST be emitted before the standard CIS-2 <code class="docutils literal notranslate"><span class="pre">Transfer</span></code>
+event for the same token. The new owner MUST re-establish
+<code class="docutils literal notranslate"><span class="pre">external_reference</span></code> via <a class="reference internal" href="#cis-8004-setexternalreference"><span class="std std-ref">setExternalReference</span></a> and
+<code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code> via <a class="reference internal" href="#cis-8004-setagentwallet"><span class="std std-ref">setAgentWallet</span></a> if they want the agent
+to be re-bound and re-payable.</p>
+<p>The remaining CIS-2 entrypoints (<code class="docutils literal notranslate"><span class="pre">balanceOf</span></code>, <code class="docutils literal notranslate"><span class="pre">operatorOf</span></code>,
+<code class="docutils literal notranslate"><span class="pre">updateOperator</span></code>, <code class="docutils literal notranslate"><span class="pre">tokenMetadata</span></code>) follow the standard
+<a class="reference internal" href="cis-2.html#cis-2"><span class="std std-ref">CIS-2: Concordium Token Standard 2</span></a> semantics with no CIS-8004-specific augmentation.
+<code class="docutils literal notranslate"><span class="pre">tokenMetadata(token_id)</span></code> MUST return the agent’s <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code> as the
+CIS-2 <code class="docutils literal notranslate"><span class="pre">MetadataUrl.url</span></code>.</p>
+</section>
+<section id="supports">
+<h3>supports<a class="headerlink" href="#supports" title="Link to this heading">¶</a></h3>
+<p>A CIS-8004 contract MUST implement <a class="reference internal" href="cis-0.html#cis-0"><span class="std std-ref">CIS-0: Standard Detection</span></a> and MUST return <code class="docutils literal notranslate"><span class="pre">Support</span></code>
+for <code class="docutils literal notranslate"><span class="pre">CIS-0</span></code>, <code class="docutils literal notranslate"><span class="pre">CIS-2</span></code>, and <code class="docutils literal notranslate"><span class="pre">CIS-8004</span></code>.</p>
+</section>
+<section id="events">
+<h3>Events<a class="headerlink" href="#events" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Tag</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#cis-8004-registered"><span class="std std-ref">Registered (tag 240)</span></a></p></td>
+<td><p>240</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cis-8004-uriupdated"><span class="std std-ref">URIUpdated (tag 241)</span></a></p></td>
+<td><p>241</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cis-8004-externalreferenceset"><span class="std std-ref">ExternalReferenceSet (tag 242)</span></a></p></td>
+<td><p>242</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cis-8004-metadataset"><span class="std std-ref">MetadataSet (tag 243)</span></a></p></td>
+<td><p>243</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cis-8004-revoked"><span class="std std-ref">Revoked (tag 244)</span></a></p></td>
+<td><p>244</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cis-8004-agentwalletset"><span class="std std-ref">AgentWalletSet (tag 245)</span></a></p></td>
+<td><p>245</p></td>
+</tr>
+<tr class="row-even"><td><p>CIS-2 <code class="docutils literal notranslate"><span class="pre">TokenMetadata</span></code></p></td>
+<td><p>251 (passthrough)</p></td>
+</tr>
+<tr class="row-odd"><td><p>CIS-2 <code class="docutils literal notranslate"><span class="pre">UpdateOperator</span></code></p></td>
+<td><p>252 (passthrough)</p></td>
+</tr>
+<tr class="row-even"><td><p>CIS-2 <code class="docutils literal notranslate"><span class="pre">Burn</span></code></p></td>
+<td><p>253 (passthrough; not emitted by CIS-8004 — see <a class="reference internal" href="#cis-8004-revoke"><span class="std std-ref">revoke</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>CIS-2 <code class="docutils literal notranslate"><span class="pre">Mint</span></code></p></td>
+<td><p>254 (passthrough; emitted on register)</p></td>
+</tr>
+<tr class="row-even"><td><p>CIS-2 <code class="docutils literal notranslate"><span class="pre">Transfer</span></code></p></td>
+<td><p>255 (passthrough)</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Every event with a <code class="docutils literal notranslate"><span class="pre">token_id</span></code> field — both CIS-8004-native (tags
+240..247) and CIS-2 inherited (tags 251..255) — serialises <code class="docutils literal notranslate"><span class="pre">token_id</span></code> in
+the standard <code class="docutils literal notranslate"><span class="pre">TokenIdU64</span></code> form. See <a class="reference internal" href="#cis-8004-tokenidwireformat"><span class="std std-ref">Token ID Wire Format</span></a>.</p>
+<section id="registered-tag-240">
+<span id="cis-8004-registered"></span><h4>Registered (tag 240)<a class="headerlink" href="#registered-tag-240" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">RegisteredEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">           </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">owner_account</span><span class="p">:</span><span class="w">      </span><span class="nc">AccountAddress</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_uri</span><span class="p">:</span><span class="w">          </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">metadata_hash</span><span class="p">:</span><span class="w">      </span><span class="nb">Option</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">u8</span><span class="p">;</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">external_reference</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">ExternalReference</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">registered_at</span><span class="p">:</span><span class="w">      </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="uriupdated-tag-241">
+<span id="cis-8004-uriupdated"></span><h4>URIUpdated (tag 241)<a class="headerlink" href="#uriupdated-tag-241" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">URIUpdatedEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">      </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">agent_uri</span><span class="p">:</span><span class="w">     </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">metadata_hash</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="p">[</span><span class="kt">u8</span><span class="p">;</span><span class="w"> </span><span class="mi">32</span><span class="p">]</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">updated_at</span><span class="p">:</span><span class="w">    </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="externalreferenceset-tag-242">
+<span id="cis-8004-externalreferenceset"></span><h4>ExternalReferenceSet (tag 242)<a class="headerlink" href="#externalreferenceset-tag-242" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExternalReferenceSetEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">           </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">external_reference</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">ExternalReference</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">updated_at</span><span class="p">:</span><span class="w">         </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Emitted on <a class="reference internal" href="#cis-8004-setexternalreference"><span class="std std-ref">setExternalReference</span></a> and on the transfer hook
+(<a class="reference internal" href="#cis-8004-transfer"><span class="std std-ref">transfer (CIS-2) — dual-reset hook</span></a>) with <code class="docutils literal notranslate"><span class="pre">external_reference</span> <span class="pre">=</span> <span class="pre">None</span></code>.</p>
+</section>
+<section id="metadataset-tag-243">
+<span id="cis-8004-metadataset"></span><h4>MetadataSet (tag 243)<a class="headerlink" href="#metadataset-tag-243" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">MetadataSetEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">   </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">key</span><span class="p">:</span><span class="w">        </span><span class="nb">String</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">value</span><span class="p">:</span><span class="w">      </span><span class="nb">Vec</span><span class="o">&lt;</span><span class="kt">u8</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">updated_at</span><span class="p">:</span><span class="w"> </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="revoked-tag-244">
+<span id="cis-8004-revoked"></span><h4>Revoked (tag 244)<a class="headerlink" href="#revoked-tag-244" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">RevokedEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">      </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">owner_account</span><span class="p">:</span><span class="w"> </span><span class="nc">AccountAddress</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">reason</span><span class="p">:</span><span class="w">        </span><span class="nb">Option</span><span class="o">&lt;</span><span class="nb">String</span><span class="o">&gt;</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">revoked_at</span><span class="p">:</span><span class="w">    </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="agentwalletset-tag-245">
+<span id="cis-8004-agentwalletset"></span><h4>AgentWalletSet (tag 245)<a class="headerlink" href="#agentwalletset-tag-245" title="Link to this heading">¶</a></h4>
+<div class="highlight-rust notranslate"><div class="highlight"><pre><span></span><span class="k">pub</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">AgentWalletSetEvent</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">token_id</span><span class="p">:</span><span class="w">   </span><span class="nc">AgentTokenId</span><span class="p">,</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">new_wallet</span><span class="p">:</span><span class="w"> </span><span class="nb">Option</span><span class="o">&lt;</span><span class="n">AccountAddress</span><span class="o">&gt;</span><span class="p">,</span><span class="w">  </span><span class="c1">// None on transfer-induced reset</span>
+<span class="w">    </span><span class="k">pub</span><span class="w"> </span><span class="n">updated_at</span><span class="p">:</span><span class="w"> </span><span class="nc">Timestamp</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="errors">
+<h3>Errors<a class="headerlink" href="#errors" title="Link to this heading">¶</a></h3>
+<p>Reject codes MUST map to the numeric values listed below via an explicit
+<code class="docutils literal notranslate"><span class="pre">From&lt;Cis8004Error&gt;</span> <span class="pre">for</span> <span class="pre">Reject</span></code>.</p>
+<div class="table-wrapper docutils container" id="id1">
+<span id="cis-8004-agentwalletdeadlinepassed"></span><span id="cis-8004-invalidagentwalletproof"></span><span id="cis-8004-reservedkey"></span><span id="cis-8004-agentalreadyrevoked"></span><span id="cis-8004-invalidmetadata"></span><span id="cis-8004-invalidexternalreference"></span><span id="cis-8004-externalreferencetaken"></span><span id="cis-8004-agentrevoked"></span><span id="cis-8004-unauthorized"></span><span id="cis-8004-agentnotfound"></span><span id="cis-8004-agentwalletdeadlinepassed"></span><span id="cis-8004-invalidagentwalletproof"></span><span id="cis-8004-reservedkey"></span><span id="cis-8004-agentalreadyrevoked"></span><span id="cis-8004-invalidmetadata"></span><span id="cis-8004-invalidexternalreference"></span><span id="cis-8004-externalreferencetaken"></span><span id="cis-8004-agentrevoked"></span><span id="cis-8004-unauthorized"></span><span id="cis-8004-agentnotfound"></span><table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Reject Codes</span><a class="headerlink" href="#id1" title="Link to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Code</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>-7200</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code></p></td>
+<td><p>No agent exists for the supplied <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7201</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code></p></td>
+<td><p>Sender is not authorised — typically: contract caller on <code class="docutils literal notranslate"><span class="pre">register</span></code>,
+or non-owner on <code class="docutils literal notranslate"><span class="pre">setAgentURI</span></code> / <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> /
+<code class="docutils literal notranslate"><span class="pre">setExternalReference</span></code> / <code class="docutils literal notranslate"><span class="pre">setMetadata</span></code> / <code class="docutils literal notranslate"><span class="pre">revoke</span></code> / <code class="docutils literal notranslate"><span class="pre">transfer</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>-7202</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AgentRevoked</span></code></p></td>
+<td><p>The agent’s <code class="docutils literal notranslate"><span class="pre">status</span></code> is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code> — mutating operations are
+refused.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7203</p></td>
+<td><p>(reserved)</p></td>
+<td><p>Reserved for future use.</p></td>
+</tr>
+<tr class="row-even"><td><p>-7204</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ExternalReferenceTaken</span></code></p></td>
+<td><p>The supplied <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> is already bound to another
+agent in <code class="docutils literal notranslate"><span class="pre">refs_index</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7205</p></td>
+<td><p>(reserved)</p></td>
+<td><p>Reserved for future use.</p></td>
+</tr>
+<tr class="row-even"><td><p>-7206</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">InvalidExternalReference</span></code></p></td>
+<td><p>The cross-contract verification path failed: address mismatch
+against <code class="docutils literal notranslate"><span class="pre">state.cis8_contract</span></code>, invoke
+error, <code class="docutils literal notranslate"><span class="pre">None</span></code> return, wrong status, or wrong owner.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7207</p></td>
+<td><p>(reserved)</p></td>
+<td><p>Reserved for future use.</p></td>
+</tr>
+<tr class="row-even"><td><p>-7208</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">InvalidMetadata</span></code></p></td>
+<td><p>Parameter parse failure, oversized <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>, or a metadata
+key/value outside the size limits in <a class="reference internal" href="#cis-8004-metadataentry"><span class="std std-ref">MetadataEntry</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7209</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AgentAlreadyRevoked</span></code></p></td>
+<td><p>Attempted to revoke an already-revoked agent.</p></td>
+</tr>
+<tr class="row-even"><td><p>-7210</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">NotImplemented</span></code></p></td>
+<td><p>Reserved for future use.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7211</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ReservedKey</span></code></p></td>
+<td><p>Attempted to use the reserved key <code class="docutils literal notranslate"><span class="pre">&quot;agentWallet&quot;</span></code> via
+<code class="docutils literal notranslate"><span class="pre">setMetadata</span></code> or <code class="docutils literal notranslate"><span class="pre">initial_metadata</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>-7212</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">InvalidAgentWalletProof</span></code></p></td>
+<td><p>The signature supplied to <a class="reference internal" href="#cis-8004-setagentwallet"><span class="std std-ref">setAgentWallet</span></a> does not
+verify against <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>’s on-chain credentials over the
+canonical bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>-7213</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">AgentWalletDeadlinePassed</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ctx.metadata().slot_time()</span> <span class="pre">&gt;</span> <span class="pre">deadline</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>CIS-2 errors emitted by the underlying <code class="docutils literal notranslate"><span class="pre">concordium-cis2</span></code> machinery pass
+through wrapped in a <code class="docutils literal notranslate"><span class="pre">Cis2Error(_)</span></code> variant.</p>
+</section>
+</section>
+<section id="departures-from-erc-8004-v2">
+<span id="cis-8004-departuresfromerc8004"></span><h2>Departures from ERC-8004 v2<a class="headerlink" href="#departures-from-erc-8004-v2" title="Link to this heading">¶</a></h2>
+<p>This section is informative.</p>
+<ul class="simple">
+<li><p><strong>CIS-8004 has native ``revoke``.</strong> ERC-8004 v2 has no native revocation
+primitive; CIS-8004 provides one because soft-deactivation without
+burning the NFT is the more common Concordium-ecosystem need.</p></li>
+<li><p><strong>``agent_wallet`` resets on transfer.</strong> The new owner MUST explicitly
+re-establish <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code> via <a class="reference internal" href="#cis-8004-setagentwallet"><span class="std std-ref">setAgentWallet</span></a>. This
+mirrors ERC-8004 v2 semantics.</p></li>
+<li><p><strong>``external_reference`` resets on transfer.</strong> The new owner MUST
+re-establish their own <code class="docutils literal notranslate"><span class="pre">external_reference</span></code>; previous bindings are
+released from <code class="docutils literal notranslate"><span class="pre">refs_index</span></code>. This is stricter than the ERC-8004 v2
+spec, which is silent on the question.</p></li>
+<li><p><strong>Identifier form is CIS-2 token address (Base58Check), not URI/DID.</strong>
+Off-chain consumers receive a single canonical Base58Check string
+derived from <code class="docutils literal notranslate"><span class="pre">(contract,</span> <span class="pre">token_id)</span></code>.</p></li>
+<li><p><strong>Reputation Registry and Validation Registry</strong> components of
+ERC-8004 v2 are out of scope for this version.</p></li>
+</ul>
+</section>
+<section id="reference-deployments">
+<span id="cis-8004-deploymentstatus"></span><h2>Reference Deployments<a class="headerlink" href="#reference-deployments" title="Link to this heading">¶</a></h2>
+<p>This section is informative.</p>
+<p>The following contract instances implement this draft on Concordium-operated
+networks:</p>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Network</p></th>
+<th class="head"><p>Contract address</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Concordium DevNet P-11</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;24,</span> <span class="pre">0&gt;</span></code></p></td>
+<td><p>Concordium-owned redeploy 2026-05-25; fixes the pre-redeploy token_id
+wire-format bug (see <a class="reference internal" href="#cis-8004-tokenidwireformat"><span class="std std-ref">Token ID Wire Format</span></a>). State freshly
+initialised.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Concordium TestNet</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;12795,</span> <span class="pre">0&gt;</span></code></p></td>
+<td><p>Concordium-owned redeploy 2026-05-25; same module bytes as DevNet.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Behavioural notes on the live deployments (subject to revision as the spec
+is finalised):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">register</span></code> with <code class="docutils literal notranslate"><span class="pre">external_reference</span> <span class="pre">=</span> <span class="pre">None</span></code> and <code class="docutils literal notranslate"><span class="pre">external_reference</span>
+<span class="pre">=</span> <span class="pre">Some(Cis8(_))</span></code> succeeds end-to-end.</p></li>
+</ul>
+</section>
+<section id="security-considerations">
+<h2>Security Considerations<a class="headerlink" href="#security-considerations" title="Link to this heading">¶</a></h2>
+<dl class="simple">
+<dt>Dual authorisation on <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code></dt><dd><p>Both the current owner AND the new wallet’s controller must
+authorise — protecting against either side unilaterally redirecting
+payments. The 26-byte <code class="docutils literal notranslate"><span class="pre">CIS-8004/v1/setAgentWallet</span></code> prefix and the
+<code class="docutils literal notranslate"><span class="pre">contract_address</span></code> + <code class="docutils literal notranslate"><span class="pre">genesis_hash</span></code> pinning prevent cross-context
+signature replay.</p>
+</dd>
+<dt>Transfer hook resets</dt><dd><p>Both <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> and <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code> are reset on every
+transfer. This prevents a previous owner’s payment address or external
+identity binding from accidentally persisting under new ownership. The
+new owner MUST explicitly re-establish each.</p>
+</dd>
+<dt>CIS-2 contract recipients</dt><dd><p><code class="docutils literal notranslate"><span class="pre">transfer.to</span></code> MAY be a contract address per CIS-2. Implementations
+SHOULD consider whether contract-owned agents are meaningful for their
+use case — agent NFTs held by a contract have no direct CIS-2
+<code class="docutils literal notranslate"><span class="pre">signature</span></code> channel for re-setting <code class="docutils literal notranslate"><span class="pre">agent_wallet</span></code>, so the agent
+would be unable to receive payments routed through that field until
+transferred back to an account.</p>
+</dd>
+</dl>
+</section>
+<section id="copyright">
+<h2>Copyright<a class="headerlink" href="#copyright" title="Link to this heading">¶</a></h2>
+<p>This document is placed in the public domain.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../ID/concordium-did.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Concordium DID Method Version 1.1</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="cis-8.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">CIS-8: External Key Registry Standard</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Concordium
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">CIS-8004: Agent Registry</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li><a class="reference internal" href="#terminology-and-conventions">Terminology and Conventions</a></li>
+<li><a class="reference internal" href="#relationship-to-other-cis-standards">Relationship to Other CIS Standards</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#specification">Specification</a><ul>
+<li><a class="reference internal" href="#common-types">Common Types</a><ul>
+<li><a class="reference internal" href="#agenttokenid">AgentTokenId</a></li>
+<li><a class="reference internal" href="#externalkeyid">ExternalKeyId</a></li>
+<li><a class="reference internal" href="#externalidentifier">ExternalIdentifier</a></li>
+<li><a class="reference internal" href="#externalrefkind">ExternalRefKind</a></li>
+<li><a class="reference internal" href="#externalreference">ExternalReference</a></li>
+<li><a class="reference internal" href="#agentstatus">AgentStatus</a></li>
+<li><a class="reference internal" href="#metadataentry">MetadataEntry</a></li>
+<li><a class="reference internal" href="#agentrecord-on-chain">AgentRecord (on-chain)</a></li>
+<li><a class="reference internal" href="#agentview-returned">AgentView (returned)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#token-id-wire-format">Token ID Wire Format</a></li>
+<li><a class="reference internal" href="#contract-state">Contract State</a></li>
+<li><a class="reference internal" href="#entrypoints">Entrypoints</a><ul>
+<li><a class="reference internal" href="#register">register</a></li>
+<li><a class="reference internal" href="#setagenturi">setAgentURI</a></li>
+<li><a class="reference internal" href="#setexternalreference">setExternalReference</a></li>
+<li><a class="reference internal" href="#setagentwallet">setAgentWallet</a><ul>
+<li><a class="reference internal" href="#setagentwallet-canonical-signed-message">setAgentWallet — canonical signed message</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#revoke">revoke</a></li>
+<li><a class="reference internal" href="#setmetadata">setMetadata</a></li>
+<li><a class="reference internal" href="#getmetadata">getMetadata</a><ul>
+<li><a class="reference internal" href="#agentwallet-reserved-metadata-key">agentWallet — reserved metadata key</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#agentof">agentOf</a></li>
+<li><a class="reference internal" href="#agentbyexternalreference">agentByExternalReference</a></li>
+<li><a class="reference internal" href="#getagentwallet">getAgentWallet</a></li>
+<li><a class="reference internal" href="#isactive">isActive</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#transfer-cis-2-dual-reset-hook">transfer (CIS-2) — dual-reset hook</a></li>
+<li><a class="reference internal" href="#supports">supports</a></li>
+<li><a class="reference internal" href="#events">Events</a><ul>
+<li><a class="reference internal" href="#registered-tag-240">Registered (tag 240)</a></li>
+<li><a class="reference internal" href="#uriupdated-tag-241">URIUpdated (tag 241)</a></li>
+<li><a class="reference internal" href="#externalreferenceset-tag-242">ExternalReferenceSet (tag 242)</a></li>
+<li><a class="reference internal" href="#metadataset-tag-243">MetadataSet (tag 243)</a></li>
+<li><a class="reference internal" href="#revoked-tag-244">Revoked (tag 244)</a></li>
+<li><a class="reference internal" href="#agentwalletset-tag-245">AgentWalletSet (tag 245)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#errors">Errors</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#departures-from-erc-8004-v2">Departures from ERC-8004 v2</a></li>
+<li><a class="reference internal" href="#reference-deployments">Reference Deployments</a></li>
+<li><a class="reference internal" href="#security-considerations">Security Considerations</a></li>
+<li><a class="reference internal" href="#copyright">Copyright</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    </body>
+</html>

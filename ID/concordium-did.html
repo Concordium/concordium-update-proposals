@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="CIS-7: Protocol-level Tokens (PLTs)" href="../CIS/cis-7.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="prev" title="CIS-8004: Agent Registry" href="../CIS/cis-8004.html" />
 
     <link rel="shortcut icon" href="../_static/concordium-logo-no-text.svg"/><!-- Generated with Sphinx 8.1.3 and Furo 2024.08.06 -->
-        <title>Concordium DID Method Version 1.0 - Interoperability Specifications</title>
+        <title>Concordium DID Method Version 1.1 - Interoperability Specifications</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
@@ -225,7 +225,9 @@
 <li class="toctree-l1"><a class="reference internal" href="../CIS/cis-5.html">CIS-5: Smart Contract Wallet Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../CIS/cis-6.html">CIS-6: Track-and-Trace Standard</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../CIS/cis-7.html">CIS-7: Protocol-level Tokens (PLTs)</a></li>
-<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Concordium DID Method Version 1.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-8.html">CIS-8: External Key Registry Standard</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../CIS/cis-8004.html">CIS-8004: Agent Registry</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Concordium DID Method Version 1.1</a></li>
 </ul>
 
 </div>
@@ -266,8 +268,8 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="concordium-did-method-version-1-0">
-<span id="concordium-did"></span><h1>Concordium DID Method Version 1.0<a class="headerlink" href="#concordium-did-method-version-1-0" title="Link to this heading">¶</a></h1>
+          <section id="concordium-did-method-version-1-1">
+<span id="concordium-did"></span><h1>Concordium DID Method Version 1.1<a class="headerlink" href="#concordium-did-method-version-1-1" title="Link to this heading">¶</a></h1>
 <section id="about">
 <h2>About<a class="headerlink" href="#about" title="Link to this heading">¶</a></h2>
 <p>The Concordium DID method specification conforms to the requirements specified in <a class="reference external" href="https://www.w3.org/TR/did-core/">Decentralized Identifiers (DIDs) v1.0</a> published by the W3C Credentials Community Group.
@@ -283,6 +285,7 @@ We distinguish the following types of DIDs:</p>
 <li><p><strong>Smart Contract DID</strong> refers to smart contract instances on the Concordium blockchain.</p></li>
 <li><p><strong>Public Key DID</strong> refers to a subject that knows the corresponding secret key.</p></li>
 <li><p><strong>Identity Provider DID</strong> refers to an Identity Provider - an organization, approved by Concordium, that performs off-chain identification of users.</p></li>
+<li><p><strong>Encrypted Identity Credential DID</strong> refers to a subject that has registered at an identity provider with the corresponding holder identifier.</p></li>
 </ul>
 </section>
 <section id="status-of-this-document">
@@ -304,7 +307,7 @@ Per DID specification [DID] this string must be in lowercase.</p>
 <section id="identifier-syntax">
 <h3>Identifier Syntax<a class="headerlink" href="#identifier-syntax" title="Link to this heading">¶</a></h3>
 <p>Concordium DID identifiers are defined by the following <a class="reference external" href="https://en.wikipedia.org/wiki/Augmented_Backus%E2%80%93Naur_form">ABNF</a>:</p>
-<div class="highlight-ABNF notranslate"><div class="highlight"><pre><span></span><span class="nc">ccd-did</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">prefix</span><span class="w"> </span><span class="l">&quot;:&quot;</span><span class="w"> </span><span class="o">*1</span><span class="p">(</span><span class="nc">network</span><span class="w"> </span><span class="l">&quot;:&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nc">acctype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">pkctype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">scitype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">idptype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">credtype</span><span class="p">)</span>
+<div class="highlight-ABNF notranslate"><div class="highlight"><pre><span></span><span class="nc">ccd-did</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">prefix</span><span class="w"> </span><span class="l">&quot;:&quot;</span><span class="w"> </span><span class="o">*1</span><span class="p">(</span><span class="nc">network</span><span class="w"> </span><span class="l">&quot;:&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="nc">acctype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">pkctype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">scitype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">idptype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">credtype</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nc">encidtype</span><span class="p">)</span>
 <span class="nc">prefix</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="l">%s&quot;did:ccd&quot;</span>
 <span class="nc">network</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">&quot;testnet&quot;</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="l">&quot;mainnet&quot;</span>
 <span class="nc">acctype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">&quot;acc:&quot;</span><span class="w"> </span><span class="o">50</span><span class="p">(</span><span class="nc">base58char</span><span class="p">)</span>
@@ -312,6 +315,7 @@ Per DID specification [DID] this string must be in lowercase.</p>
 <span class="nc">scitype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">&quot;sci:&quot;</span><span class="w"> </span><span class="nc">index</span><span class="w"> </span><span class="o">*1</span><span class="p">(</span>“:”<span class="w"> </span><span class="nc">subindex</span><span class="p">)</span>
 <span class="nc">idptype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">&quot;idp:&quot;</span><span class="w"> </span><span class="nc">index</span>
 <span class="nc">credtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">&quot;cred:&quot;</span><span class="w"> </span><span class="o">96</span><span class="p">(</span><span class="nc">base16char</span><span class="p">)</span>
+<span class="nc">encidtype</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="l">&quot;encidcred:&quot;</span><span class="w"> </span><span class="o">1*</span><span class="p">(</span><span class="nc">base16char</span><span class="p">)</span>
 <span class="nc">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">1*</span><span class="k">DIGIT</span>
 <span class="nc">subindex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">1*</span><span class="k">DIGIT</span>
 <span class="nc">base16char</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">HEXDIG</span>
@@ -334,6 +338,10 @@ Per DID specification [DID] this string must be in lowercase.</p>
 <p class="admonition-title">Note</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">subindex</span></code> part of the smart contract instance <code class="docutils literal notranslate"><span class="pre">sci</span></code> is optional.
 <em>If omitted the subindex is assumed to be `0` by default.</em></p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">1*(base16char)</span></code> part of the encidtype is a variable length ciphertext.</p>
 </div>
 </section>
 <section id="smart-contract-instance-reference-syntax">
@@ -365,6 +373,8 @@ Concordium smart contract entrypoints can be addressed using DID references.</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:sci:321/issuerKeys</span></code></p>
 <p>A smart contract instance with the <code class="docutils literal notranslate"><span class="pre">credentialEntry</span></code> entrypoint taking a parameter</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:sci:123/credentialEntry/ee763364dc1a47d6aa4cc6bdb005e2b2</span></code></p>
+<p>An encrypted identity credential</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:testnet:encidcred:04000500000001a45064854acb...40185bb9e6618f4e4</span></code></p>
 </section>
 </section>
 <section id="concordium-did-documents">
@@ -601,6 +611,22 @@ Identity provider DIDs can represent an issuer of a verifiable credential.</p>
 </pre></div>
 </div>
 </section>
+<section id="encrypted-identity-credential-did">
+<h3>Encrypted Identity Credential DID<a class="headerlink" href="#encrypted-identity-credential-did" title="Link to this heading">¶</a></h3>
+<p>The goal of the Encrypted Identity Credential DID is to represent a pseudonymous subject that has registered at an identity provider.
+The subject can be identified via identity disclosure.</p>
+<p>The Encrypted Identity Credential DID Document MUST contain the following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span></code> - the DID of the subject.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">idp</span></code> - specifies the identity provider that issued the identity credential.</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:ccd:encidcred:XX&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;idp&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;did:ccd:idp:YY&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="concordium-did-operations">
 <h2>Concordium DID Operations<a class="headerlink" href="#concordium-did-operations" title="Link to this heading">¶</a></h2>
@@ -631,11 +657,15 @@ These DIDs are not registered on the blockchain.</p>
 <h4>Identity Provider DID<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h4>
 <p>Identity providers can be added as a <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/updates/index.html">chain update</a> transaction of type <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/updates/enum.UpdateType.html#variant.UpdateAddIdentityProvider">UpdateAddIdentityProvider</a>.</p>
 </section>
+<section id="id6">
+<h4>Encrypted Identity Credential DID<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
+<p>An encrypted identity credential DID can be used as the subject of a verifiable presentation that is derived from an identity credential.</p>
+</section>
 </section>
 <section id="read">
 <h3>Read<a class="headerlink" href="#read" title="Link to this heading">¶</a></h3>
-<section id="id6">
-<h4>Account DID<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h4>
+<section id="id7">
+<h4>Account DID<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
 <p>The DID document information for a DID of the form</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:acc:ADDR</span></code></p>
 <p>can be resolved by looking up an account with address <code class="docutils literal notranslate"><span class="pre">ADDR</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
@@ -646,15 +676,15 @@ These DIDs are not registered on the blockchain.</p>
 </pre></div>
 </div>
 </section>
-<section id="id7">
-<h4>Concordium Credential DID<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
+<section id="id8">
+<h4>Concordium Credential DID<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
 <p>The DID document information for a DID of the form</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:cred:CRED</span></code></p>
 <p>can be resolved by looking up a credential with ID <code class="docutils literal notranslate"><span class="pre">CRED</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
 <p>Data required to construct the DID document can be acquired by using the same gRPC interface command <code class="docutils literal notranslate"><span class="pre">GetAccountInfo</span></code> as for Concordium account DIDs.</p>
 </section>
-<section id="id8">
-<h4>Smart Contract Instance DID<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
+<section id="id9">
+<h4>Smart Contract Instance DID<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
 <p>The DID document information for a DID of the form</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:sci:IND:SUBIND</span></code></p>
 <p>can be resolved by looking up a smart contract instance with indices <code class="docutils literal notranslate"><span class="pre">IND</span></code>, <code class="docutils literal notranslate"><span class="pre">SUBIND</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.
@@ -702,8 +732,8 @@ The parameter <code class="docutils literal notranslate"><span class="pre">PAR</
 <p><a class="reference external" href="https://w3c-ccg.github.io/did-resolution/#dereferencing">Dereferencing a DID URL</a> in the W3C Credentials Community Group draft report.</p>
 </div>
 </section>
-<section id="id9">
-<h4>Public Key Cryptography DID<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
+<section id="id10">
+<h4>Public Key Cryptography DID<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h4>
 <p>The DID document corresponding to a DID of the form</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:pkc:PK</span></code></p>
 <p>can be constructed directly from the DID without any lookup necessary.</p>
@@ -713,8 +743,8 @@ The parameter <code class="docutils literal notranslate"><span class="pre">PAR</
 In the future, however, the <code class="docutils literal notranslate"><span class="pre">vefiricationMethod</span></code> as it specified in <a class="reference internal" href="#concordium-did-pkc"><span class="std std-ref">Public Key Cryptography DID</span></a> might depend on the network.</p>
 </div>
 </section>
-<section id="id10">
-<h4>Identity Provider DID<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h4>
+<section id="id11">
+<h4>Identity Provider DID<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h4>
 <p>The DID document information for a DID of the form</p>
 <p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:idp:INDEX</span></code></p>
 <p>can be resolved by looking up an identity provider <code class="docutils literal notranslate"><span class="pre">INDEX</span></code> on blockchain <code class="docutils literal notranslate"><span class="pre">NET</span></code>.</p>
@@ -725,24 +755,35 @@ In the future, however, the <code class="docutils literal notranslate"><span cla
 </pre></div>
 </div>
 </section>
+<section id="id12">
+<h4>Encrypted Identity Credential DID<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h4>
+<p>The DID document corresponding to a DID of the form</p>
+<p><code class="docutils literal notranslate"><span class="pre">did:ccd:NET:encidcred:ENCID</span></code></p>
+<p>can be constructed from a <cite>ConcordiumIdBasedCredential</cite> verifiable presentation that contains <code class="docutils literal notranslate"><span class="pre">did:ccd:NET:encidcred:ENCID</span></code> as the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the <cite>credentialSubject</cite>.
+The <code class="docutils literal notranslate"><span class="pre">idp</span></code> field is set to the <cite>issuer</cite> field of the verifiable presentation.</p>
+<p>Note:
+A zero-knowledge proof (verifiable presentation) generated by wallets can specify as subject an
+<cite>did:ccd:&lt;NET&gt;:encidcred:&lt;ENCID&gt; (Encrypted Identity Credential DID)</cite>
+when the proof was generated from a ConcordiumIdBasedCredential (e.g., passport or ID card) not linked to an on-chain account.</p>
+</section>
 </section>
 <section id="update">
 <h3>Update<a class="headerlink" href="#update" title="Link to this heading">¶</a></h3>
-<section id="id11">
-<h4>Account DID<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h4>
+<section id="id13">
+<h4>Account DID<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
 <p>It is possible to update Account DID documents by sending an <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html">update credentials transaction</a>.
 This type of transaction allows for adding/removing credentials and changing the signature threshold.</p>
 </section>
-<section id="id12">
-<h4>Concordium Credential DID<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h4>
+<section id="id14">
+<h4>Concordium Credential DID<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h4>
 <p>It is possible to update Concordium Credential DID documents by sending an <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/send/fn.update_credential_keys.html">update credentials keys transaction</a>.
 This type of transaction allows for updating the keys associated with a Concordium credential and the corresponding signature threshold.</p>
 </section>
 </section>
 <section id="deactivate">
 <h3>Deactivate<a class="headerlink" href="#deactivate" title="Link to this heading">¶</a></h3>
-<section id="id13">
-<h4>Concordium Credential DID<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h4>
+<section id="id15">
+<h4>Concordium Credential DID<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h4>
 <p>A Concordium Credential DID can be deactivated by removing the corresponding credential with an <a class="reference external" href="https://docs.rs/concordium_base/1.2.0/concordium_base/transactions/construct/fn.update_credentials.html">update credentials transaction</a>.</p>
 </section>
 </section>
@@ -813,14 +854,14 @@ The document that uses the <code class="docutils literal notranslate"><span clas
         
         <div class="related-pages">
           
-          <a class="prev-page" href="../CIS/cis-7.html">
+          <a class="prev-page" href="../CIS/cis-8004.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">CIS-7: Protocol-level Tokens (PLTs)</div>
+                <div class="title">CIS-8004: Agent Registry</div>
                 
               </div>
             </a>
@@ -854,7 +895,7 @@ The document that uses the <code class="docutils literal notranslate"><span clas
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Concordium DID Method Version 1.0</a><ul>
+<li><a class="reference internal" href="#">Concordium DID Method Version 1.1</a><ul>
 <li><a class="reference internal" href="#about">About</a></li>
 <li><a class="reference internal" href="#abstract">Abstract</a></li>
 <li><a class="reference internal" href="#status-of-this-document">Status of This Document</a></li>
@@ -872,6 +913,7 @@ The document that uses the <code class="docutils literal notranslate"><span clas
 <li><a class="reference internal" href="#smart-contract-instance-did">Smart Contract Instance DID</a></li>
 <li><a class="reference internal" href="#public-key-cryptography-did">Public Key Cryptography DID</a></li>
 <li><a class="reference internal" href="#identity-provider-did">Identity Provider DID</a></li>
+<li><a class="reference internal" href="#encrypted-identity-credential-did">Encrypted Identity Credential DID</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#concordium-did-operations">Concordium DID Operations</a><ul>
@@ -881,24 +923,26 @@ The document that uses the <code class="docutils literal notranslate"><span clas
 <li><a class="reference internal" href="#id3">Smart Contract Instance DID</a></li>
 <li><a class="reference internal" href="#id4">Public Key Cryptography DID</a></li>
 <li><a class="reference internal" href="#id5">Identity Provider DID</a></li>
+<li><a class="reference internal" href="#id6">Encrypted Identity Credential DID</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#read">Read</a><ul>
-<li><a class="reference internal" href="#id6">Account DID</a></li>
-<li><a class="reference internal" href="#id7">Concordium Credential DID</a></li>
-<li><a class="reference internal" href="#id8">Smart Contract Instance DID</a></li>
+<li><a class="reference internal" href="#id7">Account DID</a></li>
+<li><a class="reference internal" href="#id8">Concordium Credential DID</a></li>
+<li><a class="reference internal" href="#id9">Smart Contract Instance DID</a></li>
 <li><a class="reference internal" href="#smart-contract-instance-reference">Smart Contract Instance Reference</a></li>
-<li><a class="reference internal" href="#id9">Public Key Cryptography DID</a></li>
-<li><a class="reference internal" href="#id10">Identity Provider DID</a></li>
+<li><a class="reference internal" href="#id10">Public Key Cryptography DID</a></li>
+<li><a class="reference internal" href="#id11">Identity Provider DID</a></li>
+<li><a class="reference internal" href="#id12">Encrypted Identity Credential DID</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#update">Update</a><ul>
-<li><a class="reference internal" href="#id11">Account DID</a></li>
-<li><a class="reference internal" href="#id12">Concordium Credential DID</a></li>
+<li><a class="reference internal" href="#id13">Account DID</a></li>
+<li><a class="reference internal" href="#id14">Concordium Credential DID</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#deactivate">Deactivate</a><ul>
-<li><a class="reference internal" href="#id13">Concordium Credential DID</a></li>
+<li><a class="reference internal" href="#id15">Concordium Credential DID</a></li>
 </ul>
 </li>
 </ul>
