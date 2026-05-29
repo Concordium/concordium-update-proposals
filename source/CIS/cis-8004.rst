@@ -372,7 +372,6 @@ Contract functions
 
 A smart contract implementing this standard MUST export the following functions:
 
-- :ref:`CIS-8004-functions-supports`
 - :ref:`CIS-8004-functions-register`
 - :ref:`CIS-8004-functions-setAgentURI`
 - :ref:`CIS-8004-functions-setExternalReference`
@@ -385,15 +384,9 @@ A smart contract implementing this standard MUST export the following functions:
 - :ref:`CIS-8004-functions-isActive`
 - :ref:`CIS-8004-functions-revoke`
 
-A contract implementing this standard MUST also export the complete :ref:`CIS-2<CIS-2>` interface
+A contract implementing this standard MUST also export the complete :ref:`CIS-0<CIS-0>` interface
+(``supports``) and the complete :ref:`CIS-2<CIS-2>` interface
 (``transfer``, ``balanceOf``, ``operatorOf``, ``updateOperator``, ``tokenMetadata``).
-
-.. _CIS-8004-functions-supports:
-
-``supports``
-^^^^^^^^^^^^
-
-As specified in :ref:`CIS-0<CIS-0>`.
 
 .. _CIS-8004-functions-register:
 
