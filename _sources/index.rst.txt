@@ -31,4 +31,3 @@ Concordium Interoperability Specifications
    CIS/cis-8
    CIS/cis-8004
    ID/concordium-did.rst
-
