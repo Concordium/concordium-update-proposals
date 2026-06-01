@@ -325,16 +325,16 @@ A registration may optionally attach an external reference pointing to a CIS-8 c
 <section id="string">
 <span id="cis-8004-string"></span><h4><code class="docutils literal notranslate"><span class="pre">String</span></code><a class="headerlink" href="#string" title="Link to this heading">¶</a></h4>
 <p>A variable-length UTF-8 encoded string.</p>
-<p>It is serialized as: 2 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes for the UTF-8 encoding of the string:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>String ::= (n: Byte²) (value: Byteⁿ)
+<p>It is serialized as: 4 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes for the UTF-8 encoding of the string:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>String ::= (n: Byte⁴) (value: Byteⁿ)
 </pre></div>
 </div>
 </section>
 <section id="bytestring">
 <span id="cis-8004-bytestring"></span><h4><code class="docutils literal notranslate"><span class="pre">Bytestring</span></code><a class="headerlink" href="#bytestring" title="Link to this heading">¶</a></h4>
 <p>A variable-length byte array.</p>
-<p>It is serialized as: 2 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bytestring ::= (n: Byte²) (value: Byteⁿ)
+<p>It is serialized as: 4 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bytestring ::= (n: Byte⁴) (value: Byteⁿ)
 </pre></div>
 </div>
 </section>
@@ -455,18 +455,28 @@ OptionalTimestamp ::= (0: Byte) | (1: Byte) (t: Timestamp)
 <span id="cis-8004-setagentwallet-signing"></span><h3><code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> signed message<a class="headerlink" href="#setagentwallet-signed-message" title="Link to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> entrypoint requires the new wallet account to prove control by providing a
 Concordium account signature over a canonical signed message.</p>
-<p>The message is a fixed 123-byte sequence constructed as follows.
+<p>The message is a fixed 162-byte sequence constructed as follows.
 The contract MUST derive <code class="docutils literal notranslate"><span class="pre">contract_address</span></code> from its own address and <code class="docutils literal notranslate"><span class="pre">genesis_hash</span></code> from the chain
-metadata; neither value may be supplied as a parameter.</p>
+metadata; neither value may be supplied as a parameter.
+The <code class="docutils literal notranslate"><span class="pre">owner</span></code> is the current CIS-2 owner of <code class="docutils literal notranslate"><span class="pre">token_id</span></code> at the time of the call.
+The <code class="docutils literal notranslate"><span class="pre">wallet_set_nonce</span></code> is the agent’s current nonce, which the contract increments after each
+successful <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> call and on every CIS-2 transfer of the token; clients MUST read
+the current value from <code class="docutils literal notranslate"><span class="pre">getAgentWalletNonce</span></code> before constructing the message.</p>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">token_id</span></code> is serialized here as a raw 8-byte little-endian unsigned integer,
+not using the length-prefixed <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> wire form.</p>
 <p>It is serialized as the 26 raw ASCII bytes of the domain separation tag <code class="docutils literal notranslate"><span class="pre">CIS-8004/v1/setAgentWallet</span></code>,
-followed by an <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>),
+followed by the token id as a raw 8-byte little-endian unsigned integer (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>),
+an <a class="reference internal" href="#cis-8004-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>),
 an <a class="reference internal" href="#cis-8004-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>),
+the wallet-set nonce as a raw 8-byte little-endian unsigned integer (<code class="docutils literal notranslate"><span class="pre">wallet_set_nonce</span></code>),
 a <a class="reference internal" href="#cis-8004-timestamp"><span class="std std-ref">Timestamp</span></a> (<code class="docutils literal notranslate"><span class="pre">deadline</span></code>),
 a <a class="reference internal" href="#cis-8004-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">contract_address</span></code>),
 and a <a class="reference internal" href="#cis-8004-blockhash"><span class="std std-ref">BlockHash</span></a> (<code class="docutils literal notranslate"><span class="pre">genesis_hash</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SetAgentWalletSigningData ::= (&quot;CIS-8004/v1/setAgentWallet&quot;: Byte²⁶)
-                               (token_id: AgentTokenId)
+                               (token_id: Byte⁸)
+                               (owner: AccountAddress)
                                (new_wallet: AccountAddress)
+                               (wallet_set_nonce: Byte⁸)
                                (deadline: Timestamp)
                                (contract_address: ContractAddress)
                                (genesis_hash: BlockHash)
@@ -501,9 +511,11 @@ CIS-2 inherited events are emitted directly as specified in <a class="reference 
 <p>A <code class="docutils literal notranslate"><span class="pre">Registered</span></code> event MUST be logged whenever a new agent is successfully registered.</p>
 <p>It is serialized as: first a byte with the value of 240, followed by the
 <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>), the <a class="reference internal" href="#cis-8004-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>),
-an <code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>), and an <code class="docutils literal notranslate"><span class="pre">OptionalExtRef</span></code> (<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>):</p>
+an <code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>), an <code class="docutils literal notranslate"><span class="pre">OptionalHash256</span></code> (<code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code>),
+and an <code class="docutils literal notranslate"><span class="pre">OptionalExtRef</span></code> (<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Registered ::= (240: Byte) (token_id: AgentTokenId) (owner: AccountAddress)
-               (agent_uri: OptionalString) (external_reference: OptionalExtRef)
+               (agent_uri: OptionalString) (metadata_hash: OptionalHash256)
+               (external_reference: OptionalExtRef)
 </pre></div>
 </div>
 </section>
@@ -511,8 +523,10 @@ an <code class="docutils literal notranslate"><span class="pre">OptionalString</
 <span id="cis-8004-events-uriupdated"></span><h4><code class="docutils literal notranslate"><span class="pre">URIUpdated</span></code><a class="headerlink" href="#uriupdated" title="Link to this heading">¶</a></h4>
 <p>A <code class="docutils literal notranslate"><span class="pre">URIUpdated</span></code> event MUST be logged whenever the agent URI of an existing agent is updated.</p>
 <p>It is serialized as: first a byte with the value of 241, followed by the
-<a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) and an <code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>):</p>
+<a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>), an <code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>),
+and an <code class="docutils literal notranslate"><span class="pre">OptionalHash256</span></code> (<code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>URIUpdated ::= (241: Byte) (token_id: AgentTokenId) (agent_uri: OptionalString)
+               (metadata_hash: OptionalHash256)
 </pre></div>
 </div>
 </section>
@@ -521,7 +535,7 @@ an <code class="docutils literal notranslate"><span class="pre">OptionalString</
 <p>An <code class="docutils literal notranslate"><span class="pre">ExternalReferenceSet</span></code> event MUST be logged whenever the external reference of an agent is
 set, updated, or cleared.
 This includes both explicit <a class="reference internal" href="#cis-8004-functions-setexternalreference"><span class="std std-ref">setExternalReference</span></a>
-calls and transfer-induced clears.</p>
+calls, transfer-induced clears, and revoke-induced clears.</p>
 <p>It is serialized as: first a byte with the value of 242, followed by the
 <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) and an <code class="docutils literal notranslate"><span class="pre">OptionalExtRef</span></code> (<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ExternalReferenceSet ::= (242: Byte) (token_id: AgentTokenId)
@@ -571,11 +585,11 @@ transfer-induced resets.</p>
 <li><p><a class="reference internal" href="#cis-8004-functions-setexternalreference"><span class="std std-ref">setExternalReference</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-setagentwallet"><span class="std std-ref">setAgentWallet</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-getagentwallet"><span class="std std-ref">getAgentWallet</span></a></p></li>
+<li><p><a class="reference internal" href="#cis-8004-functions-getagentwalletnonce"><span class="std std-ref">getAgentWalletNonce</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-setmetadata"><span class="std std-ref">setMetadata</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-getmetadata"><span class="std std-ref">getMetadata</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-agentof"><span class="std std-ref">agentOf</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-agentbyexternalreference"><span class="std std-ref">agentByExternalReference</span></a></p></li>
-<li><p><a class="reference internal" href="#cis-8004-functions-isactive"><span class="std std-ref">isActive</span></a></p></li>
 <li><p><a class="reference internal" href="#cis-8004-functions-revoke"><span class="std std-ref">revoke</span></a></p></li>
 </ul>
 <p>A contract implementing this standard MUST also export the complete <a class="reference internal" href="cis-0.html#cis-0"><span class="std std-ref">CIS-0</span></a> interface
@@ -606,20 +620,24 @@ records (<code class="docutils literal notranslate"><span class="pre">initial_me
 <a class="reference internal" href="#cis-8004-cross-contract-verification"><span class="std std-ref">cross-contract verification</span></a>.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">initial_metadata</span></code> MUST NOT contain the reserved key <code class="docutils literal notranslate"><span class="pre">agentWallet</span></code>;
 the contract MUST reject with <code class="docutils literal notranslate"><span class="pre">ReservedKey</span></code> if it does.</p></li>
-<li><p>On success the contract MUST assign the next available <code class="docutils literal notranslate"><span class="pre">AgentTokenId</span></code>, mint a CIS-2 NFT
-to the sender, set <code class="docutils literal notranslate"><span class="pre">agent_wallet</span> <span class="pre">=</span> <span class="pre">Some(sender)</span></code>, and emit <a class="reference internal" href="#cis-8004-events-registered"><span class="std std-ref">Registered</span></a>.</p></li>
+<li><p>On success the contract MUST mint a new CIS-2 NFT to the sender, emit
+<a class="reference internal" href="#cis-8004-events-registered"><span class="std std-ref">Registered</span></a>, and emit
+<a class="reference internal" href="#cis-8004-events-agentwalletset"><span class="std std-ref">AgentWalletSet</span></a> with <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code> set to the sender’s
+address.</p></li>
 </ul>
 </section>
 </section>
 <section id="setagenturi">
 <span id="cis-8004-functions-setagenturi"></span><h4><code class="docutils literal notranslate"><span class="pre">setAgentURI</span></code><a class="headerlink" href="#setagenturi" title="Link to this heading">¶</a></h4>
-<p>Update the agent URI for an existing agent.
-The caller MUST be the current CIS-2 owner of the token.</p>
+<p>Update the agent URI and metadata hash for an existing agent.
+The caller MUST be the current CIS-2 owner of the token.
+Either field may be set to absent to clear its current value.</p>
 <section id="id1">
 <h5>Parameter<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h5>
-<p>The parameter consists of an <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) and an
-<code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>):</p>
+<p>The parameter consists of an <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>), an
+<code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>), and an <code class="docutils literal notranslate"><span class="pre">OptionalHash256</span></code> (<code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SetAgentURIParam ::= (token_id: AgentTokenId) (agent_uri: OptionalString)
+                      (metadata_hash: OptionalHash256)
 </pre></div>
 </div>
 </section>
@@ -630,7 +648,9 @@ The caller MUST be the current CIS-2 owner of the token.</p>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentRevoked</span></code> if the agent’s status is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code> if the caller is not the CIS-2 owner.</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>, if present, MUST NOT exceed 4096 bytes.</p></li>
-<li><p>On success the contract MUST emit <a class="reference internal" href="#cis-8004-events-uriupdated"><span class="std std-ref">URIUpdated</span></a>.</p></li>
+<li><p>On success the contract MUST set <code class="docutils literal notranslate"><span class="pre">agent_uri</span></code> and <code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code> to the supplied values
+(replacing any previous values, including clearing them if absent) and emit
+<a class="reference internal" href="#cis-8004-events-uriupdated"><span class="std std-ref">URIUpdated</span></a>.</p></li>
 </ul>
 </section>
 </section>
@@ -704,11 +724,43 @@ The contract MUST reject with <code class="docutils literal notranslate"><span c
 </pre></div>
 </div>
 </section>
+<section id="id8">
+<h5>Requirements<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
+</ul>
+</section>
 <section id="response">
 <h5>Response<a class="headerlink" href="#response" title="Link to this heading">¶</a></h5>
 <p>The response is an <code class="docutils literal notranslate"><span class="pre">OptionalAddress</span></code>:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GetAgentWalletResponse ::= (0: Byte)                         // not set
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GetAgentWalletResponse ::= (0: Byte)                         // wallet not set
                           | (1: Byte) (wallet: AccountAddress) // current wallet
+</pre></div>
+</div>
+</section>
+</section>
+<section id="getagentwalletnonce">
+<span id="cis-8004-functions-getagentwalletnonce"></span><h4><code class="docutils literal notranslate"><span class="pre">getAgentWalletNonce</span></code><a class="headerlink" href="#getagentwalletnonce" title="Link to this heading">¶</a></h4>
+<p>Return the current wallet-set nonce for an agent.
+Clients MUST read this value before constructing the
+<a class="reference internal" href="#cis-8004-setagentwallet-signing"><span class="std std-ref">setAgentWallet signed message</span></a>.</p>
+<section id="id9">
+<h5>Parameter<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h5>
+<p>The parameter consists of the <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) to query:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GetAgentWalletNonceParam ::= (token_id: AgentTokenId)
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h5>Requirements<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
+</ul>
+</section>
+<section id="id11">
+<h5>Response<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h5>
+<p>The response is the current nonce as a raw 8-byte little-endian unsigned integer:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GetAgentWalletNonceResponse ::= (nonce: Byte⁸)
 </pre></div>
 </div>
 </section>
@@ -717,18 +769,19 @@ The contract MUST reject with <code class="docutils literal notranslate"><span c
 <span id="cis-8004-functions-setmetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">setMetadata</span></code><a class="headerlink" href="#setmetadata" title="Link to this heading">¶</a></h4>
 <p>Set an on-chain metadata value for an existing agent.
 The caller MUST be the current CIS-2 owner of the token.</p>
-<section id="id8">
-<h5>Parameter<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h5>
+<section id="id12">
+<h5>Parameter<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of an <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>), a
 <a class="reference internal" href="#cis-8004-string"><span class="std std-ref">String</span></a> (<code class="docutils literal notranslate"><span class="pre">key</span></code>), and a <a class="reference internal" href="#cis-8004-bytestring"><span class="std std-ref">Bytestring</span></a> (<code class="docutils literal notranslate"><span class="pre">value</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>SetMetadataParam ::= (token_id: AgentTokenId) (key: String) (value: Bytestring)
 </pre></div>
 </div>
 </section>
-<section id="id9">
-<h5>Requirements<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h5>
+<section id="id13">
+<h5>Requirements<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
+<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentRevoked</span></code> if the agent’s status is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code> if the caller is not the CIS-2 owner.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">ReservedKey</span></code> if <code class="docutils literal notranslate"><span class="pre">key</span></code> is <code class="docutils literal notranslate"><span class="pre">agentWallet</span></code>.</p></li>
 <li><p>If <code class="docutils literal notranslate"><span class="pre">value</span></code> violates implementation-defined limits the contract MUST reject with <code class="docutils literal notranslate"><span class="pre">InvalidMetadata</span></code>.</p></li>
@@ -739,16 +792,16 @@ The caller MUST be the current CIS-2 owner of the token.</p>
 <section id="getmetadata">
 <span id="cis-8004-functions-getmetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">getMetadata</span></code><a class="headerlink" href="#getmetadata" title="Link to this heading">¶</a></h4>
 <p>Return the on-chain metadata value for a given agent and key.</p>
-<section id="id10">
-<h5>Parameter<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h5>
+<section id="id14">
+<h5>Parameter<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of an <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) and a
 <a class="reference internal" href="#cis-8004-string"><span class="std std-ref">String</span></a> (<code class="docutils literal notranslate"><span class="pre">key</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>GetMetadataParam ::= (token_id: AgentTokenId) (key: String)
 </pre></div>
 </div>
 </section>
-<section id="id11">
-<h5>Response<a class="headerlink" href="#id11" title="Link to this heading">¶</a></h5>
+<section id="id15">
+<h5>Response<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h5>
 <p>The response is an <code class="docutils literal notranslate"><span class="pre">OptionalBytestring</span></code>:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>OptionalBytestring    ::= (0: Byte) | (1: Byte) (v: Bytestring)
 
@@ -757,19 +810,25 @@ GetMetadataResponse   ::= (0: Byte)                     // key not set
 </pre></div>
 </div>
 </section>
+<section id="id16">
+<h5>Requirements<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h5>
+<ul class="simple">
+<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
+</ul>
+</section>
 </section>
 <section id="agentof">
 <span id="cis-8004-functions-agentof"></span><h4><code class="docutils literal notranslate"><span class="pre">agentOf</span></code><a class="headerlink" href="#agentof" title="Link to this heading">¶</a></h4>
 <p>Return the full agent record for a given token id.</p>
-<section id="id12">
-<h5>Parameter<a class="headerlink" href="#id12" title="Link to this heading">¶</a></h5>
+<section id="id17">
+<h5>Parameter<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of the <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) to query:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AgentOfParam ::= (token_id: AgentTokenId)
 </pre></div>
 </div>
 </section>
-<section id="id13">
-<h5>Response<a class="headerlink" href="#id13" title="Link to this heading">¶</a></h5>
+<section id="id18">
+<h5>Response<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h5>
 <p>Returns the <a class="reference internal" href="#cis-8004-agentview"><span class="std std-ref">AgentView</span></a> for the agent.
 The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p>
 </section>
@@ -777,61 +836,45 @@ The contract MUST reject with <code class="docutils literal notranslate"><span c
 <section id="agentbyexternalreference">
 <span id="cis-8004-functions-agentbyexternalreference"></span><h4><code class="docutils literal notranslate"><span class="pre">agentByExternalReference</span></code><a class="headerlink" href="#agentbyexternalreference" title="Link to this heading">¶</a></h4>
 <p>Return the agent record that holds a given external reference.</p>
-<section id="id14">
-<h5>Parameter<a class="headerlink" href="#id14" title="Link to this heading">¶</a></h5>
+<section id="id19">
+<h5>Parameter<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of the <a class="reference internal" href="#cis-8004-externalreference"><span class="std std-ref">ExternalReference</span></a> (<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>) to
 resolve:</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AgentByExternalReferenceParam ::= (external_reference: ExternalReference)
 </pre></div>
 </div>
 </section>
-<section id="id15">
-<h5>Response<a class="headerlink" href="#id15" title="Link to this heading">¶</a></h5>
+<section id="id20">
+<h5>Response<a class="headerlink" href="#id20" title="Link to this heading">¶</a></h5>
 <p>Returns the <a class="reference internal" href="#cis-8004-agentview"><span class="std std-ref">AgentView</span></a> for the matching agent.
 The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no active agent holds the supplied
 external reference.</p>
-</section>
-</section>
-<section id="isactive">
-<span id="cis-8004-functions-isactive"></span><h4><code class="docutils literal notranslate"><span class="pre">isActive</span></code><a class="headerlink" href="#isactive" title="Link to this heading">¶</a></h4>
-<p>Return whether an agent exists and has <code class="docutils literal notranslate"><span class="pre">Active</span></code> status.</p>
-<section id="id16">
-<h5>Parameter<a class="headerlink" href="#id16" title="Link to this heading">¶</a></h5>
-<p>The parameter consists of the <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) to query:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IsActiveParam ::= (token_id: AgentTokenId)
-</pre></div>
-</div>
-</section>
-<section id="id17">
-<h5>Response<a class="headerlink" href="#id17" title="Link to this heading">¶</a></h5>
-<p>The response is 1 byte with value 0 for false and 1 for true:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>IsActiveResponse ::= (0: Byte) // false
-                   | (1: Byte) // true
-</pre></div>
-</div>
 </section>
 </section>
 <section id="revoke">
 <span id="cis-8004-functions-revoke"></span><h4><code class="docutils literal notranslate"><span class="pre">revoke</span></code><a class="headerlink" href="#revoke" title="Link to this heading">¶</a></h4>
 <p>Mark an agent’s status as <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.
 The caller MUST be the current CIS-2 owner of the token.</p>
-<section id="id18">
-<h5>Parameter<a class="headerlink" href="#id18" title="Link to this heading">¶</a></h5>
+<section id="id21">
+<h5>Parameter<a class="headerlink" href="#id21" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of an <a class="reference internal" href="#cis-8004-agenttokenid"><span class="std std-ref">AgentTokenId</span></a> (<code class="docutils literal notranslate"><span class="pre">token_id</span></code>) and an
 <code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">reason</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RevokeParam ::= (token_id: AgentTokenId) (reason: OptionalString)
 </pre></div>
 </div>
 </section>
-<section id="id19">
-<h5>Requirements<a class="headerlink" href="#id19" title="Link to this heading">¶</a></h5>
+<section id="id22">
+<h5>Requirements<a class="headerlink" href="#id22" title="Link to this heading">¶</a></h5>
 <ul class="simple">
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code> if the caller is not the CIS-2 owner.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentAlreadyRevoked</span></code> if the agent’s status is already
 <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></li>
 <li><p>On success the contract MUST set the agent’s status to <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>, clear the
-<code class="docutils literal notranslate"><span class="pre">external_reference</span></code> if present, and emit <a class="reference internal" href="#cis-8004-events-revoked"><span class="std std-ref">Revoked</span></a>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">external_reference</span></code> if present, and emit <a class="reference internal" href="#cis-8004-events-revoked"><span class="std std-ref">Revoked</span></a>.
+If <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> was present, the contract MUST also emit
+<a class="reference internal" href="#cis-8004-events-externalreferenceset"><span class="std std-ref">ExternalReferenceSet</span></a> with <code class="docutils literal notranslate"><span class="pre">external_reference</span></code>
+absent, before emitting <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></li>
 </ul>
 </section>
 </section>
@@ -852,6 +895,8 @@ The contract MUST emit <a class="reference internal" href="#cis-8004-events-agen
 <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">registered_at</span></code>) are preserved across transfers.</p>
 <p>The new owner MUST call <a class="reference internal" href="#cis-8004-functions-setagentwallet"><span class="std std-ref">setAgentWallet</span></a> to re-establish
 a payment address.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">to</span></code> field of a CIS-2 transfer MUST be an account address.
+The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">InvalidReceiver</span></code> if <code class="docutils literal notranslate"><span class="pre">to</span></code> is a contract address.</p>
 </section>
 <section id="rejection-errors">
 <span id="cis-8004-errors"></span><h3>Rejection errors<a class="headerlink" href="#rejection-errors" title="Link to this heading">¶</a></h3>
@@ -878,33 +923,38 @@ the described conditions:</p>
 <td><p>-7202</p></td>
 <td><p>The agent is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>; the operation requires <code class="docutils literal notranslate"><span class="pre">Active</span></code> status.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ExternalReferenceTaken</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidReceiver</span></code></p></td>
+<td><p>-7203</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">to</span></code> field of a <code class="docutils literal notranslate"><span class="pre">transfer</span></code> call is a contract address; agent NFT ownership is
+restricted to accounts.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ExternalReferenceTaken</span></code></p></td>
 <td><p>-7204</p></td>
 <td><p>An active agent already holds the supplied <code class="docutils literal notranslate"><span class="pre">external_reference</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidExternalReference</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidExternalReference</span></code></p></td>
 <td><p>-7206</p></td>
 <td><p>The supplied <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> does not resolve to an active CIS-8 entry owned by the
 sender, or the registry address does not match the configured dependency.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidMetadata</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidMetadata</span></code></p></td>
 <td><p>-7208</p></td>
 <td><p>The metadata value violates implementation-defined limits or encoding requirements.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AgentAlreadyRevoked</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AgentAlreadyRevoked</span></code></p></td>
 <td><p>-7209</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">revoke</span></code> was called on an agent that is already <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ReservedKey</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ReservedKey</span></code></p></td>
 <td><p>-7211</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">setMetadata</span></code> was called with the reserved key <code class="docutils literal notranslate"><span class="pre">agentWallet</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidAgentWalletProof</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidAgentWalletProof</span></code></p></td>
 <td><p>-7212</p></td>
 <td><p>The signature in <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> does not verify against <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>’s account
 credentials.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AgentWalletDeadlinePassed</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AgentWalletDeadlinePassed</span></code></p></td>
 <td><p>-7213</p></td>
 <td><p>The <code class="docutils literal notranslate"><span class="pre">deadline</span></code> in <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> has passed.</p></td>
 </tr>
@@ -1082,37 +1132,40 @@ Support for additional reference kinds may be added in future revisions of this 
 </li>
 <li><a class="reference internal" href="#getagentwallet"><code class="docutils literal notranslate"><span class="pre">getAgentWallet</span></code></a><ul>
 <li><a class="reference internal" href="#id7">Parameter</a></li>
+<li><a class="reference internal" href="#id8">Requirements</a></li>
 <li><a class="reference internal" href="#response">Response</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#setmetadata"><code class="docutils literal notranslate"><span class="pre">setMetadata</span></code></a><ul>
-<li><a class="reference internal" href="#id8">Parameter</a></li>
-<li><a class="reference internal" href="#id9">Requirements</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#getmetadata"><code class="docutils literal notranslate"><span class="pre">getMetadata</span></code></a><ul>
-<li><a class="reference internal" href="#id10">Parameter</a></li>
+<li><a class="reference internal" href="#getagentwalletnonce"><code class="docutils literal notranslate"><span class="pre">getAgentWalletNonce</span></code></a><ul>
+<li><a class="reference internal" href="#id9">Parameter</a></li>
+<li><a class="reference internal" href="#id10">Requirements</a></li>
 <li><a class="reference internal" href="#id11">Response</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#agentof"><code class="docutils literal notranslate"><span class="pre">agentOf</span></code></a><ul>
+<li><a class="reference internal" href="#setmetadata"><code class="docutils literal notranslate"><span class="pre">setMetadata</span></code></a><ul>
 <li><a class="reference internal" href="#id12">Parameter</a></li>
-<li><a class="reference internal" href="#id13">Response</a></li>
+<li><a class="reference internal" href="#id13">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#getmetadata"><code class="docutils literal notranslate"><span class="pre">getMetadata</span></code></a><ul>
+<li><a class="reference internal" href="#id14">Parameter</a></li>
+<li><a class="reference internal" href="#id15">Response</a></li>
+<li><a class="reference internal" href="#id16">Requirements</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#agentof"><code class="docutils literal notranslate"><span class="pre">agentOf</span></code></a><ul>
+<li><a class="reference internal" href="#id17">Parameter</a></li>
+<li><a class="reference internal" href="#id18">Response</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#agentbyexternalreference"><code class="docutils literal notranslate"><span class="pre">agentByExternalReference</span></code></a><ul>
-<li><a class="reference internal" href="#id14">Parameter</a></li>
-<li><a class="reference internal" href="#id15">Response</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#isactive"><code class="docutils literal notranslate"><span class="pre">isActive</span></code></a><ul>
-<li><a class="reference internal" href="#id16">Parameter</a></li>
-<li><a class="reference internal" href="#id17">Response</a></li>
+<li><a class="reference internal" href="#id19">Parameter</a></li>
+<li><a class="reference internal" href="#id20">Response</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#revoke"><code class="docutils literal notranslate"><span class="pre">revoke</span></code></a><ul>
-<li><a class="reference internal" href="#id18">Parameter</a></li>
-<li><a class="reference internal" href="#id19">Requirements</a></li>
+<li><a class="reference internal" href="#id21">Parameter</a></li>
+<li><a class="reference internal" href="#id22">Requirements</a></li>
 </ul>
 </li>
 </ul>
