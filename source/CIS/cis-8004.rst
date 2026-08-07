@@ -705,14 +705,11 @@ Requirements
 
 - The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
 - The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
-- The contract MUST reject with ``AgentAlreadyRevoked`` if the agent's status is already
-  ``Revoked``.
-- On success the contract MUST set the agent's status to ``Revoked``, clear the
+- If the agent is ``Active``, the contract MUST mark the agent's status as ``Revoked``, clear the
   ``external_reference`` if present, and emit :ref:`Revoked<CIS-8004-events-Revoked>`.
   If ``external_reference`` was present, the contract MUST also emit
   :ref:`ExternalReferenceSet<CIS-8004-events-ExternalReferenceSet>` with ``external_reference``
   absent, before emitting ``Revoked``.
-
 
 Transfer semantics
 ------------------
@@ -775,9 +772,6 @@ the described conditions:
   * - ``InvalidMetadata``
     - -7208
     - The metadata value violates implementation-defined limits or encoding requirements.
-  * - ``AgentAlreadyRevoked``
-    - -7209
-    - ``revoke`` was called on an agent that is already ``Revoked``.
   * - ``ReservedKey``
     - -7211
     - ``setMetadata`` was called with the reserved key ``agentWallet``.
