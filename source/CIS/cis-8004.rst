@@ -734,6 +734,7 @@ a payment address.
 The ``to`` field of a CIS-2 transfer MUST be an account address.
 The contract MUST reject with ``InvalidReceiver`` if ``to`` is a contract address.
 
+The contract MUST reject with ``AgentRevoked`` if the agent's status is ``Revoked``.
 
 .. _CIS-8004-errors:
 
