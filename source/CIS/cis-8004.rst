@@ -416,13 +416,13 @@ Parameter
 ~~~~~~~~~
 
 The parameter consists of an ``OptionalString`` (``agent_uri``), an ``OptionalHash256``
-(``metadata_hash``), an ``OptionalExtRef`` (``external_reference``), a 2-byte little-endian
+(``metadata_hash``), an ``OptionalExtRef`` (``external_reference``), a 4-byte little-endian
 count (``m``) of initial metadata entries, and then ``m`` :ref:`CIS-8004-MetadataEntry`
 records (``initial_metadata``)::
 
   RegisterParam ::= (agent_uri: OptionalString) (metadata_hash: OptionalHash256)
                     (external_reference: OptionalExtRef)
-                    (m: Byte²) (initial_metadata: MetadataEntryᵐ)
+                    (m: Byte⁴) (initial_metadata: MetadataEntryᵐ)
 
 Requirements
 ~~~~~~~~~~~~
