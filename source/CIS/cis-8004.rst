@@ -416,13 +416,13 @@ Parameter
 ~~~~~~~~~
 
 The parameter consists of an ``OptionalString`` (``agent_uri``), an ``OptionalHash256``
-(``metadata_hash``), an ``OptionalExtRef`` (``external_reference``), a 2-byte little-endian
+(``metadata_hash``), an ``OptionalExtRef`` (``external_reference``), a 4-byte little-endian
 count (``m``) of initial metadata entries, and then ``m`` :ref:`CIS-8004-MetadataEntry`
 records (``initial_metadata``)::
 
   RegisterParam ::= (agent_uri: OptionalString) (metadata_hash: OptionalHash256)
                     (external_reference: OptionalExtRef)
-                    (m: Byte²) (initial_metadata: MetadataEntryᵐ)
+                    (m: Byte⁴) (initial_metadata: MetadataEntryᵐ)
 
 Requirements
 ~~~~~~~~~~~~
@@ -524,7 +524,8 @@ Requirements
 - The contract MUST reject with ``AgentNotFound`` if no agent exists for ``token_id``.
 - The contract MUST reject with ``AgentRevoked`` if the agent's status is ``Revoked``.
 - The contract MUST reject with ``Unauthorized`` if the caller is not the CIS-2 owner.
-- The contract MUST reject with ``AgentWalletDeadlinePassed`` if ``deadline`` is in the past.
+- The contract MUST reject with ``InvalidAgentWalletProof`` if ``deadline`` is in the past or
+  outside an implementation-defined accepted validity window.
 - The contract MUST verify the signature against the
   :ref:`setAgentWallet signed message<CIS-8004-setAgentWallet-signing>` using
   ``new_wallet``'s account credentials.
@@ -731,8 +732,9 @@ All other fields of the agent record (``agent_uri``, ``metadata_hash``, ``on_cha
 The new owner MUST call :ref:`setAgentWallet<CIS-8004-functions-setAgentWallet>` to re-establish
 a payment address.
 
-The ``to`` field of a CIS-2 transfer MUST be an account address.
-The contract MUST reject with ``InvalidReceiver`` if ``to`` is a contract address.
+The transfer amount MUST be exactly one and the ``to`` field MUST be an account address.
+The contract MUST reject with ``InvalidTransfer`` if the amount is not one or ``to`` is a contract
+address.
 
 The contract MUST reject with ``AgentRevoked`` if the agent's status is ``Revoked``.
 
@@ -759,10 +761,6 @@ the described conditions:
   * - ``AgentRevoked``
     - -7202
     - The agent is ``Revoked``; the operation requires ``Active`` status.
-  * - ``InvalidReceiver``
-    - -7203
-    - The ``to`` field of a ``transfer`` call is a contract address; agent NFT ownership is
-      restricted to accounts.
   * - ``ExternalReferenceTaken``
     - -7204
     - An active agent already holds the supplied ``external_reference``.
@@ -778,11 +776,11 @@ the described conditions:
     - ``setMetadata`` was called with the reserved key ``agentWallet``.
   * - ``InvalidAgentWalletProof``
     - -7212
-    - The signature in ``setAgentWallet`` does not verify against ``new_wallet``'s account
-      credentials.
-  * - ``AgentWalletDeadlinePassed``
+    - The ``setAgentWallet`` signature is malformed or does not verify against ``new_wallet``'s
+      account credentials, or its ``deadline`` is outside the accepted validity window.
+  * - ``InvalidTransfer``
     - -7213
-    - The ``deadline`` in ``setAgentWallet`` has passed.
+    - A ``transfer`` amount is not one or its ``to`` field is a contract address.
 
 Rejecting using an error code from the table above MUST only occur in a situation as described
 in the corresponding error description.

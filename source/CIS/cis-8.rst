@@ -58,9 +58,9 @@ General types and serialization
 
 A variable-length UTF-8 encoded string.
 
-It is serialized as: 2 bytes for the length (``n``) of the string in little-endian, followed by ``n`` bytes for the UTF-8 encoding of the string::
+It is serialized as: 4 bytes for the length (``n``) of the string in little-endian, followed by ``n`` bytes for the UTF-8 encoding of the string::
 
-  String ::= (n: Byte2) (value: Byten)
+  String ::= (n: Byte⁴) (value: Byteⁿ)
 
 .. _CIS-8-Bytestring:
 
@@ -69,9 +69,9 @@ It is serialized as: 2 bytes for the length (``n``) of the string in little-endi
 
 A variable-length byte array.
 
-It is serialized as: 2 bytes for the length (``n``) in little-endian, followed by ``n`` bytes::
+It is serialized as: 4 bytes for the length (``n``) in little-endian, followed by ``n`` bytes::
 
-  Bytestring ::= (n: Byte2) (value: Byten)
+  Bytestring ::= (n: Byte⁴) (value: Byteⁿ)
 
 .. _CIS-8-AccountAddress:
 
@@ -82,7 +82,7 @@ An address of a Concordium account.
 
 It is serialized as 32 bytes::
 
-  AccountAddress ::= (address: Byte32)
+  AccountAddress ::= (address: Byte³²)
 
 .. _CIS-8-ContractAddress:
 
@@ -94,7 +94,7 @@ It consists of an index and a subindex, both unsigned 64-bit integers.
 
 It is serialized as: 8 bytes for the index (``index``) followed by 8 bytes for the subindex (``subindex``), both little-endian::
 
-  ContractAddress ::= (index: Byte8) (subindex: Byte8)
+  ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
 
 .. _CIS-8-BlockHash:
 
@@ -106,7 +106,7 @@ Used in the :ref:`canonical signed message<CIS-8-CanonicalSignedMessage>` to car
 
 It is serialized as 32 bytes::
 
-  BlockHash ::= (hash: Byte32)
+  BlockHash ::= (hash: Byte³²)
 
 .. _CIS-8-Timestamp:
 
@@ -117,7 +117,7 @@ A point in time given in milliseconds since Unix epoch, represented as an unsign
 
 It is serialized as 8 bytes in little-endian::
 
-  Timestamp ::= (milliseconds: Byte8)
+  Timestamp ::= (milliseconds: Byte⁸)
 
 .. _CIS-8-ExternalKeyId:
 
@@ -186,10 +186,10 @@ It is serialized as 1 byte with value 0 for ``Active`` and 1 for ``Revoked``::
 
 A complete record of an external key registration, including the linked Concordium account, the external key, the proof scheme used at registration time, application-defined metadata, the current status, and the time of the last status change.
 
-It is serialized as an :ref:`CIS-8-AccountAddress` (``owner``), an :ref:`CIS-8-ExternalKeyId` (``external_key``), a :ref:`CIS-8-String` (``proof_scheme``), 2 bytes for the number of metadata entries (``m``), followed by ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``), a :ref:`CIS-8-RegistrationStatus` (``status``), and a :ref:`CIS-8-Timestamp` (``last_updated``)::
+It is serialized as an :ref:`CIS-8-AccountAddress` (``owner``), an :ref:`CIS-8-ExternalKeyId` (``external_key``), a :ref:`CIS-8-String` (``proof_scheme``), 4 bytes for the number of metadata entries (``m``), followed by ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``), a :ref:`CIS-8-RegistrationStatus` (``status``), and a :ref:`CIS-8-Timestamp` (``last_updated``)::
 
   Registration ::= (owner: AccountAddress) (external_key: ExternalKeyId) (proof_scheme: String)
-                   (m: Byte2) (metadata: MetadataEntrym) (status: RegistrationStatus)
+                   (m: Byte⁴) (metadata: MetadataEntryᵐ) (status: RegistrationStatus)
                    (last_updated: Timestamp)
 
 
@@ -208,7 +208,7 @@ The message bytes MUST be prefixed with the 18-byte ASCII domain separation tag 
 
 It is serialized as the 18 raw ASCII bytes of the domain separation tag, followed by an :ref:`CIS-8-AccountAddress` (``concordium_account``), a :ref:`CIS-8-ContractAddress` (``contract_address``), a :ref:`CIS-8-BlockHash` (``concordium_genesis_hash``), a :ref:`CIS-8-String` (``external_namespace``), an :ref:`CIS-8-ExternalKeyId` (``external_key``), and a :ref:`CIS-8-String` (``proof_scheme``)::
 
-  CanonicalSignedMessage ::= ("CIS-8/v1/canonical": Byte18)
+  CanonicalSignedMessage ::= ("CIS-8/v1/canonical": Byte¹⁸)
                               (concordium_account: AccountAddress)
                               (contract_address: ContractAddress)
                               (concordium_genesis_hash: BlockHash)
@@ -307,10 +307,10 @@ It is serialized as: first a byte with the value of 232, followed by the :ref:`C
 
 An ``UpdateMetadata`` event MUST be logged whenever the metadata of an active registration is successfully updated.
 
-It is serialized as: first a byte with the value of 233, followed by the :ref:`CIS-8-AccountAddress` (``owner``), the :ref:`CIS-8-ExternalKeyId` (``external_key``), 2 bytes for the number of metadata entries (``m``), and then ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``)::
+It is serialized as: first a byte with the value of 233, followed by the :ref:`CIS-8-AccountAddress` (``owner``), the :ref:`CIS-8-ExternalKeyId` (``external_key``), 4 bytes for the number of metadata entries (``m``), and then ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``)::
 
   UpdateMetadata ::= (233: Byte) (owner: AccountAddress) (external_key: ExternalKeyId)
-                     (m: Byte2) (metadata: MetadataEntrym)
+                     (m: Byte⁴) (metadata: MetadataEntryᵐ)
 
 .. _CIS-8-functions:
 
@@ -346,9 +346,9 @@ If an active registration already exists for the supplied external key under a d
 Parameter
 ~~~~~~~~~
 
-The parameter consists of an :ref:`CIS-8-ExternalKeyId` (``external_key``), a :ref:`CIS-8-Proof` (``proof``), 2 bytes for the number of metadata entries (``m``), and then ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``)::
+The parameter consists of an :ref:`CIS-8-ExternalKeyId` (``external_key``), a :ref:`CIS-8-Proof` (``proof``), 4 bytes for the number of metadata entries (``m``), and then ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``)::
 
-  RegisterExternalKeyParam ::= (external_key: ExternalKeyId) (proof: Proof) (m: Byte²) (metadata: MetadataEntryᵐ)
+  RegisterExternalKeyParam ::= (external_key: ExternalKeyId) (proof: Proof) (m: Byte⁴) (metadata: MetadataEntryᵐ)
 
 Requirements
 ~~~~~~~~~~~~
@@ -372,9 +372,9 @@ The caller MUST be the current active owner of the registration.
 Parameter
 ~~~~~~~~~
 
-The parameter consists of an :ref:`CIS-8-ExternalKeyId` (``external_key``), 2 bytes for the number of metadata entries (``m``), and then ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``)::
+The parameter consists of an :ref:`CIS-8-ExternalKeyId` (``external_key``), 4 bytes for the number of metadata entries (``m``), and then ``m`` :ref:`CIS-8-MetadataEntry` records (``metadata``)::
 
-  UpdateMetadataParam ::= (external_key: ExternalKeyId) (m: Byte2) (metadata: MetadataEntrym)
+  UpdateMetadataParam ::= (external_key: ExternalKeyId) (m: Byte⁴) (metadata: MetadataEntryᵐ)
 
 Requirements
 ~~~~~~~~~~~~
