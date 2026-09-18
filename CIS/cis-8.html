@@ -321,16 +321,16 @@ A registration asserts that a Concordium account controls a specified external p
 <section id="string">
 <span id="cis-8-string"></span><h4><code class="docutils literal notranslate"><span class="pre">String</span></code><a class="headerlink" href="#string" title="Link to this heading">¶</a></h4>
 <p>A variable-length UTF-8 encoded string.</p>
-<p>It is serialized as: 2 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the string in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes for the UTF-8 encoding of the string:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>String ::= (n: Byte2) (value: Byten)
+<p>It is serialized as: 4 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) of the string in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes for the UTF-8 encoding of the string:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>String ::= (n: Byte⁴) (value: Byteⁿ)
 </pre></div>
 </div>
 </section>
 <section id="bytestring">
 <span id="cis-8-bytestring"></span><h4><code class="docutils literal notranslate"><span class="pre">Bytestring</span></code><a class="headerlink" href="#bytestring" title="Link to this heading">¶</a></h4>
 <p>A variable-length byte array.</p>
-<p>It is serialized as: 2 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bytestring ::= (n: Byte2) (value: Byten)
+<p>It is serialized as: 4 bytes for the length (<code class="docutils literal notranslate"><span class="pre">n</span></code>) in little-endian, followed by <code class="docutils literal notranslate"><span class="pre">n</span></code> bytes:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Bytestring ::= (n: Byte⁴) (value: Byteⁿ)
 </pre></div>
 </div>
 </section>
@@ -338,7 +338,7 @@ A registration asserts that a Concordium account controls a specified external p
 <span id="cis-8-accountaddress"></span><h4><code class="docutils literal notranslate"><span class="pre">AccountAddress</span></code><a class="headerlink" href="#accountaddress" title="Link to this heading">¶</a></h4>
 <p>An address of a Concordium account.</p>
 <p>It is serialized as 32 bytes:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AccountAddress ::= (address: Byte32)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>AccountAddress ::= (address: Byte³²)
 </pre></div>
 </div>
 </section>
@@ -347,7 +347,7 @@ A registration asserts that a Concordium account controls a specified external p
 <p>An address of a Concordium smart contract instance.
 It consists of an index and a subindex, both unsigned 64-bit integers.</p>
 <p>It is serialized as: 8 bytes for the index (<code class="docutils literal notranslate"><span class="pre">index</span></code>) followed by 8 bytes for the subindex (<code class="docutils literal notranslate"><span class="pre">subindex</span></code>), both little-endian:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ContractAddress ::= (index: Byte8) (subindex: Byte8)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>ContractAddress ::= (index: Byte⁸) (subindex: Byte⁸)
 </pre></div>
 </div>
 </section>
@@ -356,7 +356,7 @@ It consists of an index and a subindex, both unsigned 64-bit integers.</p>
 <p>A 32-byte block hash identifying a Concordium block.
 Used in the <a class="reference internal" href="#cis-8-canonicalsignedmessage"><span class="std std-ref">canonical signed message</span></a> to carry the genesis block hash and prevent cross-network replay.</p>
 <p>It is serialized as 32 bytes:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BlockHash ::= (hash: Byte32)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>BlockHash ::= (hash: Byte³²)
 </pre></div>
 </div>
 </section>
@@ -364,7 +364,7 @@ Used in the <a class="reference internal" href="#cis-8-canonicalsignedmessage"><
 <span id="cis-8-timestamp"></span><h4><code class="docutils literal notranslate"><span class="pre">Timestamp</span></code><a class="headerlink" href="#timestamp" title="Link to this heading">¶</a></h4>
 <p>A point in time given in milliseconds since Unix epoch, represented as an unsigned 64-bit integer.</p>
 <p>It is serialized as 8 bytes in little-endian:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Timestamp ::= (milliseconds: Byte8)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Timestamp ::= (milliseconds: Byte⁸)
 </pre></div>
 </div>
 </section>
@@ -416,9 +416,9 @@ The <code class="docutils literal notranslate"><span class="pre">signature</span
 <section id="registration">
 <span id="cis-8-registration"></span><h4><code class="docutils literal notranslate"><span class="pre">Registration</span></code><a class="headerlink" href="#registration" title="Link to this heading">¶</a></h4>
 <p>A complete record of an external key registration, including the linked Concordium account, the external key, the proof scheme used at registration time, application-defined metadata, the current status, and the time of the last status change.</p>
-<p>It is serialized as an <a class="reference internal" href="#cis-8-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>), an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), a <a class="reference internal" href="#cis-8-string"><span class="std std-ref">String</span></a> (<code class="docutils literal notranslate"><span class="pre">proof_scheme</span></code>), 2 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), followed by <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>), a <a class="reference internal" href="#cis-8-registrationstatus"><span class="std std-ref">RegistrationStatus</span></a> (<code class="docutils literal notranslate"><span class="pre">status</span></code>), and a <a class="reference internal" href="#cis-8-timestamp"><span class="std std-ref">Timestamp</span></a> (<code class="docutils literal notranslate"><span class="pre">last_updated</span></code>):</p>
+<p>It is serialized as an <a class="reference internal" href="#cis-8-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>), an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), a <a class="reference internal" href="#cis-8-string"><span class="std std-ref">String</span></a> (<code class="docutils literal notranslate"><span class="pre">proof_scheme</span></code>), 4 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), followed by <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>), a <a class="reference internal" href="#cis-8-registrationstatus"><span class="std std-ref">RegistrationStatus</span></a> (<code class="docutils literal notranslate"><span class="pre">status</span></code>), and a <a class="reference internal" href="#cis-8-timestamp"><span class="std std-ref">Timestamp</span></a> (<code class="docutils literal notranslate"><span class="pre">last_updated</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Registration ::= (owner: AccountAddress) (external_key: ExternalKeyId) (proof_scheme: String)
-                 (m: Byte2) (metadata: MetadataEntrym) (status: RegistrationStatus)
+                 (m: Byte⁴) (metadata: MetadataEntryᵐ) (status: RegistrationStatus)
                  (last_updated: Timestamp)
 </pre></div>
 </div>
@@ -432,7 +432,7 @@ Replay protection is provided by the Concordium transaction itself, which is bou
 Cross-contract and cross-network replay is prevented by the inclusion of the <code class="docutils literal notranslate"><span class="pre">contract_address</span></code> and <code class="docutils literal notranslate"><span class="pre">concordium_genesis_hash</span></code> fields.</p>
 <p>The message bytes MUST be prefixed with the 18-byte ASCII domain separation tag <code class="docutils literal notranslate"><span class="pre">CIS-8/v1/canonical</span></code>.</p>
 <p>It is serialized as the 18 raw ASCII bytes of the domain separation tag, followed by an <a class="reference internal" href="#cis-8-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">concordium_account</span></code>), a <a class="reference internal" href="#cis-8-contractaddress"><span class="std std-ref">ContractAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">contract_address</span></code>), a <a class="reference internal" href="#cis-8-blockhash"><span class="std std-ref">BlockHash</span></a> (<code class="docutils literal notranslate"><span class="pre">concordium_genesis_hash</span></code>), a <a class="reference internal" href="#cis-8-string"><span class="std std-ref">String</span></a> (<code class="docutils literal notranslate"><span class="pre">external_namespace</span></code>), an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), and a <a class="reference internal" href="#cis-8-string"><span class="std std-ref">String</span></a> (<code class="docutils literal notranslate"><span class="pre">proof_scheme</span></code>):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CanonicalSignedMessage ::= (&quot;CIS-8/v1/canonical&quot;: Byte18)
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>CanonicalSignedMessage ::= (&quot;CIS-8/v1/canonical&quot;: Byte¹⁸)
                             (concordium_account: AccountAddress)
                             (contract_address: ContractAddress)
                             (concordium_genesis_hash: BlockHash)
@@ -514,9 +514,9 @@ A custom event SHOULD NOT have a first byte colliding with any of the events def
 <section id="updatemetadata">
 <span id="cis-8-events-updatemetadata"></span><h4><code class="docutils literal notranslate"><span class="pre">UpdateMetadata</span></code><a class="headerlink" href="#updatemetadata" title="Link to this heading">¶</a></h4>
 <p>An <code class="docutils literal notranslate"><span class="pre">UpdateMetadata</span></code> event MUST be logged whenever the metadata of an active registration is successfully updated.</p>
-<p>It is serialized as: first a byte with the value of 233, followed by the <a class="reference internal" href="#cis-8-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>), the <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), 2 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<p>It is serialized as: first a byte with the value of 233, followed by the <a class="reference internal" href="#cis-8-accountaddress"><span class="std std-ref">AccountAddress</span></a> (<code class="docutils literal notranslate"><span class="pre">owner</span></code>), the <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), 4 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UpdateMetadata ::= (233: Byte) (owner: AccountAddress) (external_key: ExternalKeyId)
-                   (m: Byte2) (metadata: MetadataEntrym)
+                   (m: Byte⁴) (metadata: MetadataEntryᵐ)
 </pre></div>
 </div>
 </section>
@@ -542,8 +542,8 @@ The proof MUST be signed with the external private key over the <a class="refere
 <p>If an active registration already exists for the supplied external key under a different owner, the previous registration is displaced: the contract MUST emit <code class="docutils literal notranslate"><span class="pre">ExternalKeyRevoked</span></code> for the displaced owner before emitting <code class="docutils literal notranslate"><span class="pre">ExternalKeyRegistered</span></code> for the new owner.</p>
 <section id="parameter">
 <h5>Parameter<a class="headerlink" href="#parameter" title="Link to this heading">¶</a></h5>
-<p>The parameter consists of an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), a <a class="reference internal" href="#cis-8-proof"><span class="std std-ref">Proof</span></a> (<code class="docutils literal notranslate"><span class="pre">proof</span></code>), 2 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RegisterExternalKeyParam ::= (external_key: ExternalKeyId) (proof: Proof) (m: Byte²) (metadata: MetadataEntryᵐ)
+<p>The parameter consists of an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), a <a class="reference internal" href="#cis-8-proof"><span class="std std-ref">Proof</span></a> (<code class="docutils literal notranslate"><span class="pre">proof</span></code>), 4 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RegisterExternalKeyParam ::= (external_key: ExternalKeyId) (proof: Proof) (m: Byte⁴) (metadata: MetadataEntryᵐ)
 </pre></div>
 </div>
 </section>
@@ -566,8 +566,8 @@ The proof MUST be signed with the external private key over the <a class="refere
 The caller MUST be the current active owner of the registration.</p>
 <section id="id2">
 <h5>Parameter<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h5>
-<p>The parameter consists of an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), 2 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UpdateMetadataParam ::= (external_key: ExternalKeyId) (m: Byte2) (metadata: MetadataEntrym)
+<p>The parameter consists of an <a class="reference internal" href="#cis-8-externalkeyid"><span class="std std-ref">ExternalKeyId</span></a> (<code class="docutils literal notranslate"><span class="pre">external_key</span></code>), 4 bytes for the number of metadata entries (<code class="docutils literal notranslate"><span class="pre">m</span></code>), and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8-metadataentry"><span class="std std-ref">MetadataEntry</span></a> records (<code class="docutils literal notranslate"><span class="pre">metadata</span></code>):</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>UpdateMetadataParam ::= (external_key: ExternalKeyId) (m: Byte⁴) (metadata: MetadataEntryᵐ)
 </pre></div>
 </div>
 </section>

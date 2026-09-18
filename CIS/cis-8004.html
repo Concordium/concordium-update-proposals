@@ -603,12 +603,12 @@ The sender MUST be an account; contract callers MUST be rejected with <code clas
 <section id="parameter">
 <h5>Parameter<a class="headerlink" href="#parameter" title="Link to this heading">¶</a></h5>
 <p>The parameter consists of an <code class="docutils literal notranslate"><span class="pre">OptionalString</span></code> (<code class="docutils literal notranslate"><span class="pre">agent_uri</span></code>), an <code class="docutils literal notranslate"><span class="pre">OptionalHash256</span></code>
-(<code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code>), an <code class="docutils literal notranslate"><span class="pre">OptionalExtRef</span></code> (<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>), a 2-byte little-endian
+(<code class="docutils literal notranslate"><span class="pre">metadata_hash</span></code>), an <code class="docutils literal notranslate"><span class="pre">OptionalExtRef</span></code> (<code class="docutils literal notranslate"><span class="pre">external_reference</span></code>), a 4-byte little-endian
 count (<code class="docutils literal notranslate"><span class="pre">m</span></code>) of initial metadata entries, and then <code class="docutils literal notranslate"><span class="pre">m</span></code> <a class="reference internal" href="#cis-8004-metadataentry"><span class="std std-ref">MetadataEntry</span></a>
 records (<code class="docutils literal notranslate"><span class="pre">initial_metadata</span></code>):</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>RegisterParam ::= (agent_uri: OptionalString) (metadata_hash: OptionalHash256)
                   (external_reference: OptionalExtRef)
-                  (m: Byte²) (initial_metadata: MetadataEntryᵐ)
+                  (m: Byte⁴) (initial_metadata: MetadataEntryᵐ)
 </pre></div>
 </div>
 </section>
@@ -705,7 +705,8 @@ message (<code class="docutils literal notranslate"><span class="pre">signature<
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentRevoked</span></code> if the agent’s status is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code> if the caller is not the CIS-2 owner.</p></li>
-<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentWalletDeadlinePassed</span></code> if <code class="docutils literal notranslate"><span class="pre">deadline</span></code> is in the past.</p></li>
+<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">InvalidAgentWalletProof</span></code> if <code class="docutils literal notranslate"><span class="pre">deadline</span></code> is in the past or
+outside an implementation-defined accepted validity window.</p></li>
 <li><p>The contract MUST verify the signature against the
 <a class="reference internal" href="#cis-8004-setagentwallet-signing"><span class="std std-ref">setAgentWallet signed message</span></a> using
 <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>’s account credentials.
@@ -868,9 +869,7 @@ The caller MUST be the current CIS-2 owner of the token.</p>
 <ul class="simple">
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentNotFound</span></code> if no agent exists for <code class="docutils literal notranslate"><span class="pre">token_id</span></code>.</p></li>
 <li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">Unauthorized</span></code> if the caller is not the CIS-2 owner.</p></li>
-<li><p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentAlreadyRevoked</span></code> if the agent’s status is already
-<code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></li>
-<li><p>On success the contract MUST set the agent’s status to <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>, clear the
+<li><p>If the agent is <code class="docutils literal notranslate"><span class="pre">Active</span></code>, the contract MUST mark the agent’s status as <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>, clear the
 <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> if present, and emit <a class="reference internal" href="#cis-8004-events-revoked"><span class="std std-ref">Revoked</span></a>.
 If <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> was present, the contract MUST also emit
 <a class="reference internal" href="#cis-8004-events-externalreferenceset"><span class="std std-ref">ExternalReferenceSet</span></a> with <code class="docutils literal notranslate"><span class="pre">external_reference</span></code>
@@ -895,8 +894,10 @@ The contract MUST emit <a class="reference internal" href="#cis-8004-events-agen
 <code class="docutils literal notranslate"><span class="pre">status</span></code>, <code class="docutils literal notranslate"><span class="pre">registered_at</span></code>) are preserved across transfers.</p>
 <p>The new owner MUST call <a class="reference internal" href="#cis-8004-functions-setagentwallet"><span class="std std-ref">setAgentWallet</span></a> to re-establish
 a payment address.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">to</span></code> field of a CIS-2 transfer MUST be an account address.
-The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">InvalidReceiver</span></code> if <code class="docutils literal notranslate"><span class="pre">to</span></code> is a contract address.</p>
+<p>The transfer amount MUST be exactly one and the <code class="docutils literal notranslate"><span class="pre">to</span></code> field MUST be an account address.
+The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">InvalidTransfer</span></code> if the amount is not one or <code class="docutils literal notranslate"><span class="pre">to</span></code> is a contract
+address.</p>
+<p>The contract MUST reject with <code class="docutils literal notranslate"><span class="pre">AgentRevoked</span></code> if the agent’s status is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p>
 </section>
 <section id="rejection-errors">
 <span id="cis-8004-errors"></span><h3>Rejection errors<a class="headerlink" href="#rejection-errors" title="Link to this heading">¶</a></h3>
@@ -923,27 +924,18 @@ the described conditions:</p>
 <td><p>-7202</p></td>
 <td><p>The agent is <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>; the operation requires <code class="docutils literal notranslate"><span class="pre">Active</span></code> status.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidReceiver</span></code></p></td>
-<td><p>-7203</p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">to</span></code> field of a <code class="docutils literal notranslate"><span class="pre">transfer</span></code> call is a contract address; agent NFT ownership is
-restricted to accounts.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ExternalReferenceTaken</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ExternalReferenceTaken</span></code></p></td>
 <td><p>-7204</p></td>
 <td><p>An active agent already holds the supplied <code class="docutils literal notranslate"><span class="pre">external_reference</span></code>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidExternalReference</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidExternalReference</span></code></p></td>
 <td><p>-7206</p></td>
 <td><p>The supplied <code class="docutils literal notranslate"><span class="pre">external_reference</span></code> does not resolve to an active CIS-8 entry owned by the
 sender, or the registry address does not match the configured dependency.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidMetadata</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidMetadata</span></code></p></td>
 <td><p>-7208</p></td>
 <td><p>The metadata value violates implementation-defined limits or encoding requirements.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AgentAlreadyRevoked</span></code></p></td>
-<td><p>-7209</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">revoke</span></code> was called on an agent that is already <code class="docutils literal notranslate"><span class="pre">Revoked</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">ReservedKey</span></code></p></td>
 <td><p>-7211</p></td>
@@ -951,12 +943,12 @@ sender, or the registry address does not match the configured dependency.</p></t
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidAgentWalletProof</span></code></p></td>
 <td><p>-7212</p></td>
-<td><p>The signature in <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> does not verify against <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>’s account
-credentials.</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> signature is malformed or does not verify against <code class="docutils literal notranslate"><span class="pre">new_wallet</span></code>’s
+account credentials, or its <code class="docutils literal notranslate"><span class="pre">deadline</span></code> is outside the accepted validity window.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">AgentWalletDeadlinePassed</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">InvalidTransfer</span></code></p></td>
 <td><p>-7213</p></td>
-<td><p>The <code class="docutils literal notranslate"><span class="pre">deadline</span></code> in <code class="docutils literal notranslate"><span class="pre">setAgentWallet</span></code> has passed.</p></td>
+<td><p>A <code class="docutils literal notranslate"><span class="pre">transfer</span></code> amount is not one or its <code class="docutils literal notranslate"><span class="pre">to</span></code> field is a contract address.</p></td>
 </tr>
 </tbody>
 </table>
